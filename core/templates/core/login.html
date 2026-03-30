@@ -1,0 +1,403 @@
+{% extends 'core/base.html' %}
+{% block title %}Login - OrganTracker{% endblock %}
+
+{% block extra_head %}
+<!-- Boxicons loaded as requested by the snippet -->
+<script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
+<style>
+/* Scoped CSS for the Animated Login Form to fit within base.html */
+.login-wrapper * {
+    box-sizing: border-box;
+    font-family: 'Poppins', 'Inter', sans-serif;
+    color: #fff;
+}
+
+.login-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh; /* Takes up rest of the screen */
+    background: transparent;
+}
+
+.auth-container {
+    position: relative;
+    width: 850px;
+    height: 500px;
+    border: 2px solid #00f2fe; /* Updated to global theme color */
+    box-shadow: 0 0 25px rgba(0, 242, 254, 0.4);
+    border-radius: 20px;
+    background: #0b0f19;
+    overflow: hidden;
+}
+
+.auth-container .form-box {
+    position: absolute;
+    top: 0;
+    width: 50%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    z-index: 5;
+}
+
+.form-box.Login {
+    left: 0;
+    padding: 0 40px;
+}
+
+.form-box.Login .animation {
+    transform: translateX(0%);
+    transition: .7s;
+    opacity: 1;
+    transition-delay: calc(.1s * var(--S));
+}
+
+.auth-container.active .form-box.Login .animation {
+    transform: translateX(-120%);
+    opacity: 0;
+    transition-delay: calc(.1s * var(--D));
+}
+
+.form-box.Register {
+    right: 0;
+    padding: 0 60px;
+}
+
+.form-box.Register .animation {
+    transform: translateX(120%);
+    transition: .7s ease;
+    opacity: 0;
+    filter: blur(10px);
+    transition-delay: calc(.1s * var(--S));
+}
+
+.auth-container.active .form-box.Register .animation {
+    transform: translateX(0%);
+    opacity: 1;
+    filter: blur(0px);
+    transition-delay: calc(.1s * var(--li));
+}
+
+.form-box h2 {
+    font-size: 32px;
+    text-align: center;
+    font-weight: 700;
+}
+
+.form-box .input-box {
+    position: relative;
+    width: 100%;
+    height: 50px;
+    margin-top: 25px;
+}
+
+.input-box input {
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    color: #fff;
+    font-weight: 600;
+    border-bottom: 2px solid #fff;
+    padding-right: 23px;
+    transition: .5s;
+}
+
+.input-box input:focus,
+.input-box input:valid {
+    border-bottom: 2px solid #00f2fe;
+}
+
+.input-box label {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    font-size: 16px;
+    color: #fff;
+    transition: .5s;
+    pointer-events: none;
+}
+
+.input-box input:focus ~ label,
+.input-box input:valid ~ label {
+    top: -5px;
+    color: #00f2fe;
+    font-size: 12px;
+}
+
+.input-box box-icon {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    font-size: 18px;
+    transform: translateY(-50%);
+    color: #fff;
+}
+
+.input-box input:focus ~ box-icon,
+.input-box input:valid ~ box-icon {
+    fill: #00f2fe;
+}
+
+.auth-btn {
+    position: relative;
+    width: 100%;
+    height: 45px;
+    background: transparent;
+    border-radius: 40px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    border: 2px solid #00f2fe;
+    color: #fff;
+    overflow: hidden;
+    z-index: 1;    
+    margin-top: 30px;
+}
+
+.auth-btn::before {
+    content: "";
+    position: absolute;
+    height: 300%;
+    width: 100%;
+    background: linear-gradient(#0b0f19, #00f2fe, #0b0f19, #00f2fe);
+    top: -100%;
+    left: 0;
+    z-index: -1;
+    transition: .5s;
+}
+
+.auth-btn:hover:before {
+    top: 0;
+}
+
+.regi-link {
+    font-size: 14px;
+    text-align: center;
+    margin: 20px 0 10px;
+}
+
+.regi-link a {
+    text-decoration: none;
+    color: #00f2fe;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.regi-link a:hover {
+    text-decoration: underline;
+}
+
+.info-content {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: 50%;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    z-index: 6;
+    pointer-events: none;
+}
+
+.info-content.Login {
+    right: 0;
+    text-align: right;
+    padding: 0 40px 60px 150px;
+}
+
+.info-content.Login .animation {
+    transform: translateX(0);
+    transition: .7s ease;
+    transition-delay: calc(.1s * var(--S));
+    opacity: 1;
+    filter: blur(0px);
+}
+
+.auth-container.active .info-content.Login .animation {
+    transform: translateX(120%);
+    opacity: 0;
+    filter: blur(10px);
+    transition-delay: calc(.1s * var(--D));
+}
+
+.info-content.Register {
+    left: 0;
+    text-align: left;
+    padding: 0 150px 60px 40px;
+    pointer-events: none;
+}
+
+.info-content.Register .animation {
+    transform: translateX(-120%);
+    transition: .7s ease;
+    opacity: 0;
+    filter: blur(10px);
+    transition-delay: calc(.1s * var(--S));
+}
+
+.auth-container.active .info-content.Register .animation {
+    transform: translateX(0%);
+    opacity: 1;
+    filter: blur(0);
+    transition-delay: calc(.1s * var(--li));
+}
+
+.info-content h2 {
+    text-transform: uppercase;
+    font-size: 36px;
+    line-height: 1.3;
+    font-weight: 800;
+}
+
+.info-content p {
+    font-size: 16px;
+    color: #e2e8f0;
+    margin-top: 10px;
+}
+
+.auth-container .curved-shape {
+    position: absolute;
+    right: 0;
+    top: -5px;
+    height: 600px;
+    width: 850px;
+    background: linear-gradient(45deg, #0b0f19, #00f2fe);
+    transform: rotate(10deg) skewY(40deg);
+    transform-origin: bottom right;
+    transition: 1.5s ease;
+    transition-delay: 1.6s;
+    z-index: 1;
+}
+
+.auth-container.active .curved-shape {
+    transform: rotate(0deg) skewY(0deg);
+    transition-delay: .5s;
+}
+
+.auth-container .curved-shape2 {
+    position: absolute;
+    left: 250px;
+    top: 100%;
+    height: 700px;
+    width: 850px;
+    background: #0b0f19;
+    border-top: 3px solid #00f2fe;
+    transform: rotate(0deg) skewY(0deg);
+    transform-origin: bottom left;
+    transition: 1.5s ease;
+    transition-delay: .5s;
+    z-index: 2;
+}
+
+.auth-container.active .curved-shape2 {
+    transform: rotate(-11deg) skewY(-41deg);
+    transition-delay: 1.2s;
+}
+
+.alert-error {
+    color: #ff0844;
+    font-size: 14px;
+    text-align: center;
+    margin-bottom: 10px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="login-wrapper">
+    <div class="auth-container">
+        <div class="curved-shape"></div>
+        <div class="curved-shape2"></div>
+        
+        <!-- LOGIN PANE -->
+        <div class="form-box Login">
+            <h2 class="animation" style="--D:0; --S:21">Login</h2>
+            
+            {% if form.errors %}
+            <div class="animation alert-error" style="--D:0.5; --S:21.5">
+                Invalid username or password.
+            </div>
+            {% endif %}
+
+            <form method="post" action="{% url 'login' %}">
+                {% csrf_token %}
+                <div class="input-box animation" style="--D:1; --S:22">
+                    <input type="text" name="username" required>
+                    <label for="">Username</label>
+                    <box-icon type='solid' name='user' color="gray"></box-icon>
+                </div>
+
+                <div class="input-box animation" style="--D:2; --S:23">
+                    <input type="password" name="password" required>
+                    <label for="">Password</label>
+                    <box-icon name='lock-alt' type='solid' color="gray"></box-icon>
+                </div>
+
+                <div class="input-box animation" style="--D:3; --S:24">
+                    <button class="auth-btn" type="submit">Secure Login</button>
+                    <!-- Django login redirects -->
+                    <input type="hidden" name="next" value="{{ next|default:'' }}">
+                </div>
+
+                <div class="regi-link animation" style="--D:4; --S:25">
+                    <p>Don't have an account? <br> <a class="SignUpLink">Register Now</a></p>
+                </div>
+            </form>
+        </div>
+
+        <div class="info-content Login">
+            <h2 class="animation" style="--D:0; --S:20">WELCOME BACK!</h2>
+            <p class="animation" style="--D:1; --S:21">Access your Admin, Hospital, or Donor portal securely via the unified authentication gateway.</p>
+        </div>
+
+        <!-- REGISTER PANE -->
+        <div class="form-box Register">
+            <h2 class="animation" style="--li:17; --S:0">Register</h2>
+            
+            <div class="animation mt-4 text-center" style="--li:18; --S:1">
+                <p class="mb-4 text-muted">Choose your role in the ecosystem to continue your registration securely.</p>
+                
+                <a href="{% url 'register_donor' %}" class="auth-btn d-flex align-items-center justify-content-center text-decoration-none mb-3" style="font-size: 15px;">
+                    <i class="fa-solid fa-hand-holding-heart me-2"></i> Register as Donor
+                </a>
+                
+                <a href="{% url 'register_hospital' %}" class="auth-btn d-flex align-items-center justify-content-center text-decoration-none" style="font-size: 15px; border-color: #38f9d7;">
+                    <i class="fa-solid fa-hospital me-2"></i> Register as Hospital
+                </a>
+            </div>
+
+            <div class="regi-link animation" style="--li:21; --S:5" style="margin-top: 50px;">
+                <p>Already have an account? <br> <a class="SignInLink">Sign In Here</a></p>
+            </div>
+        </div>
+
+        <div class="info-content Register">
+            <h2 class="animation" style="--li:17; --S:0">JOIN US!</h2>
+            <p class="animation" style="--li:18; --S:1">Decentralized, immutable, and fully transparent. Create your profile to join the medical network.</p>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const container = document.querySelector('.auth-container');
+    const LoginLink = document.querySelector('.SignInLink');
+    const RegisterLink = document.querySelector('.SignUpLink');
+
+    RegisterLink.addEventListener('click', () =>{
+        container.classList.add('active');
+    })
+
+    LoginLink.addEventListener('click', () => {
+        container.classList.remove('active');
+    })
+</script>
+{% endblock %}

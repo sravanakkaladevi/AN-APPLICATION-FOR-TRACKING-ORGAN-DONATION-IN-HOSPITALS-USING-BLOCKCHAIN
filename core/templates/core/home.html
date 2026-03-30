@@ -1,0 +1,261 @@
+{% extends 'core/base.html' %}
+{% block title %}Home - OrganTracker{% endblock %}
+
+{% block extra_head %}
+<!-- Animate.css for entrance animations -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+<style>
+    /* Parallax Hero Wrapper */
+    .hero-wrapper {
+        position: relative;
+        width: 100vw;
+        margin-left: calc(-50vw + 50%);
+        height: 100vh;
+        min-height: 800px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: url('https://images.unsplash.com/photo-1576091160550-2173ff9e5ee4?auto=format&fit=crop&q=80&w=2000') no-repeat center center;
+        background-size: cover;
+        background-attachment: fixed;
+        margin-top: -80px; /* Pull up behind the transparent navbar */
+        padding-top: 80px;
+    }
+
+    .hero-overlay {
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: linear-gradient(180deg, rgba(11,15,25,0.6) 0%, rgba(11,15,25,0.98) 100%);
+        z-index: 1;
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 2;
+        text-align: center;
+        max-width: 1200px;
+        width: 100%;
+        padding: 0 2rem;
+    }
+
+    .hero-title {
+        font-size: 5.5rem;
+        font-weight: 900;
+        letter-spacing: -2px;
+        line-height: 1.1;
+        margin-bottom: 1.5rem;
+        background: linear-gradient(135deg, #fff 0%, #b0c4de 100%);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        filter: drop-shadow(0 4px 20px rgba(0,242,254,0.3));
+    }
+
+    .hero-subtitle {
+        font-size: 1.5rem;
+        color: #e2e8f0;
+        max-width: 800px;
+        margin: 0 auto 4rem;
+        line-height: 1.6;
+        text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    }
+
+    /* Cards Container */
+    .cards-container {
+        position: relative;
+        z-index: 3;
+        margin-top: -200px; /* Overlap into the hero background */
+        padding-bottom: 100px;
+    }
+
+    /* 3D Image Glass Cards */
+    .img-card {
+        position: relative;
+        height: 520px;
+        border-radius: 24px;
+        overflow: hidden;
+        cursor: pointer;
+        border: 1px solid rgba(255,255,255,0.15);
+        transform-style: preserve-3d;
+        box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+        background-color: #0b0f19;
+    }
+
+    .img-card-bg {
+        position: absolute;
+        top: -10px; left: -10px; right: -10px; bottom: -10px; /* extra space for smooth scaling */
+        background-size: cover;
+        background-position: center;
+        transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+        z-index: 1;
+    }
+
+    .donor .img-card-bg { background-image: url('https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?auto=format&fit=crop&w=800'); }
+    .hospital .img-card-bg { background-image: url('https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=800'); }
+    .admin .img-card-bg { background-image: url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=800'); }
+
+    /* Dynamic Overlays */
+    .img-card-overlay {
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        z-index: 2;
+        background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(11,15,25,0.98) 100%);
+        transition: opacity 0.5s ease;
+    }
+
+    .donor .img-card-overlay { background: linear-gradient(180deg, rgba(67, 233, 123, 0.25) 0%, rgba(11,15,25,0.98) 95%); }
+    .hospital .img-card-overlay { background: linear-gradient(180deg, rgba(0, 242, 254, 0.25) 0%, rgba(11,15,25,0.98) 95%); }
+    .admin .img-card-overlay { background: linear-gradient(180deg, rgba(246, 211, 101, 0.25) 0%, rgba(11,15,25,0.98) 95%); }
+
+    .img-card:hover .img-card-bg {
+        transform: scale(1.08);
+    }
+
+    /* Floating content using Z-translation */
+    .img-card-content {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 3rem 2rem;
+        z-index: 3;
+        transform: translateZ(50px);
+        transition: transform 0.3s ease;
+    }
+
+    .img-card:hover .img-card-content {
+        transform: translateZ(80px);
+    }
+
+    .img-card-icon {
+        font-size: 3.5rem;
+        margin-bottom: 1.5rem;
+        filter: drop-shadow(0 0 15px rgba(255,255,255,0.5));
+    }
+    .donor .img-card-icon { color: #43e97b; filter: drop-shadow(0 0 20px rgba(67, 233, 123, 0.6)); }
+    .hospital .img-card-icon { color: #00f2fe; filter: drop-shadow(0 0 20px rgba(0, 242, 254, 0.6)); }
+    .admin .img-card-icon { color: #f6d365; filter: drop-shadow(0 0 20px rgba(246, 211, 101, 0.6)); }
+
+    .img-card h2 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: white;
+        margin-bottom: 1rem;
+    }
+
+    .img-card p {
+        color: #cbd5e1;
+        font-size: 1.1rem;
+        line-height: 1.6;
+        margin-bottom: 2.5rem;
+    }
+
+    /* Buttons */
+    .card-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem 2.5rem;
+        border-radius: 50px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        border: none;
+    }
+
+    .donor .card-btn { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: #000; box-shadow: 0 10px 20px rgba(67, 233, 123, 0.3); }
+    .hospital .card-btn { background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%); color: #fff; box-shadow: 0 10px 20px rgba(0, 242, 254, 0.3); }
+    .admin .card-btn { background: linear-gradient(135deg, #f6d365 0%, #fda085 100%); color: #000; box-shadow: 0 10px 20px rgba(246, 211, 101, 0.3); }
+
+    .img-card:hover .card-btn {
+        box-shadow: 0 15px 30px rgba(255,255,255,0.4) !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Parallax Hero -->
+<div class="hero-wrapper">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+        <div class="badge rounded-pill border px-4 py-2 text-info animate__animated animate__fadeInDown mb-4" style="font-size: 1.1rem; background: rgba(0,0,0,0.5); border-color: rgba(0,242,254,0.5)!important;">
+            <i class="fa-solid fa-satellite-dish me-2"></i> Next-Gen Medical Ecosystem
+        </div>
+        <h1 class="hero-title animate__animated animate__zoomIn">Life-Saving Matches,<br>Secured by Code.</h1>
+        <p class="hero-subtitle animate__animated animate__fadeInUp animate__delay-1s">
+            A state-of-the-art decentralized platform redefining organ donation. From the moment of intent to the miracle of transplantation—every heartbeat is tracked precisely and immutably.
+        </p>
+    </div>
+</div>
+
+<!-- 3D Zero-Gravity Cards -->
+<div class="container cards-container">
+    <div class="row g-5">
+        
+        <!-- DONOR CARD -->
+        <div class="col-lg-4 col-md-12 animate__animated animate__fadeInUp" style="animation-delay: 0.5s;">
+            <a href="{% url 'register_donor' %}" class="text-decoration-none">
+                <div class="img-card donor js-tilt" data-tilt data-tilt-max="15" data-tilt-speed="400" data-tilt-perspective="1000">
+                    <div class="img-card-bg"></div>
+                    <div class="img-card-overlay"></div>
+                    <div class="img-card-content">
+                        <i class="fa-solid fa-hand-holding-heart img-card-icon"></i>
+                        <h2>Donor Network</h2>
+                        <p>Join the movement to save lives. Register your intent securely and immutably under powerful cryptography.</p>
+                        <span class="card-btn">Pledge Now <i class="fa-solid fa-arrow-right ms-2"></i></span>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- HOSPITAL CARD -->
+        <div class="col-lg-4 col-md-12 animate__animated animate__fadeInUp" style="animation-delay: 0.7s;">
+            <a href="{% url 'register_hospital' %}" class="text-decoration-none">
+                <div class="img-card hospital js-tilt" data-tilt data-tilt-max="15" data-tilt-speed="400" data-tilt-perspective="1000">
+                    <div class="img-card-bg"></div>
+                    <div class="img-card-overlay"></div>
+                    <div class="img-card-content">
+                        <i class="fa-solid fa-hospital img-card-icon"></i>
+                        <h2>Hospital Hub</h2>
+                        <p>Register life-saving organs, securely track verified matches, and guarantee end-to-end transparency.</p>
+                        <span class="card-btn">Access Hub <i class="fa-solid fa-arrow-right ms-2"></i></span>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- ADMIN CARD -->
+        <div class="col-lg-4 col-md-12 animate__animated animate__fadeInUp" style="animation-delay: 0.9s;">
+            <a href="{% url 'admin_dashboard' %}" class="text-decoration-none">
+                <div class="img-card admin js-tilt" data-tilt data-tilt-max="15" data-tilt-speed="400" data-tilt-perspective="1000">
+                    <div class="img-card-bg"></div>
+                    <div class="img-card-overlay"></div>
+                    <div class="img-card-content">
+                        <i class="fa-solid fa-user-astronaut img-card-icon"></i>
+                        <h2>Admin Node</h2>
+                        <p>Command center for executing real-time blockchain consensus matching and maintaining network integrity.</p>
+                        <span class="card-btn text-dark">Login Node <i class="fa-solid fa-arrow-right ms-2"></i></span>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- VanillaTilt.js for Zero Gravity 3D Effects -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.0/vanilla-tilt.min.js"></script>
+<script>
+    VanillaTilt.init(document.querySelectorAll(".js-tilt"), {
+        max: 12,
+        speed: 600,
+        glare: true,
+        "max-glare": 0.2,
+        scale: 1.02
+    });
+</script>
+{% endblock %}

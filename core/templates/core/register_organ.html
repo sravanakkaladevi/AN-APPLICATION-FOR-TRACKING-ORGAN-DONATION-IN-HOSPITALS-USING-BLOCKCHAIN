@@ -1,0 +1,80 @@
+{% extends 'core/base.html' %}
+{% load crispy_forms_tags %}
+{% block title %}Register Organ - OrganTracker{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+<style>
+    .organ-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 80vh;
+        position: relative;
+    }
+    .organ-card {
+        background: rgba(11, 15, 25, 0.85);
+        border: 2px solid #00f2fe;
+        border-radius: 20px;
+        padding: 3rem;
+        width: 100%;
+        max-width: 600px;
+        box-shadow: 0 0 40px rgba(0, 242, 254, 0.2);
+        backdrop-filter: blur(10px);
+        box-sizing: border-box;
+    }
+    .organ-card h3 {
+        color: white;
+        font-weight: 800;
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    /* Simple overrides to make Crispy forms dark */
+    .organ-card label { color: #cbd5e1; font-weight: 600; margin-bottom: 5px; }
+    .organ-card .form-control, .organ-card select {
+        background: transparent;
+        border: 1px solid rgba(255,255,255,0.2);
+        border-radius: 10px;
+        color: white;
+        padding: 12px;
+    }
+    .organ-card .form-control:focus, .organ-card select:focus {
+        border-color: #00f2fe;
+        box-shadow: 0 0 10px rgba(0,242,254,0.3);
+        background: rgba(255,255,255,0.05);
+    }
+    .organ-card select option { background: #0b0f19; color: white; }
+    .btn-submit {
+        background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+        border: none;
+        border-radius: 50px;
+        color: white;
+        font-weight: bold;
+        padding: 15px;
+        width: 100%;
+        margin-top: 20px;
+        box-shadow: 0 10px 20px rgba(0, 242, 254, 0.3);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="organ-wrapper">
+    <div class="organ-card animate__animated animate__zoomIn">
+        <h3><i class="fa-solid fa-file-invoice me-2 text-info"></i> Log Organ on Blockchain</h3>
+        <p class="text-center text-muted mb-2">You are interacting as {{ user.hospitalprofile.hospital_name }}. Organ details will be immutably verified via Smart Contract.</p>
+        <p class="text-center text-info small mb-4">Choose a donor and then select the organ type, such as Kidney, Liver, Heart, Lung, or Cornea.</p>
+        
+        {% if form.errors %}
+            <div style="color: #ff0844; margin-bottom: 15px; text-align: center;">Error registering organ. Check fields.</div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <button type="submit" class="btn-submit mt-4"><i class="fa-brands fa-ethereum me-2"></i> Register Immutable Record</button>
+            <a href="{% url 'hospital_dashboard' %}" class="d-block text-center mt-3 text-info text-decoration-none">Cancel and Return</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

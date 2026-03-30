@@ -1,0 +1,352 @@
+{% extends 'core/base.html' %}
+{% block title %}Hospital Dashboard - OrganTracker{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+<style>
+    .dashboard-wrapper {
+        position: relative;
+        width: 100vw;
+        margin-left: calc(-50vw + 50%);
+        min-height: calc(100vh - 80px);
+        background: url('https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=2000') no-repeat center center fixed;
+        background-size: cover;
+        padding-top: 40px;
+        padding-bottom: 80px;
+    }
+    
+    .dash-overlay {
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: linear-gradient(135deg, rgba(11,15,25,0.98) 0%, rgba(0, 242, 254, 0.15) 100%);
+        backdrop-filter: blur(6px);
+        z-index: 1;
+    }
+
+    .dash-content {
+        position: relative;
+        z-index: 2;
+        max-width: 1300px;
+        margin: 0 auto;
+        padding: 0 15px;
+    }
+
+    .dash-header h2 {
+        font-weight: 800;
+        font-size: 2.5rem;
+        background: linear-gradient(135deg, #fff 0%, #00f2fe 100%);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    /* Action Card */
+    .action-card {
+        background: linear-gradient(135deg, rgba(0, 242, 254, 0.1) 0%, rgba(79, 172, 254, 0.1) 100%);
+        border: 1px solid rgba(0, 242, 254, 0.3);
+        border-radius: 20px;
+        padding: 2rem;
+        text-align: center;
+        transition: transform 0.3s;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    .action-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0,242,254,0.2);
+    }
+    
+    .action-btn {
+        background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        padding: 1rem 2rem;
+        font-weight: 700;
+        font-size: 1.1rem;
+        box-shadow: 0 8px 20px rgba(0, 242, 254, 0.3);
+        transition: all 0.3s;
+    }
+    .action-btn:hover {
+        transform: scale(1.05);
+        color: white;
+        box-shadow: 0 12px 25px rgba(0, 242, 254, 0.5);
+    }
+
+    /* Glass Panels for Tables */
+    .glass-panel {
+        background: rgba(11, 15, 25, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+        margin-bottom: 2rem;
+    }
+    .panel-title {
+        color: white;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+    }
+    .panel-title i {
+        color: #00f2fe;
+        margin-right: 12px;
+        font-size: 1.5rem;
+    }
+
+    /* Table Styles */
+    .table { color: #e2e8f0; }
+    .table thead th {
+        border-bottom: 2px solid rgba(0, 242, 254, 0.3);
+        color: #00f2fe;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.9rem;
+    }
+    .table tbody tr {
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+        transition: background 0.3s;
+    }
+    .table tbody tr:hover { background: rgba(0, 242, 254, 0.05); }
+
+    /* Highlights for data */
+.hash-badge {
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.1);
+        color: #00f2fe;
+        font-family: monospace;
+        letter-spacing: 1px;
+    }
+
+    .btn-match {
+        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        border: none;
+        color: #0b0f19;
+        font-weight: 700;
+        border-radius: 50px;
+        padding: 0.55rem 1.1rem;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .btn-match:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 10px 22px rgba(67, 233, 123, 0.35);
+        color: #0b0f19;
+    }
+
+    .profile-panel {
+        background: rgba(11, 15, 25, 0.88);
+        border: 1px solid rgba(0, 242, 254, 0.25);
+        border-radius: 20px;
+        padding: 1.8rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+        height: 100%;
+    }
+
+    .profile-avatar {
+        width: 96px;
+        height: 96px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid rgba(0, 242, 254, 0.5);
+        margin-bottom: 1rem;
+    }
+
+    .profile-fallback {
+        width: 96px;
+        height: 96px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+        color: #081018;
+        font-size: 1.8rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+    }
+
+    .upload-form label {
+        display: block;
+        color: #00f2fe;
+        margin-bottom: 0.4rem;
+        font-size: 0.85rem;
+    }
+
+    .upload-form input[type="file"] {
+        width: 100%;
+        background: rgba(255,255,255,0.04);
+        border: 1px dashed rgba(0, 242, 254, 0.35);
+        border-radius: 14px;
+        color: #e2e8f0;
+        padding: 0.75rem;
+        margin-bottom: 0.8rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-wrapper">
+    <div class="dash-overlay"></div>
+    <div class="dash-content">
+        
+        <div class="dash-header mb-5 d-flex justify-content-between align-items-center animate__animated animate__fadeInDown">
+            <h2><i class="fa-solid fa-hospital-user me-3"></i> {{ user.hospitalprofile.hospital_name }} Hub</h2>
+            <div class="badge rounded-pill border px-4 py-2" style="background: rgba(0,242,254,0.1); border-color: #00f2fe !important; font-size: 1rem; color: #00f2fe;">
+                <i class="fa-solid fa-satellite-dish me-2"></i> Active Network Node
+            </div>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} bg-dark text-{{ message.tags }} border-{{ message.tags }} animate__animated animate__fadeIn">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="row g-4 mb-4">
+            <div class="col-lg-4 animate__animated animate__zoomIn">
+                <div class="profile-panel d-flex flex-column align-items-center text-center">
+                    {% if user.profile_picture %}
+                        <img src="{{ user.profile_picture.url }}" alt="{{ user.username }}" class="profile-avatar">
+                    {% else %}
+                        <div class="profile-fallback">{{ user.username|first|upper }}</div>
+                    {% endif %}
+                    <h4 class="text-white mb-1">{{ user.hospitalprofile.hospital_name }}</h4>
+                    <p class="text-muted mb-2">{{ user.username }}</p>
+                    <p class="text-muted small mb-3">{{ user.hospitalprofile.registration_number }}</p>
+                    <a href="{% url 'register_organ' %}" class="btn action-btn text-decoration-none mb-3">
+                        <i class="fa-solid fa-plus me-2"></i> Register Organ
+                    </a>
+                    <form method="post" action="{% url 'update_profile_picture' %}" enctype="multipart/form-data" class="upload-form w-100">
+                        {% csrf_token %}
+                        <label for="hospital-profile-update">Profile Pic</label>
+                        <input id="hospital-profile-update" type="file" name="profile_picture" accept="image/*" required>
+                        <button type="submit" class="btn action-btn text-decoration-none w-100">Upload Profile Pic</button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="col-lg-8 animate__animated animate__fadeInRight" style="animation-delay: 0.2s;">
+                <div class="glass-panel h-100">
+                    <h4 class="panel-title"><i class="fa-solid fa-list-check"></i> Organs Originating from Your Hospital</h4>
+                    <div class="table-responsive">
+                        <table class="table table-borderless align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Organ Type</th>
+                                    <th>Donor Hash ID</th>
+                                    <th>Status</th>
+                                    <th>Blockchain Hash</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for organ in registered_organs %}
+                                <tr>
+                                    <td class="text-white fw-bold">{{ organ.organ_type }}</td>
+                                    <td><span class="badge bg-secondary font-monospace">{{ organ.donor.user.id }}</span></td>
+                                    <td>
+                                        {% if organ.status == 'Available' %}
+                                            <span class="badge rounded-pill bg-success px-3">{{ organ.status }}</span>
+                                        {% elif organ.status == 'Matched' %}
+                                            <span class="badge rounded-pill bg-info text-dark px-3">{{ organ.status }}</span>
+                                        {% else %}
+                                            <span class="badge rounded-pill bg-secondary px-3">{{ organ.status }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td><span class="badge hash-badge px-3 py-2">#{{ organ.blockchain_id }}</span></td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center py-4 text-muted">No organs registered yet.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row animate__animated animate__fadeInUp" style="animation-delay: 0.3s;">
+            <div class="col-12">
+                <div class="glass-panel" style="border-color: rgba(67, 233, 123, 0.3);">
+                    <h4 class="panel-title"><i class="fa-solid fa-hand-holding-medical text-success"></i> Available Network Organs to Match</h4>
+                    <div class="table-responsive">
+                        <table class="table table-borderless align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Blockchain ID</th>
+                                    <th>Organ Type</th>
+                                    <th>Blood Group</th>
+                                    <th>Originating Hospital</th>
+                                    <th class="text-end">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for organ in available_organs %}
+                                <tr>
+                                    <td><span class="badge hash-badge px-3 py-2">#{{ organ.blockchain_id }}</span></td>
+                                    <td class="text-white fw-bold">{{ organ.organ_type }}</td>
+                                    <td><span class="badge bg-danger">{{ organ.blood_group }}</span></td>
+                                    <td>{{ organ.registered_by.hospital_name }}</td>
+                                    <td class="text-end">
+                                        <form method="post" action="{% url 'match_organ' organ.id %}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn-match">
+                                                <i class="fa-solid fa-handshake-angle me-1"></i> Match Organ
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center py-4 text-muted">No external organs are currently available for matching.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row animate__animated animate__fadeInUp" style="animation-delay: 0.4s;">
+            <div class="col-12">
+                <div class="glass-panel" style="border-color: rgba(67, 233, 123, 0.3);">
+                    <h4 class="panel-title"><i class="fa-solid fa-handshake-angle text-success"></i> Organs Transferred via Blockchain Match</h4>
+                    <div class="table-responsive">
+                        <table class="table table-borderless align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Blockchain ID</th>
+                                    <th>Organ Type</th>
+                                    <th>Originating Hospital</th>
+                                    <th>Blood Group</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for organ in received_organs %}
+                                <tr style="background: rgba(67, 233, 123, 0.02);">
+                                    <td><span class="badge font-monospace text-success border border-success px-3 py-2" style="background: transparent;">#{{ organ.blockchain_id }}</span></td>
+                                    <td class="text-white fw-bold">{{ organ.organ_type }}</td>
+                                    <td>{{ organ.registered_by.hospital_name }}</td>
+                                    <td><span class="badge bg-danger">{{ organ.blood_group }}</span></td>
+                                    <td><span class="badge rounded-pill bg-primary px-3 text-white"><i class="fa-solid fa-truck-medical me-1"></i> Received securely</span></td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center py-5 text-muted">Your hospital has not received any matched organs from the network yet.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</div>
+{% endblock %}

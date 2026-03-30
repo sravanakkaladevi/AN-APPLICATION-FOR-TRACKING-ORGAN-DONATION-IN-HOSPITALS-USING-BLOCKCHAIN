@@ -1,0 +1,235 @@
+{% extends 'core/base.html' %}
+{% block title %}Donor Dashboard - OrganTracker{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.0/vanilla-tilt.min.js"></script>
+<style>
+    .dashboard-wrapper {
+        position: relative;
+        width: 100vw;
+        margin-left: calc(-50vw + 50%);
+        min-height: calc(100vh - 80px);
+        background: url('https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?auto=format&fit=crop&w=2000') no-repeat center center fixed;
+        background-size: cover;
+        padding-top: 40px;
+        padding-bottom: 80px;
+    }
+
+    .dash-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(11,15,25,0.95) 0%, rgba(67, 233, 123, 0.15) 100%);
+        backdrop-filter: blur(8px);
+        z-index: 1;
+    }
+
+    .dash-content {
+        position: relative;
+        z-index: 2;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 15px;
+    }
+
+    .dash-header h2 {
+        font-weight: 800;
+        font-size: 2.5rem;
+        background: linear-gradient(135deg, #fff 0%, #43e97b 100%);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .id-card, .glass-panel {
+        background: rgba(11, 15, 25, 0.72);
+        border: 1px solid rgba(67, 233, 123, 0.22);
+        border-radius: 22px;
+        box-shadow: 0 18px 40px rgba(0,0,0,0.45);
+        color: white;
+    }
+
+    .id-card {
+        padding: 2rem;
+        transform-style: preserve-3d;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .id-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 50%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(67, 233, 123, 0.15), transparent);
+        transform: skewX(-25deg);
+        animation: shine-id 6s infinite;
+    }
+
+    @keyframes shine-id {
+        0%, 80% { left: -100%; }
+        100% { left: 200%; }
+    }
+
+    .profile-avatar {
+        width: 110px;
+        height: 110px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid rgba(67, 233, 123, 0.5);
+        box-shadow: 0 0 20px rgba(67, 233, 123, 0.25);
+        margin-bottom: 1rem;
+    }
+
+    .profile-fallback {
+        width: 110px;
+        height: 110px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        color: #081018;
+        font-size: 2rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+    }
+
+    .id-highlight {
+        color: #43e97b;
+        font-family: monospace;
+        font-size: 1.1rem;
+        font-weight: 700;
+    }
+
+    .id-detail {
+        color: #cbd5e1;
+        margin-bottom: 0.7rem;
+    }
+
+    .upload-form {
+        margin-top: 1.25rem;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .upload-form label {
+        display: block;
+        color: #43e97b;
+        font-size: 0.85rem;
+        margin-bottom: 0.45rem;
+    }
+
+    .upload-form input[type="file"] {
+        width: 100%;
+        background: rgba(255,255,255,0.04);
+        border: 1px dashed rgba(67, 233, 123, 0.35);
+        border-radius: 14px;
+        color: #e2e8f0;
+        padding: 0.75rem;
+        margin-bottom: 0.8rem;
+    }
+
+    .upload-btn {
+        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        border: none;
+        color: #081018;
+        font-weight: 800;
+        border-radius: 999px;
+        padding: 0.75rem 1.1rem;
+    }
+
+    .glass-panel {
+        padding: 2rem;
+    }
+
+    .table { color: #e2e8f0; }
+    .table thead th {
+        border-bottom: 2px solid rgba(67, 233, 123, 0.3);
+        color: #43e97b;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.9rem;
+        letter-spacing: 1px;
+    }
+    .table tbody tr {
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-wrapper">
+    <div class="dash-overlay"></div>
+    <div class="dash-content">
+        <div class="dash-header mb-5 d-flex justify-content-between align-items-center animate__animated animate__fadeInDown">
+            <h2><i class="fa-solid fa-hand-holding-heart me-3"></i> Donor Dashboard</h2>
+            <div class="badge rounded-pill border px-4 py-2" style="background: rgba(67,233,123,0.12); border-color: #43e97b !important; font-size: 1rem; color: #43e97b;">
+                <i class="fa-solid fa-certificate me-2"></i> Verified Donor
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <div class="id-card animate__animated animate__zoomIn" data-tilt data-tilt-max="6">
+                    <div class="text-center">
+                        {% if user.profile_picture %}
+                            <img src="{{ user.profile_picture.url }}" alt="{{ user.username }}" class="profile-avatar">
+                        {% else %}
+                            <div class="profile-fallback">{{ user.username|first|upper }}</div>
+                        {% endif %}
+                    </div>
+                    <h4 class="mb-3 text-white">{{ user.get_full_name|default:user.username }}</h4>
+                    <div class="id-detail">Username: <span class="id-highlight">{{ user.username }}</span></div>
+                    <div class="id-detail">Blood Group: <span class="id-highlight">{{ user.donorprofile.blood_group }}</span></div>
+                    <div class="id-detail">Contact: {{ user.donorprofile.contact_number }}</div>
+                    <div class="id-detail">Address: {{ user.donorprofile.address }}</div>
+
+                    <form method="post" action="{% url 'update_profile_picture' %}" enctype="multipart/form-data" class="upload-form">
+                        {% csrf_token %}
+                        <label for="donor-profile-update">Profile Pic</label>
+                        <input id="donor-profile-update" type="file" name="profile_picture" accept="image/*" required>
+                        <button type="submit" class="upload-btn">Upload Profile Pic</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-lg-8">
+                <div class="glass-panel animate__animated animate__fadeInRight">
+                    <h4 class="text-white mb-3"><i class="fa-solid fa-file-contract me-2 text-success"></i> Your Registered Organs</h4>
+                    {% if organs %}
+                    <div class="table-responsive">
+                        <table class="table table-borderless align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Organ Type</th>
+                                    <th>Blood Group</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th>Hospital</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for organ in organs %}
+                                <tr>
+                                    <td class="text-white fw-bold">{{ organ.organ_type }}</td>
+                                    <td>{{ organ.blood_group }}</td>
+                                    <td>{{ organ.status }}</td>
+                                    <td>{{ organ.created_at|date:"M d, Y" }}</td>
+                                    <td>{{ organ.registered_by.hospital_name }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted mb-0">No organs registered under your name yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
