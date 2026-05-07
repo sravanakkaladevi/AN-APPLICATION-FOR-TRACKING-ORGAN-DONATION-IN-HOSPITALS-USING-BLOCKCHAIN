@@ -1,0 +1,638 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}Donor Portal - OrganTracker{% endblock %}
+
+{% block extra_head %}
+<style>
+    .portal-auth {
+        min-height: calc(100vh - 190px);
+        display: grid;
+        place-items: center;
+        padding: clamp(1rem, 4vw, 3rem) 0;
+    }
+
+    .portal-shell {
+        width: min(100%, 1050px);
+        display: grid;
+        grid-template-columns: minmax(300px, 0.8fr) minmax(0, 1.2fr);
+        overflow: hidden;
+        border: 1px solid rgba(45, 212, 191, 0.22);
+        border-radius: 14px;
+        background:
+            linear-gradient(135deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02)),
+            rgba(5, 10, 18, 0.9);
+        box-shadow: 0 28px 80px rgba(0, 0, 0, 0.44);
+        backdrop-filter: blur(18px);
+    }
+
+    .portal-side {
+        position: relative;
+        min-height: 640px;
+        padding: clamp(2rem, 5vw, 3.5rem);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        background:
+            linear-gradient(rgba(45, 212, 191, 0.1) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(45, 212, 191, 0.07) 1px, transparent 1px),
+            radial-gradient(circle at 24% 16%, rgba(45, 212, 191, 0.22), transparent 32%),
+            radial-gradient(circle at 90% 76%, rgba(34, 211, 238, 0.12), transparent 30%),
+            #05070b;
+        background-size: 48px 48px, 48px 48px, auto, auto, auto;
+    }
+
+    .portal-kicker {
+        display: inline-flex;
+        width: fit-content;
+        align-items: center;
+        gap: 0.55rem;
+        padding: 0.45rem 0.8rem;
+        border: 1px solid rgba(45, 212, 191, 0.25);
+        border-radius: 999px;
+        color: rgba(255, 255, 255, 0.72);
+        background: rgba(3, 3, 3, 0.36);
+        font-size: 0.8rem;
+        font-weight: 800;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+    }
+
+    .portal-kicker span {
+        width: 0.5rem;
+        height: 0.5rem;
+        border-radius: 50%;
+        background: #5eead4;
+        box-shadow: 0 0 18px rgba(94, 234, 212, 0.8);
+    }
+
+    .portal-side h1 {
+        margin: 2rem 0 1rem;
+        color: #ffffff;
+        font-size: clamp(2.4rem, 5vw, 4.4rem);
+        line-height: 1;
+        font-weight: 900;
+    }
+
+    .portal-side h1 strong {
+        display: block;
+        background: linear-gradient(90deg, #5eead4, #ffffff 52%, #67e8f9);
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+    }
+
+    .portal-side p {
+        max-width: 440px;
+        color: rgba(255, 255, 255, 0.58);
+        line-height: 1.7;
+    }
+
+    .portal-mini-grid {
+        display: grid;
+        gap: 0.75rem;
+    }
+
+    .portal-mini-card {
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        padding: 0.9rem;
+        background: rgba(3, 3, 3, 0.42);
+    }
+
+    .portal-mini-card i {
+        color: #5eead4;
+        margin-right: 0.45rem;
+    }
+
+    .portal-form {
+        padding: clamp(1.5rem, 4vw, 3rem);
+        background: rgba(3, 3, 3, 0.38);
+        border-left: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .portal-form h2 {
+        margin-bottom: 0.45rem;
+        font-size: 2rem;
+        font-weight: 900;
+    }
+
+    .portal-form > p {
+        margin-bottom: 1.4rem;
+        color: rgba(255, 255, 255, 0.54);
+    }
+
+    .field-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
+    }
+
+    .field-grid .full {
+        grid-column: 1 / -1;
+    }
+
+    .portal-field label {
+        display: block;
+        margin-bottom: 0.42rem;
+        color: rgba(255, 255, 255, 0.74);
+        font-size: 0.9rem;
+        font-weight: 750;
+    }
+
+    .portal-field input,
+    .portal-field select,
+    .portal-field textarea {
+        width: 100%;
+        min-height: 48px;
+        padding: 0.72rem 0.9rem;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.045);
+        color: #ffffff;
+        outline: none;
+    }
+
+    .portal-field textarea {
+        min-height: 92px;
+        resize: vertical;
+    }
+
+    .portal-field input:focus,
+    .portal-field select:focus,
+    .portal-field textarea:focus {
+        border-color: rgba(45, 212, 191, 0.72);
+        box-shadow: 0 0 0 0.2rem rgba(45, 212, 191, 0.1);
+    }
+
+    .form-errors {
+        margin-bottom: 1rem;
+        padding: 0.85rem 1rem;
+        border-radius: 10px;
+        border: 1px solid rgba(251, 113, 133, 0.32);
+        background: rgba(251, 113, 133, 0.11);
+        color: #fecdd3;
+    }
+
+    .portal-actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.8rem;
+        margin-top: 1.3rem;
+    }
+
+    .portal-submit,
+    .portal-link {
+        min-height: 46px;
+        border-radius: 999px;
+        padding: 0.65rem 1.25rem;
+        font-weight: 850;
+    }
+
+    .portal-submit {
+        border: 1px solid rgba(45, 212, 191, 0.35);
+        background: rgba(45, 212, 191, 0.09);
+        color: #ffffff;
+    }
+
+    .portal-submit:hover {
+        border-color: rgba(45, 212, 191, 0.68);
+        background: rgba(45, 212, 191, 0.16);
+    }
+
+    .portal-link {
+        display: inline-flex;
+        align-items: center;
+        text-decoration: none;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        color: rgba(255, 255, 255, 0.82);
+        background: rgba(255, 255, 255, 0.035);
+    }
+
+    .portal-link:hover {
+        color: #ffffff;
+        border-color: rgba(45, 212, 191, 0.42);
+    }
+
+    .gl-checkbox {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.85rem;
+        cursor: pointer;
+        user-select: none;
+        font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+        margin-top: 1.2rem;
+    }
+
+    .gl-checkbox__input {
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
+        pointer-events: none;
+    }
+
+    .gl-checkbox__box {
+        width: 22px;
+        height: 22px;
+        min-width: 22px;
+        border-radius: 7px;
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+        transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .gl-checkbox__box::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at center, rgba(200, 240, 96, 0.35) 0%, transparent 70%);
+        opacity: 0;
+        transform: scale(0);
+        transition: opacity 0.3s ease, transform 0.4s ease;
+    }
+
+    .gl-checkbox:hover .gl-checkbox__box {
+        border-color: rgba(200, 240, 96, 0.35);
+        transform: scale(1.06);
+    }
+
+    .gl-checkbox__input:checked ~ .gl-checkbox__box {
+        background: linear-gradient(135deg, #c8f060, #60f0b8);
+        border-color: transparent;
+        box-shadow: 0 0 0 3px rgba(200, 240, 96, 0.15), 0 4px 14px rgba(200, 240, 96, 0.3);
+        transform: scale(1.05);
+    }
+
+    .gl-checkbox__input:checked ~ .gl-checkbox__box::before {
+        opacity: 1;
+        transform: scale(1.5);
+    }
+
+    .gl-checkbox__check {
+        width: 13px;
+        height: 13px;
+        color: #080a0f;
+        stroke-dasharray: 24;
+        stroke-dashoffset: 24;
+        transition: stroke-dashoffset 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) 0.05s;
+        z-index: 1;
+    }
+
+    .gl-checkbox__input:checked ~ .gl-checkbox__box .gl-checkbox__check {
+        stroke-dashoffset: 0;
+    }
+
+    .gl-checkbox__label {
+        font-size: 0.9rem;
+        font-weight: 400;
+        color: rgba(255, 255, 255, 0.5);
+        transition: color 0.25s ease;
+    }
+
+    .gl-checkbox:hover .gl-checkbox__label {
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+    .gl-checkbox__input:checked ~ .gl-checkbox__label {
+        color: rgba(255, 255, 255, 0.9);
+    }
+
+    .policy-error {
+        margin-top: 0.45rem;
+        color: #fecdd3;
+        font-size: 0.85rem;
+    }
+
+    @media (max-width: 900px) {
+        .portal-shell {
+            grid-template-columns: 1fr;
+        }
+
+        .portal-side {
+            min-height: auto;
+        }
+
+        .portal-form {
+            border-left: 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+    }
+
+    @media (max-width: 576px) {
+        .field-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .security-card-container {
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        height: 100%;
+        position: relative;
+        padding-top: 4rem;
+    }
+
+    .security-card {
+        width: 100%;
+        max-width: 340px;
+        background: rgba(5, 10, 18, 0.6);
+        border: 1px solid rgba(103, 232, 249, 0.3);
+        border-radius: 16px;
+        padding: 2.5rem 1.5rem;
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(20px);
+        box-shadow: 0 0 40px rgba(34, 211, 238, 0.05), inset 0 0 20px rgba(255,255,255,0.02);
+        z-index: 10;
+        margin: 0 auto;
+    }
+
+    .scanner-line {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: #67e8f9;
+        box-shadow: 0 0 15px #67e8f9, 0 0 30px #67e8f9;
+        animation: scan 3s ease-in-out infinite alternate;
+        opacity: 0.8;
+        z-index: 20;
+    }
+
+    @keyframes scan {
+        0% { top: 0; opacity: 0; }
+        10% { opacity: 1; }
+        90% { opacity: 1; }
+        100% { top: 100%; opacity: 0; }
+    }
+
+    .avatar-container {
+        width: 90px;
+        height: 90px;
+        margin: 0 auto 2rem;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .avatar-svg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        transform: rotate(-90deg);
+        filter: drop-shadow(0 0 8px rgba(103, 232, 249, 0.4));
+    }
+
+    .avatar-icon {
+        font-size: 2.5rem;
+        color: rgba(255, 255, 255, 0.9);
+        z-index: 2;
+        animation: pulse-icon 2s infinite alternate;
+    }
+    
+    @keyframes pulse-icon {
+        0% { transform: scale(0.95); opacity: 0.8; }
+        100% { transform: scale(1.05); opacity: 1; }
+    }
+
+    .animate-draw-outline {
+        stroke-dasharray: 290;
+        stroke-dashoffset: 290;
+        animation: draw-outline 3s ease-in-out forwards infinite alternate;
+    }
+
+    @keyframes draw-outline {
+        0% { stroke-dashoffset: 290; }
+        100% { stroke-dashoffset: 0; }
+    }
+
+    .identity-details {
+        text-align: center;
+        margin-bottom: 2rem;
+        min-height: 60px;
+    }
+
+    .identity-role {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        color: #67e8f9;
+        margin-bottom: 0.5rem;
+        font-weight: 800;
+    }
+
+    .identity-name {
+        font-size: 1.1rem;
+        color: white;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .data-stream-container {
+        background: rgba(0, 0, 0, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+        padding: 1rem;
+        height: 110px;
+        overflow: hidden;
+        position: relative;
+        box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+    }
+    
+    .data-stream-container::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(transparent 50%, rgba(0,0,0,0.8));
+        pointer-events: none;
+    }
+
+    .scramble-text {
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 0.65rem;
+        color: rgba(103, 232, 249, 0.4);
+        line-height: 1.4;
+        word-break: break-all;
+    }
+
+    .scramble-highlight {
+        color: #ffffff;
+        font-weight: bold;
+        text-shadow: 0 0 5px rgba(255,255,255,0.8);
+    }
+    
+    .scramble-alert {
+        color: #fda4af;
+        font-weight: bold;
+    }
+
+    .verification-badge {
+        position: absolute;
+        bottom: -10px;
+        right: -10px;
+        background: rgba(10, 15, 25, 0.9);
+        color: #34d399;
+        font-size: 0.65rem;
+        font-weight: 800;
+        padding: 4px 8px;
+        border-radius: 20px;
+        letter-spacing: 1px;
+        border: 1px solid #059669;
+        box-shadow: 0 0 10px rgba(5, 150, 105, 0.3);
+        z-index: 5;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="portal-auth">
+    <div class="portal-shell">
+        <div class="security-card-container">
+            <div class="security-card">
+                <div class="scanner-line"></div>
+                <div class="avatar-container">
+                    <svg class="avatar-svg" viewBox="0 0 100 100">
+                        <circle cx="50" cy="50" r="46" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="2"></circle>
+                        <circle cx="50" cy="50" r="46" fill="none" stroke="#67e8f9" stroke-width="2" stroke-linecap="round" class="animate-draw-outline"></circle>
+                    </svg>
+                    <img src="{% static 'core/images/avatars/avatar_donor_neon.png' %}" class="avatar-icon" alt="Donor Avatar" style="width: 76px; height: 76px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(103, 232, 249, 0.4);">
+                    <div class="verification-badge"><i class="fa-solid fa-shield-halved me-1"></i>SECURE</div>
+                </div>
+                
+                <div class="identity-details">
+                    <div class="identity-role">DONOR GATEWAY</div>
+                    <h3 class="identity-name">Secure User Access</h3>
+                </div>
+
+                <div class="data-stream-container">
+                    <div class="scramble-text" id="scramble-stream"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="portal-form">
+            <h2>Register Donor</h2>
+            <p>Already registered? Use the shared login gateway for donor, hospital, or admin access.</p>
+
+            {% if form.errors %}
+                <div class="form-errors">
+                    Please correct the highlighted details and try again.
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <form method="post" action="{% url 'register_donor' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="field-grid">
+                    <div class="portal-field">
+                        <label for="donor-username">Username</label>
+                        <input id="donor-username" type="text" name="username" autocomplete="username" required>
+                    </div>
+                    <div class="portal-field">
+                        <label for="donor-email">Email</label>
+                        <input id="donor-email" type="email" name="email" autocomplete="email" required>
+                    </div>
+                    <div class="portal-field">
+                        <label for="donor-password1">Password</label>
+                        <input id="donor-password1" type="password" name="password1" autocomplete="new-password" required>
+                    </div>
+                    <div class="portal-field">
+                        <label for="donor-password2">Confirm Password</label>
+                        <input id="donor-password2" type="password" name="password2" autocomplete="new-password" required>
+                    </div>
+                    <div class="portal-field">
+                        <label for="donor-blood">Blood Group</label>
+                        <select id="donor-blood" name="blood_group" required>
+                            <option value="" selected disabled>Select blood group</option>
+                            <option value="A+">A+ (Positive)</option>
+                            <option value="A-">A- (Negative)</option>
+                            <option value="B+">B+ (Positive)</option>
+                            <option value="B-">B- (Negative)</option>
+                            <option value="O+">O+ (Positive)</option>
+                            <option value="O-">O- (Negative)</option>
+                            <option value="AB+">AB+ (Positive)</option>
+                            <option value="AB-">AB- (Negative)</option>
+                        </select>
+                    </div>
+                    <div class="portal-field">
+                        <label for="donor-contact">Contact Number</label>
+                        <input id="donor-contact" type="text" name="contact_number" autocomplete="tel" required>
+                    </div>
+                    <div class="portal-field full">
+                        <label for="donor-address">Address</label>
+                        <textarea id="donor-address" name="address" required></textarea>
+                    </div>
+                    <div class="portal-field full">
+                        <label for="donor-profile-picture">Profile Picture</label>
+                        <input id="donor-profile-picture" type="file" name="profile_picture" accept="image/*">
+                    </div>
+                </div>
+
+                <label class="gl-checkbox">
+                    <input class="gl-checkbox__input" type="checkbox" name="policy_accepted" required>
+                    <span class="gl-checkbox__box">
+                        <svg class="gl-checkbox__check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    </span>
+                    <span class="gl-checkbox__label">I accept the organ donation policy and account terms</span>
+                </label>
+                {% if form.policy_accepted.errors %}
+                    <div class="policy-error">{{ form.policy_accepted.errors|striptags }}</div>
+                {% endif %}
+
+                <div class="portal-actions">
+                    <button class="portal-submit ui-action" type="submit">
+                        Complete Donor Registration
+                    </button>
+                    <a class="portal-link" href="{% url 'login' %}">
+                        Login Instead
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Security Card Scramble Effect
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*<>_[]{}';
+        const streamEl = document.getElementById('scramble-stream');
+        
+        const keywords = [
+            '<span class="scramble-highlight">USER_AUTH</span>', 
+            '<span class="scramble-highlight">DONOR_PROFILE</span>', 
+            '<span class="scramble-highlight">BLOCKCHAIN_TX</span>', 
+            '<span class="scramble-alert">ENCRYPTING...</span>', 
+            '<span class="scramble-highlight">VERIFIED</span>'
+        ];
+        
+        function generateStream() {
+            if (!streamEl) return;
+            let streamContent = '';
+            for(let i=0; i<150; i++) {
+                if (Math.random() > 0.98) {
+                    streamContent += keywords[Math.floor(Math.random() * keywords.length)] + ' ';
+                } else {
+                    streamContent += characters.charAt(Math.floor(Math.random() * characters.length));
+                }
+            }
+            streamEl.innerHTML = streamContent;
+        }
+        
+        setInterval(generateStream, 80);
+    });
+</script>
+{% endblock %}

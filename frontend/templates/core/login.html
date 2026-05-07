@@ -1,0 +1,681 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}Login - OrganTracker{% endblock %}
+
+{% block extra_head %}
+<style>
+    .auth-gateway {
+        position: relative;
+        min-height: calc(100vh - 190px);
+        display: grid;
+        place-items: center;
+        padding: clamp(1rem, 4vw, 3rem) 0;
+        overflow: hidden;
+    }
+
+    .auth-gateway::before,
+    .auth-gateway::after {
+        content: "";
+        position: absolute;
+        border-radius: 999px;
+        filter: blur(18px);
+        pointer-events: none;
+    }
+
+    .auth-gateway::before {
+        width: 340px;
+        height: 340px;
+        left: -120px;
+        top: 8%;
+        background: rgba(34, 211, 238, 0.13);
+    }
+
+    .auth-gateway::after {
+        width: 380px;
+        height: 380px;
+        right: -150px;
+        bottom: 0;
+        background: rgba(251, 113, 133, 0.11);
+    }
+
+    .auth-shell {
+        position: relative;
+        z-index: 1;
+        width: min(100%, 980px);
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(360px, 0.85fr);
+        border: 1px solid rgba(34, 211, 238, 0.2);
+        border-radius: 14px;
+        overflow: hidden;
+        background:
+            linear-gradient(135deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02)),
+            rgba(5, 10, 18, 0.88);
+        box-shadow: 0 28px 80px rgba(0, 0, 0, 0.44), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(18px);
+    }
+
+    .auth-brand-panel {
+        position: relative;
+        min-height: 560px;
+        padding: clamp(2rem, 5vw, 3.5rem);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        overflow: hidden;
+        background:
+            linear-gradient(rgba(34, 211, 238, 0.09) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(34, 211, 238, 0.07) 1px, transparent 1px),
+            radial-gradient(circle at 20% 18%, rgba(34, 211, 238, 0.2), transparent 32%),
+            radial-gradient(circle at 88% 72%, rgba(251, 113, 133, 0.16), transparent 30%),
+            #05070b;
+        background-size: 48px 48px, 48px 48px, auto, auto, auto;
+    }
+
+    .auth-brand-panel::after {
+        content: "";
+        position: absolute;
+        inset: auto -18% 14% 36%;
+        height: 120px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: linear-gradient(90deg, rgba(34, 211, 238, 0.18), transparent);
+        transform: rotate(-16deg);
+    }
+
+    .auth-kicker {
+        display: inline-flex;
+        width: fit-content;
+        align-items: center;
+        gap: 0.55rem;
+        padding: 0.45rem 0.8rem;
+        border-radius: 999px;
+        border: 1px solid rgba(34, 211, 238, 0.22);
+        color: rgba(255, 255, 255, 0.72);
+        background: rgba(3, 3, 3, 0.36);
+        font-size: 0.84rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+    }
+
+    .auth-kicker span {
+        width: 0.5rem;
+        height: 0.5rem;
+        border-radius: 50%;
+        background: #67e8f9;
+        box-shadow: 0 0 18px rgba(103, 232, 249, 0.8);
+    }
+
+    .auth-copy h1 {
+        margin: 2rem 0 1rem;
+        max-width: 560px;
+        color: #ffffff;
+        font-size: clamp(2.5rem, 6vw, 4.9rem);
+        line-height: 0.98;
+        font-weight: 900;
+        letter-spacing: 0;
+    }
+
+    .auth-copy h1 strong {
+        display: block;
+        background: linear-gradient(90deg, #67e8f9, #ffffff 48%, #fda4af);
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+    }
+
+    .auth-copy p {
+        max-width: 560px;
+        color: rgba(255, 255, 255, 0.58);
+        font-size: 1.02rem;
+        line-height: 1.7;
+    }
+
+    .role-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.75rem;
+        margin-top: 2rem;
+    }
+
+    .role-chip {
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        padding: 0.85rem;
+        background: rgba(3, 3, 3, 0.42);
+    }
+
+    .role-chip i {
+        color: #67e8f9;
+        margin-bottom: 0.65rem;
+    }
+
+    .role-chip strong {
+        display: block;
+        font-size: 0.92rem;
+    }
+
+    .role-chip span {
+        display: block;
+        margin-top: 0.2rem;
+        color: rgba(255, 255, 255, 0.46);
+        font-size: 0.78rem;
+    }
+
+    .auth-form-panel {
+        padding: clamp(1.5rem, 4vw, 3rem);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        background: rgba(3, 3, 3, 0.42);
+        border-left: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .auth-card-title {
+        margin-bottom: 1.5rem;
+    }
+
+    .auth-card-title h2 {
+        margin: 0;
+        font-size: 2rem;
+        font-weight: 900;
+    }
+
+    .auth-card-title p {
+        margin: 0.45rem 0 0;
+        color: rgba(255, 255, 255, 0.54);
+    }
+
+    .auth-field {
+        position: relative;
+        margin-bottom: 1rem;
+    }
+
+    .auth-field label {
+        display: block;
+        margin-bottom: 0.45rem;
+        color: rgba(255, 255, 255, 0.72);
+        font-size: 0.9rem;
+        font-weight: 700;
+    }
+
+    .auth-field .input-icon {
+        position: absolute;
+        left: 1rem;
+        bottom: 0.93rem;
+        color: rgba(103, 232, 249, 0.8);
+        pointer-events: none;
+    }
+
+    .password-toggle {
+        position: absolute;
+        right: 1rem;
+        bottom: 0.85rem;
+        background: none;
+        border: none;
+        color: rgba(255, 255, 255, 0.5);
+        cursor: pointer;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: color 0.2s;
+    }
+
+    .password-toggle:hover {
+        color: #67e8f9;
+    }
+
+    .auth-field input {
+        width: 100%;
+        height: 50px;
+        padding: 0 1rem 0 2.75rem;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.045);
+        color: #ffffff;
+        outline: none;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    .auth-field input:focus {
+        border-color: rgba(34, 211, 238, 0.72);
+        background: rgba(255, 255, 255, 0.065);
+        box-shadow: 0 0 0 0.2rem rgba(34, 211, 238, 0.1);
+    }
+
+    .auth-submit {
+        position: relative;
+        width: 100%;
+        min-height: 50px;
+        margin-top: 0.45rem;
+        border-radius: 999px;
+        border: 1px solid rgba(59, 130, 246, 0.28);
+        background: rgba(59, 130, 246, 0.08);
+        color: #ffffff;
+        font-weight: 850;
+        overflow: hidden;
+        transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+    }
+
+    .auth-submit::before,
+    .auth-submit::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        width: 76%;
+        height: 1px;
+        opacity: 0;
+        transform: translateX(-50%);
+        background: linear-gradient(90deg, transparent, #3b82f6, transparent);
+        transition: opacity 0.45s ease;
+    }
+
+    .auth-submit::before {
+        top: 0;
+    }
+
+    .auth-submit::after {
+        bottom: -1px;
+    }
+
+    .auth-submit:hover {
+        transform: translateY(-2px);
+        background: transparent;
+        border-color: rgba(59, 130, 246, 0.52);
+    }
+
+    .auth-submit:hover::before {
+        opacity: 1;
+    }
+
+    .auth-submit:hover::after {
+        opacity: 0.35;
+    }
+
+    .auth-error {
+        margin-bottom: 1rem;
+        padding: 0.8rem 1rem;
+        border-radius: 10px;
+        border: 1px solid rgba(251, 113, 133, 0.32);
+        background: rgba(251, 113, 133, 0.11);
+        color: #fecdd3;
+        font-weight: 700;
+        font-size: 0.9rem;
+    }
+
+    .auth-links {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0.65rem;
+        margin-top: 1.2rem;
+    }
+
+    .auth-link-button {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 0.8rem 0.95rem;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.035);
+        color: rgba(255, 255, 255, 0.82);
+        text-decoration: none;
+        transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+    }
+
+    .auth-link-button:hover {
+        color: #ffffff;
+        transform: translateY(-2px);
+        border-color: rgba(34, 211, 238, 0.34);
+        background: rgba(34, 211, 238, 0.07);
+    }
+
+    .auth-note {
+        margin-top: 1rem;
+        color: rgba(255, 255, 255, 0.44);
+        font-size: 0.86rem;
+        line-height: 1.6;
+    }
+
+    @media (max-width: 900px) {
+        .auth-shell {
+            grid-template-columns: 1fr;
+        }
+
+        .auth-brand-panel {
+            min-height: auto;
+            padding-bottom: 2rem;
+        }
+
+        .auth-form-panel {
+            border-left: 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+    }
+
+    @media (max-width: 576px) {
+        .auth-gateway {
+            padding-top: 0.5rem;
+        }
+
+        .role-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .security-card-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        position: relative;
+    }
+
+    .security-card {
+        width: 100%;
+        max-width: 320px;
+        background: rgba(5, 10, 18, 0.6);
+        border: 1px solid rgba(103, 232, 249, 0.3);
+        border-radius: 16px;
+        padding: 2.5rem 1.5rem;
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(20px);
+        box-shadow: 0 0 40px rgba(34, 211, 238, 0.05), inset 0 0 20px rgba(255,255,255,0.02);
+        z-index: 10;
+    }
+
+    .scanner-line {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: #67e8f9;
+        box-shadow: 0 0 15px #67e8f9, 0 0 30px #67e8f9;
+        animation: scan 3s ease-in-out infinite alternate;
+        opacity: 0.8;
+        z-index: 20;
+    }
+
+    @keyframes scan {
+        0% { top: 0; opacity: 0; }
+        10% { opacity: 1; }
+        90% { opacity: 1; }
+        100% { top: 100%; opacity: 0; }
+    }
+
+    .avatar-container {
+        width: 90px;
+        height: 90px;
+        margin: 0 auto 2rem;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .avatar-svg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        transform: rotate(-90deg);
+        filter: drop-shadow(0 0 8px rgba(103, 232, 249, 0.4));
+    }
+
+    .avatar-icon {
+        font-size: 2.5rem;
+        color: rgba(255, 255, 255, 0.9);
+        z-index: 2;
+    }
+
+    .animate-draw-outline {
+        stroke-dasharray: 290;
+        stroke-dashoffset: 290;
+        animation: draw-outline 3s ease-in-out forwards infinite alternate;
+    }
+
+    @keyframes draw-outline {
+        0% { stroke-dashoffset: 290; }
+        100% { stroke-dashoffset: 0; }
+    }
+
+    .identity-details {
+        text-align: center;
+        margin-bottom: 2rem;
+        min-height: 60px;
+    }
+
+    .identity-role {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        color: #67e8f9;
+        margin-bottom: 0.5rem;
+        font-weight: 800;
+        animation: fade-switch 4s infinite;
+    }
+
+    .identity-name {
+        font-size: 1.1rem;
+        color: white;
+        font-weight: 600;
+        margin: 0;
+        animation: fade-switch 4s infinite;
+    }
+    
+    @keyframes fade-switch {
+        0%, 90%, 100% { opacity: 1; filter: blur(0px); }
+        95% { opacity: 0; filter: blur(4px); }
+    }
+
+    .data-stream-container {
+        background: rgba(0, 0, 0, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+        padding: 1rem;
+        height: 110px;
+        overflow: hidden;
+        position: relative;
+        box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+    }
+    
+    .data-stream-container::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(transparent 50%, rgba(0,0,0,0.8));
+        pointer-events: none;
+    }
+
+    .scramble-text {
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 0.65rem;
+        color: rgba(103, 232, 249, 0.4);
+        line-height: 1.4;
+        word-break: break-all;
+    }
+
+    .scramble-highlight {
+        color: #ffffff;
+        font-weight: bold;
+        text-shadow: 0 0 5px rgba(255,255,255,0.8);
+    }
+    
+    .scramble-alert {
+        color: #fda4af;
+        font-weight: bold;
+    }
+
+    .verification-badge {
+        position: absolute;
+        bottom: -10px;
+        right: -10px;
+        background: rgba(10, 15, 25, 0.9);
+        color: #34d399;
+        font-size: 0.65rem;
+        font-weight: 800;
+        padding: 4px 8px;
+        border-radius: 20px;
+        letter-spacing: 1px;
+        border: 1px solid #059669;
+        box-shadow: 0 0 10px rgba(5, 150, 105, 0.3);
+        z-index: 5;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="auth-gateway">
+    <div class="auth-shell">
+        <div class="auth-brand-panel">
+            <div class="security-card-container">
+                <div class="security-card">
+                    <div class="scanner-line"></div>
+                    <div class="avatar-container">
+                        <svg class="avatar-svg" viewBox="0 0 100 100">
+                            <circle cx="50" cy="50" r="46" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="2"></circle>
+                            <circle cx="50" cy="50" r="46" fill="none" stroke="#67e8f9" stroke-width="2" stroke-linecap="round" class="animate-draw-outline"></circle>
+                        </svg>
+                        <img src="{% static 'core/images/avatars/avatar_system.png' %}" class="avatar-icon" id="dynamic-avatar" alt="User Avatar" style="width: 76px; height: 76px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(103, 232, 249, 0.4);">
+                        <div class="verification-badge"><i class="fa-solid fa-shield-halved me-1"></i>SECURE</div>
+                    </div>
+                    
+                    <div class="identity-details">
+                        <div class="identity-role" id="dynamic-role">SYSTEM READY</div>
+                        <h3 class="identity-name" id="dynamic-name">Awaiting Login</h3>
+                    </div>
+
+                    <div class="data-stream-container">
+                        <div class="scramble-text" id="scramble-stream"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="auth-form-panel">
+            <div class="auth-card-title">
+                <h2>Secure Login</h2>
+                <p>Enter your credentials to continue.</p>
+            </div>
+
+            {% if form.errors %}
+                <div class="auth-error">
+                    Invalid username or password. Please try again.
+                </div>
+            {% endif %}
+
+            <form method="post" action="{% url 'login' %}">
+                {% csrf_token %}
+
+                <div class="auth-field">
+                    <label for="login-username">Username</label>
+                    <i class="fa-solid fa-user input-icon"></i>
+                    <input id="login-username" type="text" name="username" autocomplete="username" required>
+                </div>
+
+                <div class="auth-field">
+                    <label for="login-password">Password</label>
+                    <i class="fa-solid fa-lock input-icon"></i>
+                    <input id="login-password" type="password" name="password" autocomplete="current-password" required>
+                    <button type="button" class="password-toggle" id="togglePassword" aria-label="Toggle password visibility">
+                        <i class="fa-solid fa-eye" id="toggleIcon"></i>
+                    </button>
+                </div>
+
+                <button class="auth-submit ui-action" type="submit">
+                    Login to Dashboard
+                </button>
+                <input type="hidden" name="next" value="{{ next|default:'' }}">
+            </form>
+
+            <div class="auth-links">
+                <a href="{% url 'register_donor' %}" class="auth-link-button">
+                    <span><i class="fa-solid fa-hand-holding-heart me-2"></i> Register as Donor</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </a>
+                <a href="{% url 'register_hospital' %}" class="auth-link-button">
+                    <span><i class="fa-solid fa-hospital me-2"></i> Register as Hospital</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+
+
+        </div>
+    </div>
+</section>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('login-password');
+        
+        if (togglePassword && passwordInput) {
+            togglePassword.addEventListener('click', function () {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                
+                const icon = this.querySelector('i');
+                if (type === 'text') {
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                } else {
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                }
+            });
+        }
+
+        // Security Card Scramble Effect
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*<>_[]{}';
+        const streamEl = document.getElementById('scramble-stream');
+        const dynamicRole = document.getElementById('dynamic-role');
+        const dynamicName = document.getElementById('dynamic-name');
+        
+        const keywords = [
+            '<span class="scramble-highlight">USER_AUTH</span>', 
+            '<span class="scramble-highlight">HOSPITAL_NODE</span>', 
+            '<span class="scramble-highlight">BLOCKCHAIN_TX</span>', 
+            '<span class="scramble-alert">ENCRYPTING...</span>', 
+            '<span class="scramble-highlight">VERIFIED</span>'
+        ];
+        
+        function generateStream() {
+            if (!streamEl) return;
+            let streamContent = '';
+            for(let i=0; i<150; i++) {
+                if (Math.random() > 0.98) {
+                    streamContent += keywords[Math.floor(Math.random() * keywords.length)] + ' ';
+                } else {
+                    streamContent += characters.charAt(Math.floor(Math.random() * characters.length));
+                }
+            }
+            streamEl.innerHTML = streamContent;
+        }
+        
+        setInterval(generateStream, 80);
+
+        const dynamicAvatar = document.getElementById('dynamic-avatar');
+
+        const identities = [
+            { role: 'SYSTEM READY', name: 'Awaiting Login', avatar: "{% static 'core/images/avatars/avatar_system.png' %}" },
+            { role: 'DONOR GATEWAY', name: 'Secure User Access', avatar: "{% static 'core/images/avatars/avatar_donor.png' %}" },
+            { role: 'MEDICAL NODE', name: 'Hospital Verification', avatar: "{% static 'core/images/avatars/avatar_hospital.png' %}" },
+            { role: 'ADMIN PORTAL', name: 'Network Ledger', avatar: "{% static 'core/images/avatars/avatar_admin.png' %}" }
+        ];
+        let idIndex = 0;
+        
+        setInterval(() => {
+            if(dynamicRole && dynamicName && dynamicAvatar) {
+                idIndex = (idIndex + 1) % identities.length;
+                dynamicRole.innerText = identities[idIndex].role;
+                dynamicName.innerText = identities[idIndex].name;
+                dynamicAvatar.src = identities[idIndex].avatar;
+            }
+        }, 4000);
+    });
+</script>
+{% endblock %}

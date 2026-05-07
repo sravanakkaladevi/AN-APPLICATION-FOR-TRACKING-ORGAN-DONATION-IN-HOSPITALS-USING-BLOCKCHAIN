@@ -1,0 +1,81 @@
+{% extends 'core/base.html' %}
+{% block title %}Register Organ{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="mb-4">
+    <h1 class="h3 fw-bold mb-1">Register Organ</h1>
+    <p class="text-muted mb-0">Add a donor organ record and store it on blockchain.</p>
+</div>
+
+<div class="alert alert-info page-card" role="alert">
+    <strong>Blockchain required:</strong> Keep Ganache or the local blockchain RPC running at
+    <code>http://127.0.0.1:7545</code> before submitting this form.
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card page-card">
+            <div class="card-body p-4">
+                <h2 class="h5 fw-bold mb-3">Organ Details</h2>
+
+                {% if form.errors %}
+                    <div class="alert alert-danger">
+                        {% if form.non_field_errors %}
+                            {% for error in form.non_field_errors %}
+                                <div>{{ error }}</div>
+                            {% endfor %}
+                        {% else %}
+                            Please check the entered details and try again.
+                        {% endif %}
+                    </div>
+                {% endif %}
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    <!-- Select Donor -->
+                    <div class="mb-3">
+                        <label for="{{ form.donor.id_for_label }}" class="form-label">Select Donor</label>
+                        {{ form.donor }}
+                    </div>
+
+                    <!-- Organ Type -->
+                    <div class="mb-3">
+                        <label for="{{ form.organ_type.id_for_label }}" class="form-label">Organ Type</label>
+                        {{ form.organ_type }}
+                    </div>
+
+                    <!-- Blood Group Display -->
+                    <div class="mb-3">
+                        <label class="form-label">Blood Group</label>
+                        <input type="text" class="form-control" value="Auto-filled from selected donor profile" disabled>
+                        <div class="form-text">
+                            The backend uses the selected donor's registered blood group.
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-column flex-sm-row gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary ui-action">
+                            Register on Blockchain
+                        </button>
+                        <a href="{% url 'hospital_dashboard' %}" class="btn btn-outline-secondary ui-action">
+                            Back to Dashboard
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll("select").forEach(function (select) {
+            select.classList.add("form-select");
+        });
+    });
+</script>
+{% endblock %}

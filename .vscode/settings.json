@@ -1,0 +1,7 @@
+{
+    "git.ignoreLimitWarning": true,
+    "python.defaultInterpreterPath": "${workspaceFolder}\\venv\\Scripts\\python.exe",
+    "python.analysis.exclude": [
+        "**/__pyrefly_virtual__/**"
+    ]
+}
