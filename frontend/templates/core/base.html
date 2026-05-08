@@ -73,18 +73,19 @@
         .app-navbar .navbar-brand {
             display: inline-flex;
             align-items: center;
-            gap: 0.7rem;
-            letter-spacing: 0.2px;
+            gap: 0.8rem;
+            letter-spacing: 0.3px;
             background: linear-gradient(90deg, #67e8f9, #ffffff 45%, #fda4af);
             background-clip: text;
             -webkit-background-clip: text;
             color: transparent !important;
-            font-weight: 800;
+            font-weight: 850;
+            font-size: 1.35rem;
         }
 
         .project-logo-mark {
-            width: 34px;
-            height: 34px;
+            width: 42px;
+            height: 42px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -839,7 +840,7 @@
 <body>
     <!-- Navbar -->
     <nav class="app-navbar navbar navbar-dark navbar-expand-lg sticky-top">
-        <div class="container">
+        <div class="container-fluid px-lg-5">
             <a class="navbar-brand" href="{% url 'home' %}">
                 <span class="project-logo-mark" aria-hidden="true">
                     <svg class="project-logo-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 784.37 1277.39">
@@ -851,7 +852,7 @@
                         <polygon fill="#393939" points="0,650.54 392.07,882.29 392.07,472.33"></polygon>
                     </svg>
                 </span>
-                <span>Organ Donation System</span>
+                <span>Organ Donation Tracking System    </span>
             </a>
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -859,7 +860,7 @@
             </button>
 
             <div class="collapse navbar-collapse" id="mainNavbar">
-                <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-1">
+                <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-4">
                     <li class="nav-item">
                         <a class="nav-link ui-action" href="{% url 'home' %}">Home</a>
                     </li>
