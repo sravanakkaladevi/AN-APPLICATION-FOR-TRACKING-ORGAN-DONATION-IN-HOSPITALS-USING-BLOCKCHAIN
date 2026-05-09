@@ -168,6 +168,26 @@
           <a href="{% url 'register_organ' %}" class="btn btn-light text-primary fw-semibold ui-action">Register Organ</a>
         </div>
       </div>
+      
+      <!-- Wallet Info Card -->
+      <div class="card mt-4 bg-dark border-0 shadow-lg text-white" style="background: rgba(0,0,0,0.3) !important; backdrop-filter: blur(10px);">
+        <div class="card-body py-3">
+          <div class="d-flex align-items-center gap-3">
+            <div class="quick-icon bg-primary text-white"><i class="fa-solid fa-wallet"></i></div>
+            <div>
+              <div class="small text-white-50">Blockchain Wallet Address (Ganache)</div>
+              <div class="fw-bold ledger-id mt-1" style="word-break: break-all; font-size: 0.9rem;">
+                {{ user.hospitalprofile.blockchain_wallet_address|default:"Not Linked" }}
+              </div>
+            </div>
+            <div class="ms-auto">
+              <span class="badge {% if user.hospitalprofile.blockchain_wallet_address %}bg-success{% else %}bg-danger{% endif %}">
+                {% if user.hospitalprofile.blockchain_wallet_address %}Connected{% else %}Disconnected{% endif %}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
 
     {% if messages %}
@@ -372,14 +392,13 @@
         <div class="table-responsive">
           <table class="table align-middle">
             <thead class="table-light">
-              <tr><th>Organ</th><th>Blood Group</th><th>Status</th><th>Blockchain ID</th><th>Edit</th></tr>
+              <tr><th>Organ</th><th>Blood Group</th><th>Status</th><th>Blockchain ID</th><th>Tx Hash</th><th>Edit</th></tr>
             </thead>
             <tbody>
               {% for organ in registered_organs %}
               <tr>
                 <td class="fw-semibold">
                   <select form="organ-edit-{{ organ.id }}" name="organ_type" class="form-select form-select-sm" required>
-                    {% for val, lbl in organ.registered_by.registered_organs.model._meta.get_field|default_if_none:"" %}{% endfor %}
                     <option value="Kidney" {% if organ.organ_type == 'Kidney' %}selected{% endif %}>Kidney</option>
                     <option value="Liver" {% if organ.organ_type == 'Liver' %}selected{% endif %}>Liver</option>
                     <option value="Heart" {% if organ.organ_type == 'Heart' %}selected{% endif %}>Heart</option>
@@ -393,9 +412,14 @@
                 </td>
                 <td>
                   <select form="organ-edit-{{ organ.id }}" name="blood_group" class="form-select form-select-sm" required>
-                    {% for bg in "A+,A-,B+,B-,O+,O-,AB+,AB-"|split:"," %}
-                    <option value="{{ bg }}" {% if organ.blood_group == bg %}selected{% endif %}>{{ bg }}</option>
-                    {% endfor %}
+                    <option value="A+" {% if organ.blood_group == 'A+' %}selected{% endif %}>A+</option>
+                    <option value="A-" {% if organ.blood_group == 'A-' %}selected{% endif %}>A-</option>
+                    <option value="B+" {% if organ.blood_group == 'B+' %}selected{% endif %}>B+</option>
+                    <option value="B-" {% if organ.blood_group == 'B-' %}selected{% endif %}>B-</option>
+                    <option value="O+" {% if organ.blood_group == 'O+' %}selected{% endif %}>O+</option>
+                    <option value="O-" {% if organ.blood_group == 'O-' %}selected{% endif %}>O-</option>
+                    <option value="AB+" {% if organ.blood_group == 'AB+' %}selected{% endif %}>AB+</option>
+                    <option value="AB-" {% if organ.blood_group == 'AB-' %}selected{% endif %}>AB-</option>
                   </select>
                 </td>
                 <td>
@@ -403,7 +427,18 @@
                   {% elif organ.status == 'Matched' %}<span class="badge text-bg-warning">{{ organ.status }}</span>
                   {% else %}<span class="badge text-bg-info">{{ organ.status }}</span>{% endif %}
                 </td>
-                <td><span class="ledger-id">#{{ organ.blockchain_id }}</span></td>
+                <td>
+                  <span class="ledger-id" title="Blockchain Record ID">#{{ organ.blockchain_id }}</span>
+                </td>
+                <td>
+                  {% if organ.blockchain_tx_hash %}
+                    <span class="text-muted small" style="font-family: monospace;" title="{{ organ.blockchain_tx_hash }}">
+                      {{ organ.blockchain_tx_hash|slice:":10" }}...
+                    </span>
+                  {% else %}
+                    <span class="text-danger small">Pending</span>
+                  {% endif %}
+                </td>
                 <td>
                   <form id="organ-edit-{{ organ.id }}" method="post" action="{% url 'hospital_update_organ_status' organ.id %}" class="d-flex gap-2">
                     {% csrf_token %}
@@ -445,6 +480,15 @@
                 <td>{{ organ.registered_by.hospital_name }}</td>
                 <td><span class="badge text-bg-warning">{{ organ.status }}</span></td>
                 <td><span class="ledger-id">#{{ organ.blockchain_id }}</span></td>
+                <td>
+                  {% if organ.blockchain_tx_hash %}
+                    <span class="text-muted small" style="font-family: monospace;" title="{{ organ.blockchain_tx_hash }}">
+                      {{ organ.blockchain_tx_hash|slice:":10" }}...
+                    </span>
+                  {% else %}
+                    <span class="text-danger small">Pending</span>
+                  {% endif %}
+                </td>
                 <td>
                   <form method="post" action="{% url 'hospital_update_organ_status' organ.id %}" class="d-flex gap-2">
                     {% csrf_token %}

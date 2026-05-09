@@ -1,0 +1,1084 @@
+{
+  "contractName": "abi",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "donorHash",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "organType",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "bloodGroup",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "hospital",
+          "type": "address"
+        }
+      ],
+      "name": "OrganAdded",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "recipientHospital",
+          "type": "address"
+        }
+      ],
+      "name": "OrganMatched",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        }
+      ],
+      "name": "OrganTransplanted",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_donorHash",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_organType",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_bloodGroup",
+          "type": "string"
+        }
+      ],
+      "name": "addOrgan",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_id",
+          "type": "uint256"
+        }
+      ],
+      "name": "completeTransplant",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_id",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "_recipientHospital",
+          "type": "address"
+        }
+      ],
+      "name": "matchOrgan",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "organCount",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "organs",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "donorHash",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "organType",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "bloodGroup",
+          "type": "string"
+        },
+        {
+          "internalType": "uint8",
+          "name": "status",
+          "type": "uint8"
+        },
+        {
+          "internalType": "address",
+          "name": "hospital",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "recipientHospital",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.8.19+commit.7dd6d404\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"donorHash\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"organType\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"bloodGroup\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"hospital\",\"type\":\"address\"}],\"name\":\"OrganAdded\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"recipientHospital\",\"type\":\"address\"}],\"name\":\"OrganMatched\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"}],\"name\":\"OrganTransplanted\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"_donorHash\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"_organType\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"_bloodGroup\",\"type\":\"string\"}],\"name\":\"addOrgan\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_id\",\"type\":\"uint256\"}],\"name\":\"completeTransplant\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_id\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"_recipientHospital\",\"type\":\"address\"}],\"name\":\"matchOrgan\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"organCount\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"organs\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"donorHash\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"organType\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"bloodGroup\",\"type\":\"string\"},{\"internalType\":\"uint8\",\"name\":\"status\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"hospital\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"recipientHospital\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/abi.json\":\"abi\"},\"evmVersion\":\"paris\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/contracts/abi.json\":{\"keccak256\":\"0x203c1b08129ad0ca911ce68626170012d5f7d117bec8e7c260593f1c594b573e\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://424c41c97d08e93f9fd17cc88f0ff18fab0a6dcde148163377b16b78ebe17f3b\",\"dweb:/ipfs/QmdC1ULwUZ1gUWE9xUWVKcWwYvBt9acw5uavy98tSXcS76\"]}},\"version\":1}",
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "immutableReferences": {},
+  "generatedSources": [],
+  "deployedGeneratedSources": [],
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "// SPDX-License-Identifier: MIT\n// !! THIS FILE WAS AUTOGENERATED BY abi-to-sol v0.7.0. SEE SOURCE BELOW. !!\npragma solidity 0.8.19;\n\ninterface abi {\n\n\nevent OrganAdded( uint256 id,string donorHash,string organType,string bloodGroup,address hospital ) ;\nevent OrganMatched( uint256 id,address recipientHospital ) ;\nevent OrganTransplanted( uint256 id ) ;\nfunction addOrgan( string memory _donorHash,string memory _organType,string memory _bloodGroup ) external   ;\nfunction completeTransplant( uint256 _id ) external   ;\nfunction matchOrgan( uint256 _id,address _recipientHospital ) external   ;\nfunction organCount(  ) external view returns (uint256 ) ;\nfunction organs( uint256  ) external view returns (uint256 id, string memory donorHash, string memory organType, string memory bloodGroup, uint8 status, address hospital, address recipientHospital) ;\n}\n\n\n\n\n// THIS FILE WAS AUTOGENERATED FROM THE FOLLOWING ABI JSON:\n/*\n[{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"donorHash\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"organType\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"bloodGroup\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"hospital\",\"type\":\"address\"}],\"name\":\"OrganAdded\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"recipientHospital\",\"type\":\"address\"}],\"name\":\"OrganMatched\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"}],\"name\":\"OrganTransplanted\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"_donorHash\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"_organType\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"_bloodGroup\",\"type\":\"string\"}],\"name\":\"addOrgan\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_id\",\"type\":\"uint256\"}],\"name\":\"completeTransplant\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_id\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"_recipientHospital\",\"type\":\"address\"}],\"name\":\"matchOrgan\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"organCount\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"organs\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"donorHash\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"organType\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"bloodGroup\",\"type\":\"string\"},{\"internalType\":\"enum OrganDonation.OrganStatus\",\"name\":\"status\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"hospital\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"recipientHospital\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]\n*/",
+  "sourcePath": "C:\\Users\\srava\\.gemini\\antigravity\\scratch\\organ_donation\\backend\\contracts\\abi.json",
+  "ast": {
+    "absolutePath": "project:/contracts/abi.json",
+    "exportedSymbols": {
+      "abi": [
+        415
+      ]
+    },
+    "id": 416,
+    "license": "MIT",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 347,
+        "literals": [
+          "solidity",
+          "0.8",
+          ".19"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "109:23:1"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "abi",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": false,
+        "id": 415,
+        "linearizedBaseContracts": [
+          415
+        ],
+        "name": "abi",
+        "nameLocation": "144:3:1",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "anonymous": false,
+            "eventSelector": "12ad90f1f045be04b79949e2decfb136e683c7fa32d2668095c50f7d9a151fbd",
+            "id": 359,
+            "name": "OrganAdded",
+            "nameLocation": "158:10:1",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 358,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 349,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "id",
+                  "nameLocation": "178:2:1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 359,
+                  "src": "170:10:1",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 348,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "170:7:1",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 351,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "donorHash",
+                  "nameLocation": "188:9:1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 359,
+                  "src": "181:16:1",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 350,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "181:6:1",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 353,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "organType",
+                  "nameLocation": "205:9:1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 359,
+                  "src": "198:16:1",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 352,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "198:6:1",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 355,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "bloodGroup",
+                  "nameLocation": "222:10:1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 359,
+                  "src": "215:17:1",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 354,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "215:6:1",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 357,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "hospital",
+                  "nameLocation": "241:8:1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 359,
+                  "src": "233:16:1",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 356,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "233:7:1",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "168:83:1"
+            },
+            "src": "152:101:1"
+          },
+          {
+            "anonymous": false,
+            "eventSelector": "b392e284b46f9b6a7771b37213d7a0bd4e58d50f7e98b25dc07662efbab905a0",
+            "id": 365,
+            "name": "OrganMatched",
+            "nameLocation": "260:12:1",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 364,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 361,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "id",
+                  "nameLocation": "282:2:1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 365,
+                  "src": "274:10:1",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 360,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "274:7:1",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 363,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "recipientHospital",
+                  "nameLocation": "293:17:1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 365,
+                  "src": "285:25:1",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 362,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "285:7:1",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "272:40:1"
+            },
+            "src": "254:60:1"
+          },
+          {
+            "anonymous": false,
+            "eventSelector": "d54db9be2574d343235e4ab6bbd87e590decc3af57feb5080e935ee4c57a4a31",
+            "id": 369,
+            "name": "OrganTransplanted",
+            "nameLocation": "321:17:1",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 368,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 367,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "id",
+                  "nameLocation": "348:2:1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 369,
+                  "src": "340:10:1",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 366,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "340:7:1",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "338:14:1"
+            },
+            "src": "315:39:1"
+          },
+          {
+            "functionSelector": "c17e4a71",
+            "id": 378,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "addOrgan",
+            "nameLocation": "364:8:1",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 376,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 371,
+                  "mutability": "mutable",
+                  "name": "_donorHash",
+                  "nameLocation": "388:10:1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 378,
+                  "src": "374:24:1",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 370,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "374:6:1",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 373,
+                  "mutability": "mutable",
+                  "name": "_organType",
+                  "nameLocation": "413:10:1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 378,
+                  "src": "399:24:1",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 372,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "399:6:1",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 375,
+                  "mutability": "mutable",
+                  "name": "_bloodGroup",
+                  "nameLocation": "438:11:1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 378,
+                  "src": "424:25:1",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 374,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "424:6:1",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "372:79:1"
+            },
+            "returnParameters": {
+              "id": 377,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "463:0:1"
+            },
+            "scope": 415,
+            "src": "355:109:1",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "b8d12415",
+            "id": 383,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "completeTransplant",
+            "nameLocation": "474:18:1",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 381,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 380,
+                  "mutability": "mutable",
+                  "name": "_id",
+                  "nameLocation": "502:3:1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 383,
+                  "src": "494:11:1",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 379,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "494:7:1",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "492:15:1"
+            },
+            "returnParameters": {
+              "id": 382,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "519:0:1"
+            },
+            "scope": 415,
+            "src": "465:55:1",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "c5121988",
+            "id": 390,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "matchOrgan",
+            "nameLocation": "530:10:1",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 388,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 385,
+                  "mutability": "mutable",
+                  "name": "_id",
+                  "nameLocation": "550:3:1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 390,
+                  "src": "542:11:1",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 384,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "542:7:1",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 387,
+                  "mutability": "mutable",
+                  "name": "_recipientHospital",
+                  "nameLocation": "562:18:1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 390,
+                  "src": "554:26:1",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 386,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "554:7:1",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "540:42:1"
+            },
+            "returnParameters": {
+              "id": 389,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "594:0:1"
+            },
+            "scope": 415,
+            "src": "521:74:1",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "098809d7",
+            "id": 395,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "organCount",
+            "nameLocation": "605:10:1",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 391,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "615:4:1"
+            },
+            "returnParameters": {
+              "id": 394,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 393,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 395,
+                  "src": "643:7:1",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 392,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "643:7:1",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "642:10:1"
+            },
+            "scope": 415,
+            "src": "596:58:1",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "4fbd241d",
+            "id": 414,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "organs",
+            "nameLocation": "664:6:1",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 398,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 397,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 414,
+                  "src": "672:7:1",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 396,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "672:7:1",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "670:12:1"
+            },
+            "returnParameters": {
+              "id": 413,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 400,
+                  "mutability": "mutable",
+                  "name": "id",
+                  "nameLocation": "714:2:1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 414,
+                  "src": "706:10:1",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 399,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "706:7:1",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 402,
+                  "mutability": "mutable",
+                  "name": "donorHash",
+                  "nameLocation": "732:9:1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 414,
+                  "src": "718:23:1",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 401,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "718:6:1",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 404,
+                  "mutability": "mutable",
+                  "name": "organType",
+                  "nameLocation": "757:9:1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 414,
+                  "src": "743:23:1",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 403,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "743:6:1",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 406,
+                  "mutability": "mutable",
+                  "name": "bloodGroup",
+                  "nameLocation": "782:10:1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 414,
+                  "src": "768:24:1",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 405,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "768:6:1",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 408,
+                  "mutability": "mutable",
+                  "name": "status",
+                  "nameLocation": "800:6:1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 414,
+                  "src": "794:12:1",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint8",
+                    "typeString": "uint8"
+                  },
+                  "typeName": {
+                    "id": 407,
+                    "name": "uint8",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "794:5:1",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint8",
+                      "typeString": "uint8"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 410,
+                  "mutability": "mutable",
+                  "name": "hospital",
+                  "nameLocation": "816:8:1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 414,
+                  "src": "808:16:1",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 409,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "808:7:1",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 412,
+                  "mutability": "mutable",
+                  "name": "recipientHospital",
+                  "nameLocation": "834:17:1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 414,
+                  "src": "826:25:1",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 411,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "826:7:1",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "705:147:1"
+            },
+            "scope": 415,
+            "src": "655:199:1",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 416,
+        "src": "134:722:1",
+        "usedErrors": []
+      }
+    ],
+    "src": "109:3038:1"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.8.19+commit.7dd6d404.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.4.16",
+  "updatedAt": "2026-05-09T07:24:05.237Z",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  }
+}

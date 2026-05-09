@@ -1,86 +1,85 @@
-# Organ Donation Tracker
+# Organ Donation Tracker (Blockchain + Django)
 
-A Django and blockchain-based application for tracking organ donation workflows in hospitals.
+A decentralized application (DApp) for tracking organ donation workflows, ensuring transparency and security using Ethereum Blockchain (Ganache) and Django.
 
-## Project Structure
+## 🏗️ Project Architecture
+The system follows a clean architecture:
+**User → Hospital Portal → Django Backend → Web3.py → Ethereum Smart Contract → Ganache**
+
+## 📂 Project Structure
 
 ```text
 organ_donation/
-├── architecture/         # Project architecture diagrams and documentation
 ├── backend/              # Django backend and Blockchain logic
-│   ├── contracts/        # Solidity smart contracts and interaction scripts
+│   ├── contracts/        # Solidity smart contracts (OrganDonation.sol)
 │   ├── core/             # Main Django app (Logic, Models, Views)
-│   │   ├── blockchain/   # Blockchain interaction service
-│   │   ├── migrations/   # Database migrations
-│   │   └── ...           # Forms, Views, Models, Tests
-│   ├── media/            # User-uploaded files (Profile pictures)
-│   ├── organ_donation_project/ # Project settings and root URLs
-│   ├── scripts/          # Utility and data seeding scripts
+│   │   ├── blockchain/   # Web3.py interaction service (service.py)
+│   │   └── ...           # Models, Views, Templates
+│   ├── scripts/          # Seeding scripts (seed_mca_hospitals.py)
+│   ├── db.sqlite3        # SQLite database (Zero setup required)
 │   ├── manage.py         # Django management script
 │   └── requirements.txt  # Python dependencies
-├── database/             # Database schemas, records, and SQL exports
-├── frontend/             # Frontend assets and HTML templates
-│   ├── static/           # Static files (CSS, JS, Images, Vendors)
-│   └── templates/        # Django HTML templates
-└── manage.py             # Root Django management script
+├── frontend/             # HTML templates and UI assets
+└── README.md             # Documentation
 ```
 
-## Directory Deep Dive
+## 🚀 Features
 
-### 🏗️ `architecture/`
-Contains visual and textual documentation of the system's design.
-- `architecture.png` & `data_flow.png`: High-level system and data movement diagrams.
-- `uml_diagram.md`: Source code for the UML diagrams.
+- **Decentralized Ledger**: Immutable record-keeping for organ matches and donation history.
+- **5 Hospital Nodes**: Pre-configured nodes for Apollo, Yashoda, CARE, KIMS, and AIG.
+- **Wallet Integration**: Every hospital has a unique Ethereum wallet address from Ganache.
+- **Transaction Tracking**: Real-time status, wallet address display, and transaction hash logging.
+- **Role-Based Access**: Specialized portals for Donors, Hospitals, and Admins.
 
-### ⚙️ `backend/`
-The heart of the application, powered by Django.
-- **`contracts/`**: Holds the `OrganDonation.sol` Ethereum smart contract. It also includes `compile_contract.py` and `deploy_contract.py` for blockchain deployment.
-- **`core/`**: The main application logic.
-    - `models.py`: Defines the database schema for Donors, Hospitals, and Organs.
-    - `views.py`: Handles the request-response cycle and portal logic.
-    - `blockchain/`: Contains `service.py` which interfaces with the Ethereum network using Web3.py.
-- **`organ_donation_project/`**: Contains `settings.py` for project configuration and `urls.py` for global routing.
-- **`scripts/`**: Includes scripts like `seed_hospitals.py` to pre-populate the database with demo data.
+## 🛠️ Setup Instructions
 
-### 🗄️ `database/`
-Dedicated folder for database management.
-- `schema.sql`: The raw SQL structure of the MySQL database.
-- `database_records.json`: A snapshot of the current database data for portability.
+### 1. Prerequisites
+- **Python 3.10+**
+- **Ganache**: Download and install [Truffle Ganache](https://trufflesuite.com/ganache/).
+- **Node.js** (for Truffle if compiling contracts manually).
 
-### 🎨 `frontend/`
-Handles the User Interface and Experience.
-- **`static/`**: 
-    - `core/css/`: Custom styling for the application.
-    - `core/js/`: Client-side logic and interactive elements.
-    - `core/vendor/`: Third-party libraries like FontAwesome or Bootstrap.
-- **`templates/`**:
-    - `core/base.html`: The master layout template.
-    - `core/donor_dashboard.html`, `core/hospital_dashboard.html`, etc.: Specific pages for different user roles.
+### 2. Start Blockchain (Ganache)
+1. Open Ganache and click **Quickstart**.
+2. Ensure the RPC Server is running at `http://127.0.0.1:7545`.
+3. Network ID should be `5777`.
 
-## Features
+### 3. Install Dependencies
+```bash
+pip install -r backend/requirements.txt
+```
 
-- **Donor, Hospital, and Admin Portals**: Role-based access control and dashboards.
-- **Blockchain Integration**: Immutable record-keeping for organ matches and donation history.
-- **Organ Matching System**: Automated and manual matching of donors with patients.
-- **Admin Dashboard**: Comprehensive analytics and hospital verification system.
-- **Real-time Updates**: Status tracking of organ donation journeys.
+### 4. Database Initialization
+```bash
+cd backend
+python manage.py makemigrations core
+python manage.py migrate
+```
 
-## Run Locally
+### 5. Seed Hospital Data (Mapped to Ganache Wallets)
+This script creates exactly 5 hospital admins and maps them to the first 5 accounts in your Ganache instance.
+```bash
+python scripts/seed_mca_hospitals.py
+```
+*Note: Default password for all hospital admins is `Hospital123`.*
 
-1. **Install Dependencies**:
-   ```bash
-   pip install -r backend/requirements.txt
-   ```
+### 6. Run the Application
+```bash
+python manage.py runserver
+```
 
-2. **Database Setup**:
-   Ensure MySQL is running and update `backend/organ_donation_project/settings.py` with your credentials.
+## 🏥 Hospital Admin Accounts
+| Hospital | Username | Wallet (Ganache) |
+| :--- | :--- | :--- |
+| **Apollo Hospital** | `apollo_admin` | Account #1 |
+| **Yashoda Hospital** | `yashoda_admin` | Account #2 |
+| **CARE Hospital** | `care_admin` | Account #3 |
+| **KIMS Hospital** | `kims_admin` | Account #4 |
+| **AIG Hospital** | `aig_admin` | Account #5 |
 
-3. **Run Migrations**:
-   ```bash
-   python manage.py migrate
-   ```
+## ⚙️ Configuration
+- **Database**: Uses SQLite (`db.sqlite3`) for simple, zero-config local development.
+- **Blockchain**: Configured in `backend/organ_donation_project/settings.py`.
+- **Contract Address**: Automatically read from the latest Truffle artifacts.
 
-4. **Start the Server**:
-   ```bash
-   python manage.py runserver
-   ```
+## 🎓 Academic Info
+This project is developed as part of an MCA (Master of Computer Applications) curriculum to demonstrate the integration of Blockchain technology in Healthcare Management.

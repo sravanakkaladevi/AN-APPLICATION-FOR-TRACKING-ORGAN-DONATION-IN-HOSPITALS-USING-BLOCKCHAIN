@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -20,7 +21,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-eca(*c4c$r--=9piu*@=r2ifh0y8&=1f7_cs^=3$52jv%0=)7%'
+SECRET_KEY = os.environ.get(
+    'DJANGO_SECRET_KEY',
+    'django-insecure-eca(*c4c$r--=9piu*@=r2ifh0y8&=1f7_cs^=3$52jv%0=)7%',
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -78,15 +82,8 @@ WSGI_APPLICATION = 'organ_donation_project.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'organ_donation_db',
-        'USER': 'root',
-        'PASSWORD': '8309484956',
-        'HOST': '127.0.0.1',
-        'PORT': '3306',
-        'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-        }
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
@@ -144,3 +141,12 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
 LOGIN_URL = 'login'
+
+GANACHE_RPC_URL = os.environ.get('GANACHE_RPC_URL', 'http://127.0.0.1:7545')
+GANACHE_CHAIN_ID = int(os.environ.get('GANACHE_CHAIN_ID', '5777'))
+ORGAN_DONATION_CONTRACT_ADDRESS = os.environ.get('ORGAN_DONATION_CONTRACT_ADDRESS', '')
+ORGAN_DONATION_FROM_ADDRESS = os.environ.get('ORGAN_DONATION_FROM_ADDRESS', '')
+ORGAN_DONATION_ARTIFACT_PATH = os.environ.get(
+    'ORGAN_DONATION_ARTIFACT_PATH',
+    str(BASE_DIR / 'build' / 'contracts' / 'OrganDonation.json'),
+)

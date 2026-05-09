@@ -1,6 +1,6 @@
 from django.urls import path
 from django.contrib.auth import views as auth_views
-from . import views
+from . import views, api_views
 
 urlpatterns = [
     path('', views.home, name='home'),
@@ -22,4 +22,9 @@ urlpatterns = [
     path('update-theme/', views.update_theme, name='update_theme'),
     path('feedback/submit/', views.submit_feedback, name='submit_feedback'),
     path('admin/death-certificate/', views.issue_death_certificate, name='issue_death_certificate'),
+    
+    # Blockchain API Endpoints
+    path('api/blockchain/register-donor/', api_views.api_register_donor, name='api_register_donor'),
+    path('api/blockchain/get-donor/', api_views.api_get_donor, name='api_get_donor'),
+    path('api/blockchain/verify/', api_views.api_verify_transaction, name='api_verify_transaction'),
 ]

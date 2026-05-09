@@ -37,14 +37,15 @@ class DonorProfile(models.Model):
         return self.user.username
 
 class HospitalProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name='hospital_profile')
     hospital_name = models.CharField(max_length=100)
+    contact_email = models.EmailField(max_length=100, blank=True, null=True)
     registration_number = models.CharField(max_length=50, unique=True)
     contact_number = models.CharField(max_length=15)
     address = models.TextField()
     city = models.CharField(max_length=100, blank=True, null=True)
     state = models.CharField(max_length=100, blank=True, null=True)
-    blockchain_address = models.CharField(max_length=42, help_text="Ethereum Address", blank=True, null=True)
+    blockchain_wallet_address = models.CharField(max_length=42, help_text="Ethereum Address from Ganache", blank=True, null=True)
 
     def __str__(self):
         return self.hospital_name
@@ -63,6 +64,9 @@ class OrganRecord(models.Model):
     status = models.CharField(max_length=20, choices=status_choices, default='Available')
     registered_by = models.ForeignKey(HospitalProfile, related_name="registered_organs", on_delete=models.CASCADE)
     recipient_hospital = models.ForeignKey(HospitalProfile, related_name="received_organs", null=True, blank=True, on_delete=models.SET_NULL)
+    blockchain_tx_hash = models.CharField(max_length=66, blank=True, null=True, db_index=True)
+    blockchain_block_number = models.PositiveIntegerField(blank=True, null=True)
+    blockchain_timestamp = models.DateTimeField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

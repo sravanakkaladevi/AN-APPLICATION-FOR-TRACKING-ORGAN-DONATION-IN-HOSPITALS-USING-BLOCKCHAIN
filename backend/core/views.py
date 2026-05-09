@@ -27,7 +27,7 @@ from .forms import (
     ORGAN_TYPE_CHOICES, BLOOD_GROUP_CHOICES
 )
 from .models import User, DonorProfile, HospitalProfile, OrganRecord, Feedback, DeathCertificate
-from .blockchain.service import register_organ_on_chain, match_organ_on_chain, get_blockchain_status
+from .blockchain.service import register_organ_on_chain, match_organ_on_chain, transplant_organ_on_chain, get_blockchain_status
 
 def home(request):
     return render(request, 'core/home.html')
@@ -143,14 +143,29 @@ def register_organ(request):
             # Automatically pull the blood group from the Donor's fixed profile
             organ.blood_group = organ.donor.blood_group
             
-            # Interact with Blockchain (this might fail if blockchain is not up)
+            # Store the approval log on Ganache, then cache the receipt in MySQL.
             try:
-                donor_hash = str(organ.donor.user.id) # simple hash for now
-                blockchain_id = register_organ_on_chain(donor_hash, organ.organ_type, organ.blood_group)
-                if blockchain_id is not None:
-                    organ.blockchain_id = blockchain_id
+                hospital = request.user.hospitalprofile
+                doctor_name = request.user.get_full_name() or request.user.username
+                blockchain_receipt = register_organ_on_chain(
+                    donor_id=organ.donor.user.id,
+                    donor_name=organ.donor.user.get_full_name() or organ.donor.user.username,
+                    organ_type=organ.organ_type,
+                    hospital_name=hospital.hospital_name,
+                    doctor_name=doctor_name,
+                    sender_address=hospital.blockchain_wallet_address,
+                )
+                if blockchain_receipt is not None:
+                    if isinstance(blockchain_receipt, dict):
+                        organ.blockchain_id = blockchain_receipt['blockchain_id']
+                        organ.blockchain_tx_hash = blockchain_receipt['transaction_hash']
+                        organ.blockchain_block_number = blockchain_receipt['block_number']
+                        organ.blockchain_timestamp = blockchain_receipt['timestamp']
+                    else:
+                        organ.blockchain_id = blockchain_receipt
                     organ.registered_by = request.user.hospitalprofile
                     organ.save()
+                    messages.success(request, "Organ donation approved and saved to blockchain.")
                     return redirect('hospital_dashboard')
                 else:
                     form.add_error(None, "Blockchain transaction failed to return an ID.")
@@ -564,10 +579,19 @@ def hospital_update_organ_status(request, organ_id):
         messages.error(request, "Received organs cannot be returned to Available from this dashboard.")
         return redirect('hospital_dashboard')
 
+    if status == 'Transplanted' and organ.status != 'Transplanted':
+        try:
+            blockchain_receipt = transplant_organ_on_chain(organ.blockchain_id, hospital.blockchain_wallet_address)
+            organ.blockchain_tx_hash = blockchain_receipt['transaction_hash']
+            organ.blockchain_block_number = blockchain_receipt['block_number']
+        except Exception as e:
+            messages.error(request, _format_blockchain_error(e))
+            return redirect('hospital_dashboard')
+
     organ.status = status
     if owns_record and status == 'Available':
         organ.recipient_hospital = None
-    organ.save(update_fields=['organ_type', 'blood_group', 'status', 'recipient_hospital'])
+    organ.save(update_fields=['organ_type', 'blood_group', 'status', 'recipient_hospital', 'blockchain_tx_hash', 'blockchain_block_number'])
 
     messages.success(request, f"Organ #{organ.blockchain_id} details updated.")
     return redirect('hospital_dashboard')
@@ -618,12 +642,14 @@ def match_organ(request, organ_id):
                     redirect_name = 'hospital_dashboard' if hasattr(request.user, 'hospitalprofile') else 'admin_dashboard'
                     return redirect(redirect_name)
                 try:
-                    success = match_organ_on_chain(organ.blockchain_id, str(recipient.user.id), None)
-                    if success:
+                    blockchain_receipt = match_organ_on_chain(organ.blockchain_id, recipient.hospital_name, recipient.blockchain_wallet_address)
+                    if blockchain_receipt and blockchain_receipt['status'] == 1:
                         organ.status = 'Matched'
                         organ.recipient_hospital = recipient
+                        organ.blockchain_tx_hash = blockchain_receipt['transaction_hash']
+                        organ.blockchain_block_number = blockchain_receipt['block_number']
                         organ.save()
-                        messages.success(request, f"Organ #{organ.blockchain_id} successfully matched to {recipient.hospital_name} on the blockchain.")
+                        messages.success(request, f"Organ #{organ.blockchain_id} successfully matched to {recipient.hospital_name} on the blockchain. TX: {organ.blockchain_tx_hash[:10]}...")
                     else:
                         messages.error(request, "Blockchain smart contract matching failed.")
                 except Exception as e:

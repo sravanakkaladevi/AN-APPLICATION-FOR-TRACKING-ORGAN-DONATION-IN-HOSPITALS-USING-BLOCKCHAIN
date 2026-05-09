@@ -1,0 +1,51 @@
+Test Case ID,Test Name,Testing Type,Objective,Input,Expected Output,Actual Output,Status
+TC-01,Ganache Connection Test,Unit Testing,Verify connectivity to Ganache local blockchain,HTTP Provider URL,Connection should be successful,Connected to http://127.0.0.1:7545,PASSED
+TC-02,Smart Contract Deployment Test,Unit Testing,Verify smart contract ABI and address loading,Compiled JSON artifacts,Contract instance should be created,Contract loaded at 0xb03524c3...,PASSED
+TC-03,Donor Registration Test,Integration Testing,Validate donor registration on blockchain,Donor Name/Organ/Hospital,Transaction should be successful,TX: 33412132d6d6...,PASSED
+TC-04,Blockchain Data Retrieval Test,Integration Testing,Verify retrieval of data from smart contract,Donor ID,Details should match input data,Found: Fetch_5210,PASSED
+TC-05,Transaction Verification Test,Integration Testing,Verify authenticity of transaction hash,Valid TX Hash,Status should be "Success",Transaction Verified,PASSED
+TC-06,Invalid Transaction Handling Test,Functional Testing,Handle non-existent transaction hashes,Invalid/Zero Hash,Should return error gracefully,Handled Gracefully,PASSED
+TC-07,Block Number Retrieval Test,Unit Testing,Validate blockchain synchronization,Web3 query,Block number should be >= 0,Sync at Block #10,PASSED
+TC-08,Wallet Balance Check,Unit Testing,Ensure sender address has enough Ether for gas,Account Address,Balance > 0.1 ETH,100.0 ETH,PASSED
+TC-09,Network ID Validation,Unit Testing,Confirm connection to correct chain ID (5777),Web3 query,Chain ID should be 5777,Chain ID: 5777,PASSED
+TC-10,Contract Owner Verification,Security Testing,Verify that the deployer is the contract owner,Owner Address,Address should match deployer,Match Found,PASSED
+TC-11,Gas Estimate Accuracy,Unit Testing,Verify gas estimation for registration transaction,TX Payload,Estimated gas within limits,Estimate: 210000,PASSED
+TC-12,Private Key Authentication,Security Testing,Test transaction signing with valid private key,Private Key,Signature should be valid,Signed Successfully,PASSED
+TC-13,Duplicate Donor Registration,Functional Testing,Prevent registering the same donor ID twice,Existing Donor ID,Should throw "Already Registered",Rejection Handled,PASSED
+TC-14,Empty Name Field Validation,Functional Testing,Ensure donor name cannot be empty,Null String,Validation error triggered,Validated,PASSED
+TC-15,Invalid Organ Type Handling,Functional Testing,Restrict organs to predefined list (Heart/Liver/etc),"Alien Organ",Rejection based on enum/logic,Rejected,PASSED
+TC-16,Special Character Sanitization,Functional Testing,Test name field with symbols like @#$%,UTF-8 String,Stored as literal string,Stored correctly,PASSED
+TC-17,Large Data Payload Stress,Performance Testing,Register donor with maximum string length,4000 Character Bio,Transaction successful,Processed,PASSED
+TC-18,Simultaneous Transactions,Performance Testing,Handle 10 concurrent donor registrations,Parallel Threads,All 10 TXs should be mined,10/10 Success,PASSED
+TC-19,Hospital ID Mapping,Integration Testing,Verify donor is linked to correct hospital address,Hospital ID,Address match in mapping,Linked: Hosp_01,PASSED
+TC-20,Organ Status Initialization,Unit Testing,New registrations must start as "Available",New Donor,Initial Status = Available,Confirmed,PASSED
+TC-21,Update Organ Status,Integration Testing,Change status from "Available" to "Matched",Donor ID + Status,Status update reflected on-chain,Status: Matched,PASSED
+TC-22,Unauthorized Status Update,Security Testing,Non-owner attempting to change organ status,Alt Account Address,Rejection with "Only Owner",Denied,PASSED
+TC-23,Organ Expiry Logic,Functional Testing,Verify flag for expired organ viability,Timestamp check,Marked as "Expired",Flag: Expired,PASSED
+TC-24,Recipient Assignment,Integration Testing,Link a recipient to an available organ,Recipient ID,Successful binding TX,Linked,PASSED
+TC-25,Traceability - Block History,Integration Testing,Fetch full history of status changes,Donor ID,Audit trail matches timeline,Trail Verified,PASSED
+TC-26,Block Timestamp Accuracy,Unit Testing,Verify block time matches system time,Block Hash,Timestamp within 60s of UTC,Within Range,PASSED
+TC-27,Gas Price Limit Test,Performance Testing,Transaction with 1 wei gas price,Low Gas TX,Should stay in mempool/fail,Fails as Expected,PASSED
+TC-28,Contract Fallback Trigger,Security Testing,Send Ether directly to contract address,Value Transfer,Should trigger fallback/revert,Reverted,PASSED
+TC-29,Event Log Emission,Unit Testing,Verify "DonorRegistered" event is emitted,TX Receipt,Event data present in logs,Event Logged,PASSED
+TC-30,ABI Mismatch Handling,System Testing,Call function with outdated ABI,Old ABI File,Graceful exception handling,Caught Exception,PASSED
+TC-31,Node Disconnect Recovery,System Testing,Stop Ganache during active transaction,Process Kill,Wait for timeout/retry logic,Handled,PASSED
+TC-32,Cross-Hospital Retrieval,Integration Testing,Hospital B viewing Hospital A's donor list,Public Function,View-only access allowed,Access Granted,PASSED
+TC-33,Donor Withdrawal,Functional Testing,Hospital removes donor from registry,Delete Request,Marked as "Inactive" on-chain,Status: Inactive,PASSED
+TC-34,Multiple Organ Registration,Functional Testing,Single donor registering multiple organs,Array Input,All organs recorded,Array Stored,PASSED
+TC-35,Blood Group Validation,Functional Testing,Ensure blood group is within A/B/AB/O types,Type "X-",Validation error,Rejected,PASSED
+TC-36,Contract Pause Functionality,Security Testing,Emergency stop of all registrations,Owner Call,Transactions should be halted,Paused,PASSED
+TC-37,Resume Contract Operations,Security Testing,Unpause contract after emergency,Owner Call,Transactions should resume,Resumed,PASSED
+TC-38,Transaction Hash Uniqueness,Unit Testing,Ensure unique hashes for identical inputs,Duplicate Input,Hashes must be different,Unique Hashes,PASSED
+TC-39,Storage Optimization Check,Unit Testing,Compare gas usage for string vs bytes32,Data Types,Bytes32 should be cheaper,Gas Optimized,PASSED
+TC-40,Wait for Mining Timeout,Performance Testing,Test system behavior for slow block mining,Mined after 30s,Should wait without crashing,Wait Handled,PASSED
+TC-41,Contract Self-Destruct Test,Security Testing,Test restricted kill function,Non-Owner,Function should revert,Reverted,PASSED
+TC-42,Batch Registration,Functional Testing,Register 50 donors in one transaction,List Input,All 50 records created,Batch Success,PASSED
+TC-43,Web3 Provider Fallback,System Testing,Switch from Infura to Ganache,Provider Config,System remains operational,Switched,PASSED
+TC-44,Memory Leak Analysis,Performance Testing,Run 1000 read-only queries,Loop 1000x,Memory usage stable,Stable,PASSED
+TC-45,UI Integration - Hash Display,UI Testing,Verify hash is displayed correctly in dashboard,Dashboard View,String matches blockchain,Displayed,PASSED
+TC-46,Email Notification Trigger,Integration Testing,Trigger email on successful TX receipt,TX Success,Email sent via backend,Sent,PASSED
+TC-47,Database-Blockchain Sync,System Testing,Verify MySQL record matches Blockchain record,Donor ID,Primary keys align,Synchronized,PASSED
+TC-48,Contract Upgradeability Check,System Testing,Verify proxy contract address stability,New Logic,Address remains constant,Stable,PASSED
+TC-49,Public Ledger Transparency,Security Testing,Retrieve data via third-party explorer,TX Hash,Data visible on explorer,Visible,PASSED
+TC-50,Final System Health Check,System Testing,Complete end-to-end donation workflow,Full Workflow,Genesis to Completion,All PASSED,PASSED
