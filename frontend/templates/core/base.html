@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
     {% if user.theme == 'custom' %}
+
     <script>
         document.documentElement.style.setProperty('--dash-accent', '{{ user.custom_theme_color|default:"#67e8f9" }}');
     </script>
@@ -239,6 +240,52 @@
 
         main.container {
             position: relative;
+        }
+
+        .page-back-row {
+            display: flex;
+            justify-content: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .page-back-button {
+            display: inline-flex;
+            height: 3em;
+            min-width: 100px;
+            align-items: center;
+            justify-content: center;
+            gap: 0.35rem;
+            background: #ffffff;
+            border-radius: 8px;
+            letter-spacing: 0.02em;
+            transition: box-shadow 0.2s linear, transform 0.2s linear, background 0.2s ease, color 0.2s ease;
+            cursor: pointer;
+            border: none;
+            color: #111827;
+            font-weight: 800;
+            text-decoration: none;
+            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.16);
+        }
+
+        .page-back-button svg {
+            width: 20px;
+            height: 20px;
+            margin-right: 5px;
+            margin-left: 5px;
+            transition: transform 0.4s ease-in;
+        }
+
+        .page-back-button:hover,
+        .page-back-button:focus {
+            background: #ffffff;
+            color: #111827;
+            box-shadow: 9px 9px 33px rgba(209, 209, 209, 0.25), -9px -9px 33px rgba(255, 255, 255, 0.12);
+            transform: translateY(-2px);
+        }
+
+        .page-back-button:hover svg,
+        .page-back-button:focus svg {
+            transform: translateX(-5px) scale(1.08);
         }
 
         h1,
@@ -843,14 +890,18 @@
         <div class="container-fluid px-lg-5">
             <a class="navbar-brand" href="{% url 'home' %}">
                 <span class="project-logo-mark" aria-hidden="true">
-                    <svg class="project-logo-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 784.37 1277.39">
-                        <polygon fill="#343434" points="392.07,0 383.5,29.11 383.5,873.74 392.07,882.29 784.13,650.54"></polygon>
-                        <polygon fill="#8C8C8C" points="392.07,0 -0,650.54 392.07,882.29 392.07,472.33"></polygon>
-                        <polygon fill="#3C3C3B" points="392.07,956.52 387.24,962.41 387.24,1263.28 392.07,1277.38 784.37,724.89"></polygon>
-                        <polygon fill="#8C8C8C" points="392.07,1277.38 392.07,956.52 -0,724.89"></polygon>
-                        <polygon fill="#141414" points="392.07,882.29 784.13,650.54 392.07,472.33"></polygon>
-                        <polygon fill="#393939" points="0,650.54 392.07,882.29 392.07,472.33"></polygon>
-                    </svg>
+                    {% if user.is_authenticated and user.is_hospital and user.profile_picture %}
+                        <img src="{{ user.profile_picture.url }}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">
+                    {% else %}
+                        <svg class="project-logo-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 784.37 1277.39">
+                            <polygon fill="#343434" points="392.07,0 383.5,29.11 383.5,873.74 392.07,882.29 784.13,650.54"></polygon>
+                            <polygon fill="#8C8C8C" points="392.07,0 -0,650.54 392.07,882.29 392.07,472.33"></polygon>
+                            <polygon fill="#3C3C3B" points="392.07,956.52 387.24,962.41 387.24,1263.28 392.07,1277.38 784.37,724.89"></polygon>
+                            <polygon fill="#8C8C8C" points="392.07,1277.38 392.07,956.52 -0,724.89"></polygon>
+                            <polygon fill="#141414" points="392.07,882.29 784.13,650.54 392.07,472.33"></polygon>
+                            <polygon fill="#393939" points="0,650.54 392.07,882.29 392.07,472.33"></polygon>
+                        </svg>
+                    {% endif %}
                 </span>
                 <span>Organ Donation Tracking System    </span>
             </a>
@@ -865,42 +916,44 @@
                         <a class="nav-link ui-action" href="{% url 'home' %}">Home</a>
                     </li>
 
-                    {% if user.is_authenticated and user.is_donor %}
-                        <li class="nav-item">
-                            <a class="nav-link ui-action" href="{% url 'donor_dashboard' %}">Donor</a>
-                        </li>
-                    {% else %}
-                        <li class="nav-item">
-                            <a class="nav-link ui-action" href="{% url 'register_donor' %}">Donor</a>
-                        </li>
-                    {% endif %}
-
-                    {% if user.is_authenticated and user.is_hospital %}
-                        <li class="nav-item">
-                            <a class="nav-link ui-action" href="{% url 'hospital_dashboard' %}">Hospital</a>
-                        </li>
-                    {% else %}
-                        <li class="nav-item">
-                            <a class="nav-link ui-action" href="{% url 'register_hospital' %}">Hospital</a>
-                        </li>
-                    {% endif %}
-
-                    {% if user.is_authenticated and user.is_superuser %}
-
-                        <li class="nav-item">
-                            <a class="nav-link ui-action" href="{% url 'admin_dashboard' %}">Admin</a>
-                        </li>
-                    {% endif %}
-
                     {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            {% if user.is_superuser %}
+                                <a class="nav-link ui-action" href="{% url 'admin_dashboard' %}"><i class="fa-solid fa-gauge-high me-1"></i> Dashboard</a>
+                            {% elif user.is_hospital %}
+                                <a class="nav-link ui-action" href="{% url 'hospital_dashboard' %}"><i class="fa-solid fa-gauge-high me-1"></i> Dashboard</a>
+                            {% else %}
+                                <a class="nav-link ui-action" href="{% url 'donor_dashboard' %}"><i class="fa-solid fa-gauge-high me-1"></i> Dashboard</a>
+                            {% endif %}
+                        </li>
+
+                        {% if user.is_superuser %}
+                            <li class="nav-item"><a class="nav-link ui-action" href="{% url 'admin_dashboard' %}#admin-hospitals">Hospitals</a></li>
+                            <li class="nav-item"><a class="nav-link ui-action" href="{% url 'admin_dashboard' %}#admin-pending">Pending</a></li>
+                            <li class="nav-item"><a class="nav-link ui-action" href="{% url 'admin_dashboard' %}#admin-profile">Profile Settings</a></li>
+                        {% elif user.is_hospital %}
+                            <li class="nav-item"><a class="nav-link ui-action" href="{% url 'hospital_dashboard' %}#hosp-donors-mgmt">Management</a></li>
+                            <li class="nav-item"><a class="nav-link ui-action" href="{% url 'register_organ' %}">Register Organ</a></li>
+                        {% elif user.is_donor %}
+                            <li class="nav-item"><a class="nav-link ui-action" href="{% url 'donor_dashboard' %}#donor-donate">Donate Organ</a></li>
+                            <li class="nav-item"><a class="nav-link ui-action" href="{% url 'donor_dashboard' %}#donor-status">My Status</a></li>
+                        {% endif %}
+
                         <li class="nav-item ms-lg-2">
                             <a class="nav-btn-logout ui-action" href="{% url 'logout' %}">Logout</a>
                         </li>
                     {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link ui-action" href="{% url 'register_donor' %}">Join as Donor</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link ui-action" href="{% url 'register_hospital' %}">Hospital Hub</a>
+                        </li>
                         <li class="nav-item ms-lg-2">
                             <a class="nav-btn-login ui-action" href="{% url 'login' %}">Login</a>
                         </li>
                     {% endif %}
+
                 </ul>
             </div>
         </div>
@@ -908,6 +961,16 @@
 
     <!-- Messages / Alerts -->
     <main class="container py-4">
+        {% if request.resolver_match.url_name != 'home' %}
+            <div class="page-back-row">
+                <button type="button" class="page-back-button ui-action" data-back-fallback="{% if user.is_authenticated and user.is_superuser %}{% url 'admin_dashboard' %}{% elif user.is_authenticated and user.is_hospital %}{% url 'hospital_dashboard' %}{% elif user.is_authenticated and user.is_donor %}{% url 'donor_dashboard' %}{% else %}{% url 'home' %}{% endif %}">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path fill="currentColor" d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.42-1.41L7.83 13H20v-2Z"></path>
+                    </svg>
+                    Back
+                </button>
+            </div>
+        {% endif %}
         {% if messages %}
             {% for message in messages %}
                 <div class="alert alert-{{ message.tags }} alert-dismissible fade show page-alert" role="alert">
@@ -959,6 +1022,17 @@
             document.querySelectorAll('input[name="custom_theme_color"]').forEach(input => {
                 input.addEventListener('change', function() {
                     this.form.submit();
+                });
+            });
+
+            document.querySelectorAll(".page-back-button").forEach(function (button) {
+                button.addEventListener("click", function () {
+                    const fallback = button.dataset.backFallback || "{% url 'home' %}";
+                    if (window.history.length > 1) {
+                        window.history.back();
+                    } else {
+                        window.location.href = fallback;
+                    }
                 });
             });
 

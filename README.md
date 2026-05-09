@@ -66,14 +66,19 @@ If you prefer manual steps:
 python backend/manage.py runserver
 ```
 
-## 🏥 Hospital Admin Accounts
-| Hospital | Username | Wallet (Ganache) |
-| :--- | :--- | :--- |
-| **Apollo Hospital** | `apollo_admin` | Account #1 |
-| **Yashoda Hospital** | `yashoda_admin` | Account #2 |
-| **CARE Hospital** | `care_admin` | Account #3 |
-| **KIMS Hospital** | `kims_admin` | Account #4 |
-| **AIG Hospital** | `aig_admin` | Account #5 |
+## 🔐 Login Credentials
+
+> [!NOTE]
+> For security reasons, login credentials are not included in the public repository.
+> 
+> **How to access:**
+> 1. Check the local `CREDENTIALS.md` file (if available).
+> 2. If you are a student or evaluator, please contact the project maintainer for the hospital and admin credentials.
+> 3. Alternatively, you can create your own superuser using:
+
+```bash
+python backend/manage.py createsuperuser
+```
 
 ## ⚙️ Configuration
 - **Database**: Uses SQLite (`db.sqlite3`) for simple, zero-config local development.

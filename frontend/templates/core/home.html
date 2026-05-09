@@ -85,6 +85,15 @@
         overflow: hidden;
     }
 
+    .hero-wrapper.hospital-home-bg {
+        background:
+            linear-gradient(180deg, rgba(3, 3, 3, 0.62), #030303 96%),
+            linear-gradient(90deg, rgba(3, 3, 3, 0.84), rgba(3, 3, 3, 0.38), rgba(3, 3, 3, 0.88)),
+            var(--hospital-home-bg);
+        background-size: cover, cover, cover;
+        background-position: center;
+    }
+
     .hero-wrapper::before {
         content: "";
         position: absolute;
@@ -1252,6 +1261,62 @@
         opacity: 0.2;
     }
 
+    html[data-ui-theme="white"] .hero-wrapper.hospital-home-bg,
+    html[data-ui-theme="black_white"] .hero-wrapper.hospital-home-bg,
+    .hero-wrapper.hospital-home-bg {
+        background:
+            linear-gradient(180deg, rgba(3, 3, 3, 0.54), #030303 96%),
+            linear-gradient(90deg, rgba(3, 3, 3, 0.82), rgba(3, 3, 3, 0.28), rgba(3, 3, 3, 0.86)),
+            var(--hospital-home-bg) !important;
+        background-size: cover, cover, cover !important;
+        background-position: center !important;
+    }
+
+    html[data-ui-theme="white"] .hero-wrapper.hospital-home-bg .hero-overlay,
+    html[data-ui-theme="black_white"] .hero-wrapper.hospital-home-bg .hero-overlay {
+        background:
+            linear-gradient(to top, #030303 0%, rgba(3, 3, 3, 0.08) 46%, rgba(3, 3, 3, 0.76) 100%),
+            linear-gradient(90deg, rgba(3, 3, 3, 0.28), transparent, rgba(3, 3, 3, 0.34));
+    }
+
+    html[data-ui-theme="white"] .hero-wrapper.hospital-home-bg .hero-title-primary,
+    html[data-ui-theme="black_white"] .hero-wrapper.hospital-home-bg .hero-title-primary {
+        background: linear-gradient(180deg, #ffffff 0%, #dbeafe 100%);
+        background-clip: text;
+        -webkit-background-clip: text;
+    }
+
+    html[data-ui-theme="white"] .hero-wrapper.hospital-home-bg .hero-subtitle,
+    html[data-ui-theme="black_white"] .hero-wrapper.hospital-home-bg .hero-subtitle {
+        color: rgba(255, 255, 255, 0.72);
+    }
+
+    html[data-ui-theme="white"] .hero-wrapper.hospital-home-bg .hero-badge,
+    html[data-ui-theme="black_white"] .hero-wrapper.hospital-home-bg .hero-badge,
+    html[data-ui-theme="white"] .hero-wrapper.hospital-home-bg .workflow-slider,
+    html[data-ui-theme="black_white"] .hero-wrapper.hospital-home-bg .workflow-slider {
+        background: rgba(3, 7, 18, 0.58);
+        color: rgba(255, 255, 255, 0.76);
+        border-color: rgba(34, 211, 238, 0.18);
+        box-shadow: 0 18px 48px rgba(0, 0, 0, 0.2);
+    }
+
+    html[data-ui-theme="white"] .hero-wrapper.hospital-home-bg .workflow-item,
+    html[data-ui-theme="black_white"] .hero-wrapper.hospital-home-bg .workflow-item {
+        color: rgba(255, 255, 255, 0.62);
+        border-right-color: rgba(255, 255, 255, 0.1);
+    }
+
+    html[data-ui-theme="white"] .hero-wrapper.hospital-home-bg .workflow-item strong,
+    html[data-ui-theme="black_white"] .hero-wrapper.hospital-home-bg .workflow-item strong {
+        color: #ffffff;
+    }
+
+    html[data-ui-theme="white"] .hero-wrapper.hospital-home-bg .workflow-item span,
+    html[data-ui-theme="black_white"] .hero-wrapper.hospital-home-bg .workflow-item span {
+        color: rgba(255, 255, 255, 0.5);
+    }
+
     html[data-ui-theme="white"] .section-heading .eyebrow,
     html[data-ui-theme="black_white"] .section-heading .eyebrow {
         color: #0891b2;
@@ -1399,7 +1464,12 @@
 
 {% block content %}
 <!-- Geometric Hero -->
-<div class="hero-wrapper">
+<div
+    class="hero-wrapper {% if user.is_authenticated and user.is_hospital and user.hospitalprofile.background_image %}hospital-home-bg{% endif %}"
+    {% if user.is_authenticated and user.is_hospital and user.hospitalprofile.background_image %}
+        style="--hospital-home-bg: url('{{ user.hospitalprofile.background_image.url }}');"
+    {% endif %}
+>
     <canvas class="cyber-canvas" id="heroCyberCanvas" aria-hidden="true"></canvas>
     <div class="hero-shapes" aria-hidden="true">
         <div class="scroll-knife-track">
@@ -1447,19 +1517,46 @@
             A state-of-the-art decentralized platform redefining organ donation. From intent to transplantation, every heartbeat is tracked precisely and immutably.
         </p>
         <div class="hero-actions fx-layer animate__animated animate__fadeInUp animate__delay-1s">
-            <a href="{% url 'register_donor' %}" class="glass-start-btn" string="magnetic" string-radius="150" string-strength="0.2" style="--w: 260px;--h: 75px;--tr: 15%;">
-                <span class="text">Get started</span>
-                <span class="btn-icon" aria-hidden="true">
-                    <svg class="svg" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M779.180132 473.232045 322.354755 16.406668c-21.413706-21.413706-56.121182-21.413706-77.534887 0-21.413706 21.413706-21.413706 56.122205 0 77.534887l418.057421 418.057421L244.819868 930.057421c-21.413706 21.413706-21.413706 56.122205 0 77.534887 10.706853 10.706853 24.759917 16.059767 38.767955 16.059767s28.061103-5.353938 38.767955-16.059767L779.180132 550.767955C800.593837 529.35425 800.593837 494.64575 779.180132 473.232045z"></path>
-                    </svg>
-                </span>
-                <span class="circle-overlay"></span>
-            </a>
-            <a href="{% url 'register_hospital' %}" class="hero-secondary-link" string="magnetic" string-radius="150" string-strength="0.2">
-                <span><i class="fa-solid fa-hospital me-2"></i> Hospital Access</span>
-            </a>
+            {% if user.is_authenticated %}
+                {% if user.is_superuser %}
+                    <a href="{% url 'admin_dashboard' %}" class="glass-start-btn" style="--w: 260px;--h: 75px;--tr: 15%;">
+                        <span class="text">Admin Control</span>
+                {% elif user.is_hospital %}
+                    <a href="{% url 'hospital_dashboard' %}" class="glass-start-btn" style="--w: 260px;--h: 75px;--tr: 15%;">
+                        <span class="text">Hospital Hub</span>
+                {% else %}
+                    <a href="{% url 'donor_dashboard' %}" class="glass-start-btn" style="--w: 260px;--h: 75px;--tr: 15%;">
+                        <span class="text">Donor Dashboard</span>
+                {% endif %}
+                    <span class="btn-icon" aria-hidden="true">
+                        <svg class="svg" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M779.180132 473.232045 322.354755 16.406668c-21.413706-21.413706-56.121182-21.413706-77.534887 0-21.413706 21.413706-21.413706 56.122205 0 77.534887l418.057421 418.057421L244.819868 930.057421c-21.413706 21.413706-21.413706 56.122205 0 77.534887 10.706853 10.706853 24.759917 16.059767 38.767955 16.059767s28.061103-5.353938 38.767955-16.059767L779.180132 550.767955C800.593837 529.35425 800.593837 494.64575 779.180132 473.232045z"></path>
+                        </svg>
+                    </span>
+                    <span class="circle-overlay"></span>
+                </a>
+            {% else %}
+                <a href="{% url 'register_donor' %}" class="glass-start-btn" style="--w: 260px;--h: 75px;--tr: 15%;">
+                    <span class="text">Get started</span>
+                    <span class="btn-icon" aria-hidden="true">
+                        <svg class="svg" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M779.180132 473.232045 322.354755 16.406668c-21.413706-21.413706-56.121182-21.413706-77.534887 0-21.413706 21.413706-21.413706 56.122205 0 77.534887l418.057421 418.057421L244.819868 930.057421c-21.413706 21.413706-21.413706 56.122205 0 77.534887 10.706853 10.706853 24.759917 16.059767 38.767955 16.059767s28.061103-5.353938 38.767955-16.059767L779.180132 550.767955C800.593837 529.35425 800.593837 494.64575 779.180132 473.232045z"></path>
+                        </svg>
+                    </span>
+                    <span class="circle-overlay"></span>
+                </a>
+                <div class="d-flex flex-wrap align-items-center gap-3">
+                    <a href="{% url 'register_hospital' %}" class="hero-secondary-link">
+                        <span><i class="fa-solid fa-hospital me-2"></i> Hospital Hub</span>
+                    </a>
+                    <a href="{% url 'login' %}" class="hero-secondary-link">
+                        <span><i class="fa-solid fa-right-to-bracket me-2"></i> Staff Login</span>
+                    </a>
+                </div>
+            {% endif %}
+
         </div>
+
         <div class="workflow-slider animate__animated animate__fadeInUp animate__delay-1s" aria-label="Donation workflow">
             <div class="workflow-track">
                 <div class="workflow-item"><i class="fa-solid fa-id-card-clip"></i><div><strong>Profile Verified</strong><span>Donor identity</span></div></div>

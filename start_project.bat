@@ -6,17 +6,11 @@ echo ======================================
 echo STARTING BLOCKCHAIN PROJECT
 echo ======================================
 
-REM Activate virtual environment
 call venv\Scripts\activate
 
 echo.
-echo Starting Ganache...
-
-REM Open Ganache
-start "" "C:\Users\srava\AppData\Local\Programs\Ganache\Ganache.exe"
-
-REM Wait for Ganache startup
-timeout /t 10
+echo Please ensure Ganache is already running...
+timeout /t 5
 
 echo.
 echo Deploying Smart Contract...

@@ -3,7 +3,45 @@
 
 {% block extra_head %}
 <style>
-  .hospital-hero { background: linear-gradient(135deg,#0d6efd 0%,#0f766e 100%); color:#fff; border-radius:12px; padding:2rem; margin-bottom:1.5rem; box-shadow:0 12px 30px rgba(13,110,253,.2); }
+  .hospital-bg-shell {
+    position: fixed;
+    inset: 60px 0 0;
+    z-index: -1;
+    background:
+      linear-gradient(180deg, rgba(3, 7, 18, 0.72), rgba(3, 7, 18, 0.96)),
+      radial-gradient(circle at 18% 14%, rgba(34, 211, 238, 0.18), transparent 28%),
+      radial-gradient(circle at 82% 22%, rgba(20, 184, 166, 0.16), transparent 30%),
+      #030712;
+  }
+  .hospital-bg-shell.has-image {
+    background-image:
+      linear-gradient(180deg, rgba(3, 7, 18, 0.48), rgba(3, 7, 18, 0.86)),
+      linear-gradient(90deg, rgba(3, 7, 18, 0.76), rgba(3, 7, 18, 0.24), rgba(3, 7, 18, 0.82)),
+      var(--hospital-bg-image);
+    background-size: cover, cover, cover;
+    background-position: center;
+  }
+  .hospital-bg-shell::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(rgba(34, 211, 238, 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(34, 211, 238, 0.05) 1px, transparent 1px);
+    background-size: 64px 64px;
+    opacity: 0.34;
+  }
+  .hospital-hero {
+    background:
+      linear-gradient(135deg, rgba(13,110,253,.78) 0%, rgba(15,118,110,.78) 100%);
+    color:#fff;
+    border: 1px solid rgba(255,255,255,.16);
+    border-radius:12px;
+    padding:2rem;
+    margin-bottom:1.5rem;
+    box-shadow:0 18px 44px rgba(0,0,0,.28);
+    backdrop-filter: blur(14px);
+  }
   .hospital-hero p { color:rgba(255,255,255,.82); }
   .quick-card { border:1px solid rgba(255,255,255,.09); border-radius:10px; background:radial-gradient(circle at 20% 0%,rgba(34,211,238,.09),transparent 34%),rgba(8,13,20,.84); transition:transform .2s; }
   .quick-card:hover { transform:translateY(-3px); }
@@ -11,6 +49,7 @@
   .ledger-id { font-family:Consolas,monospace; background:rgba(34,211,238,.08); color:#67e8f9; border:1px solid rgba(34,211,238,.2); border-radius:8px; padding:.35rem .6rem; font-weight:700; }
   .section-hdr { font-size:1.1rem; font-weight:700; padding-bottom:.75rem; border-bottom:2px solid var(--dash-border,#e5e7eb); margin-bottom:1rem; display:flex; align-items:center; gap:.5rem; }
   .section-hdr::before { content:""; display:inline-block; width:4px; height:18px; background:linear-gradient(135deg,#0d6efd,#0f766e); border-radius:2px; }
+  .hosp-section-hidden { display: none !important; }
   .search-bar { background:var(--dash-panel,#fff); border:1px solid var(--dash-border,#cbd5e1); border-radius:10px; padding:1rem 1.25rem; margin-bottom:1.5rem; }
   .donor-chip { display:inline-flex; align-items:center; gap:.5rem; padding:.4rem .85rem; border:1px solid var(--dash-border,#e5e7eb); border-radius:20px; font-size:.85rem; background:var(--dash-panel,#fff); }
   .neo-toggle-container { --toggle-width:80px; --toggle-height:38px; --toggle-bg:#181c20; --toggle-off-color:#475057; --toggle-on-color:#36f9c7; --toggle-transition:.4s cubic-bezier(.25,1,.5,1); position:relative; display:inline-flex; flex-direction:column; font-family:"Segoe UI",Tahoma,sans-serif; user-select:none; margin-bottom:18px; }
@@ -59,6 +98,13 @@
 {% endblock %}
 
 {% block content %}
+<div
+  class="hospital-bg-shell {% if user.hospitalprofile.background_image %}has-image{% endif %}"
+  {% if user.hospitalprofile.background_image %}
+    style="--hospital-bg-image: url('{{ user.hospitalprofile.background_image.url }}');"
+  {% endif %}
+  aria-hidden="true"
+></div>
 <div class="role-shell">
   <aside class="role-sidebar" aria-label="Hospital sidebar">
     <div class="role-sidebar-brand">
@@ -66,33 +112,31 @@
       <span class="role-sidebar-title">Hospital Portal</span>
     </div>
 
-    <div class="project-logo-card" aria-label="OrganChain project logo">
-      <svg class="project-logo-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 784.37 1277.39">
-        <polygon fill="#343434" points="392.07,0 383.5,29.11 383.5,873.74 392.07,882.29 784.13,650.54"></polygon>
-        <polygon fill="#8C8C8C" points="392.07,0 -0,650.54 392.07,882.29 392.07,472.33"></polygon>
-        <polygon fill="#3C3C3B" points="392.07,956.52 387.24,962.41 387.24,1263.28 392.07,1277.38 784.37,724.89"></polygon>
-        <polygon fill="#8C8C8C" points="392.07,1277.38 392.07,956.52 -0,724.89"></polygon>
-        <polygon fill="#141414" points="392.07,882.29 784.13,650.54 392.07,472.33"></polygon>
-        <polygon fill="#393939" points="0,650.54 392.07,882.29 392.07,472.33"></polygon>
-      </svg>
-      <span class="project-logo-text">
-        <strong>OrganChain</strong>
-        <span>Donation Ledger</span>
-        <small>Hospital Node</small>
-      </span>
+    <div class="project-logo-card" aria-label="{{ user.hospitalprofile.hospital_name }} hospital logo">
+      {% if user.profile_picture %}
+        <img src="{{ user.profile_picture.url }}" alt="{{ user.hospitalprofile.hospital_name }} logo" style="width:100%;height:100%;object-fit:contain;padding:1rem;">
+      {% else %}
+        <div class="text-center px-3">
+          <i class="fa-solid fa-hospital text-primary mb-2" style="font-size:3rem;"></i>
+          <strong class="d-block">{{ user.hospitalprofile.hospital_name }}</strong>
+          <small class="text-muted">Hospital Logo</small>
+        </div>
+      {% endif %}
     </div>
 
     <nav class="role-sidebar-nav">
-      <a class="role-nav-link active" href="#hosp-overview"><i class="fa-solid fa-gauge-high"></i><span>Dashboard</span></a>
-      <a class="role-nav-link" href="#hosp-donors-mgmt"><i class="fa-solid fa-users"></i><span>Donors Management</span></a>
-      <a class="role-nav-link" href="#hosp-registered-donors"><i class="fa-solid fa-user-check"></i><span>Registered Donors</span></a>
-      <a class="role-nav-link" href="#hosp-available"><i class="fa-solid fa-magnifying-glass"></i><span>Available Donors</span></a>
-      <a class="role-nav-link" href="#hosp-search"><i class="fa-solid fa-search"></i><span>Search</span></a>
-      <a class="role-nav-link" href="#hosp-registered"><i class="fa-solid fa-file-medical"></i><span>Registered Organs</span></a>
-      <a class="role-nav-link" href="#hosp-received"><i class="fa-solid fa-rotate"></i><span>Update Status</span></a>
+      <a class="role-nav-link active" href="#hosp-overview" data-hosp-target="hosp-overview"><i class="fa-solid fa-gauge-high"></i><span>Dashboard</span></a>
+      <a class="role-nav-link" href="#hosp-donors-mgmt" data-hosp-target="hosp-donors-mgmt"><i class="fa-solid fa-users"></i><span>Donors Management</span></a>
+      <a class="role-nav-link" href="#hosp-registered-donors" data-hosp-target="hosp-registered-donors"><i class="fa-solid fa-user-check"></i><span>Registered Donors</span></a>
+      <a class="role-nav-link" href="#hosp-available" data-hosp-target="hosp-available"><i class="fa-solid fa-magnifying-glass"></i><span>Available Donors</span></a>
+      <a class="role-nav-link" href="#hosp-search" data-hosp-target="hosp-search"><i class="fa-solid fa-search"></i><span>Search</span></a>
+      <a class="role-nav-link" href="#hosp-registered" data-hosp-target="hosp-registered"><i class="fa-solid fa-file-medical"></i><span>Registered Organs</span></a>
+      <a class="role-nav-link" href="#hosp-received" data-hosp-target="hosp-received"><i class="fa-solid fa-rotate"></i><span>Update Status</span></a>
       <a class="role-nav-link" href="{% url 'register_organ' %}"><i class="fa-solid fa-plus"></i><span>Add Organ</span></a>
+      <a class="role-nav-link" href="#hosp-profile" data-hosp-target="hosp-profile"><i class="fa-solid fa-user-gear"></i><span>Profile Settings</span></a>
       <a class="role-nav-link" href="{% url 'logout' %}"><i class="fa-solid fa-right-from-bracket"></i><span>Logout</span></a>
     </nav>
+
 
     <form action="{% url 'update_theme' %}" method="post" class="theme-panel">
       {% csrf_token %}
@@ -110,7 +154,13 @@
     </form>
 
     <div class="role-sidebar-user">
-      <span class="role-user-avatar">{{ request.user.username|first|upper }}</span>
+      <div class="role-user-avatar">
+        {% if user.profile_picture %}
+          <img src="{{ user.profile_picture.url }}" alt="Logo" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;">
+        {% else %}
+          {{ request.user.username|first|upper }}
+        {% endif %}
+      </div>
       <span class="role-user-meta">
         <strong>{{ request.user.hospitalprofile.hospital_name }}</strong>
         <small>{{ request.user.email|default:request.user.username }}</small>
@@ -118,9 +168,9 @@
     </div>
   </aside>
 
-  <div class="role-content">
-    <!-- Hero -->
-    <section id="hosp-overview" class="hospital-hero">
+  <div class="role-content" id="hosp-content">
+    <!-- ── Overview Section ── -->
+    <section id="hosp-overview" data-hosp-section="hosp-overview" class="hospital-hero">
       <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
         <div>
           <span class="badge bg-light text-primary mb-2">Hospital Portal</span>
@@ -227,14 +277,15 @@
     </div>
 
     <!-- ── Donors Management ── -->
-    <section id="hosp-donors-mgmt" class="card page-card mb-4">
+    <section id="hosp-donors-mgmt" data-hosp-section="hosp-donors-mgmt" class="card page-card mb-4">
+
       <div class="card-body">
         <div class="section-hdr"><i class="fa-solid fa-users text-primary"></i>Donors Management</div>
         <p class="text-muted">Overview of all donors registered in the system and their organ donation status.</p>
         <div class="table-responsive">
           <table class="table align-middle">
             <thead class="table-light">
-              <tr><th>Donor</th><th>Blood Group</th><th>Contact</th><th>Location</th><th>Organs Donated</th><th>Status</th></tr>
+              <tr><th>Donor</th><th>Blood Group</th><th>Contact</th><th>Location</th><th>Organs Donated</th><th>Status</th><th>Action</th></tr>
             </thead>
             <tbody>
               {% for dp in all_donors %}
@@ -248,7 +299,13 @@
                 <td>{{ dp.city|default:"—" }}{% if dp.state %}, {{ dp.state }}{% endif %}</td>
                 <td>{{ dp.organrecord_set.count }}</td>
                 <td>{% if dp.is_deceased %}<span class="badge text-bg-secondary">Deceased</span>{% else %}<span class="badge text-bg-success">Active</span>{% endif %}</td>
+                <td>
+                  <a href="{% url 'register_organ' %}?donor_id={{ dp.id }}" class="btn btn-sm btn-outline-primary ui-action">
+                    <i class="fa-solid fa-plus me-1"></i>Register Organ
+                  </a>
+                </td>
               </tr>
+
               {% empty %}
               <tr><td colspan="6" class="text-center text-muted py-4">No donors in the system yet.</td></tr>
               {% endfor %}
@@ -258,8 +315,8 @@
       </div>
     </section>
 
-    <!-- ── Registered Donors (Donors who donated organs registered by THIS hospital) ── -->
-    <section id="hosp-registered-donors" class="card page-card mb-4">
+    <!-- ── Registered Donors (In Hospital) ── -->
+    <section id="hosp-registered-donors" data-hosp-section="hosp-registered-donors" class="card page-card mb-4">
       <div class="card-body">
         <div class="section-hdr"><i class="fa-solid fa-user-check text-success"></i>Registered Donors <span class="badge text-bg-success ms-2">{{ registered_organs|length }}</span></div>
         <p class="text-muted">Donors whose organs have been registered by your hospital.</p>
@@ -291,8 +348,8 @@
       </div>
     </section>
 
-    <!-- ── Available Donors / Organs ── -->
-    <section id="hosp-available" class="card page-card mb-4">
+    <!-- ── Available Donors (Searchable) ── -->
+    <section id="hosp-available" data-hosp-section="hosp-available" class="card page-card mb-4">
       <div class="card-body">
         <div class="d-flex justify-content-between align-items-center mb-3">
           <div class="section-hdr mb-0"><i class="fa-solid fa-magnifying-glass text-success"></i>Available Donors / Organs</div>
@@ -327,8 +384,8 @@
       </div>
     </section>
 
-    <!-- ── Search ── -->
-    <section id="hosp-search" class="card page-card mb-4">
+    <!-- ── Search by Organ/Location ── -->
+    <section id="hosp-search" data-hosp-section="hosp-search" class="card page-card mb-4">
       <div class="card-body">
         <div class="section-hdr"><i class="fa-solid fa-search text-primary"></i>Search</div>
         <form method="get" action="{% url 'hospital_dashboard' %}#hosp-search" class="search-bar">
@@ -382,8 +439,8 @@
       </div>
     </section>
 
-    <!-- ── Registered Organs Table ── -->
-    <section id="hosp-registered" class="card page-card mb-4">
+    <!-- ── Registered Organs ── -->
+    <section id="hosp-registered" data-hosp-section="hosp-registered" class="card page-card mb-4">
       <div class="card-body">
         <div class="d-flex justify-content-between align-items-center mb-3">
           <div class="section-hdr mb-0"><i class="fa-solid fa-file-medical text-primary"></i>Registered Organs</div>
@@ -461,7 +518,8 @@
     </section>
 
     <!-- ── Received Organs ── -->
-    <section id="hosp-received" class="card page-card mb-4">
+    <section id="hosp-received" data-hosp-section="hosp-received" class="card page-card mb-4">
+
       <div class="card-body">
         <div class="d-flex justify-content-between align-items-center mb-3">
           <div class="section-hdr mb-0"><i class="fa-solid fa-rotate text-warning"></i>Received Organs — Update Status</div>
@@ -507,7 +565,161 @@
           </table>
         </div>
       </div>
+    <!-- ── Profile Settings ── -->
+    </section>
+    <section id="hosp-profile" data-hosp-section="hosp-profile" class="card page-card mb-4 hosp-section-hidden">
+      <div class="card-body">
+        <div class="section-hdr"><i class="fa-solid fa-user-gear text-primary"></i>Profile Settings</div>
+        
+        <div class="row g-4">
+          <div class="col-md-4 text-center border-end">
+            <div class="mb-3">
+              <h6 class="fw-bold">Current Logo</h6>
+              <div class="mx-auto rounded-circle bg-light d-flex align-items-center justify-content-center shadow-sm mb-3" style="width: 150px; height: 150px; border: 2px solid var(--dash-accent, #0d6efd); overflow: hidden;">
+                {% if user.profile_picture %}
+                  <img src="{{ user.profile_picture.url }}" alt="Logo" style="width: 100%; height: 100%; object-fit: cover;">
+                {% else %}
+                  <i class="fa-solid fa-hospital text-muted" style="font-size: 4rem;"></i>
+                {% endif %}
+              </div>
+              <p class="small text-muted">This logo will be visible on your dashboard and to the system administrators.</p>
+            </div>
+          </div>
+          
+          <div class="col-md-8">
+            <form method="post" action="{% url 'update_profile_picture' %}" enctype="multipart/form-data" class="mb-4">
+              {% csrf_token %}
+              <div class="mb-3">
+                <label class="form-label fw-bold">Update Logo</label>
+                <input type="file" name="profile_picture" class="form-control" accept="image/*" required>
+                <div class="form-text">Upload a high-quality logo (JPG or PNG, max 5MB).</div>
+              </div>
+              <button type="submit" class="btn btn-primary ui-action">Update Logo</button>
+            </form>
+            
+            <hr>
+            
+            <form method="post" action="{% url 'hospital_dashboard' %}" enctype="multipart/form-data" class="mt-4">
+              {% csrf_token %}
+              <input type="hidden" name="form_type" value="update_details">
+              {% if hospital_profile_form.errors %}
+                <div class="alert alert-danger">
+                  Please check the profile form. Passwords must match and username must be unique.
+                </div>
+              {% endif %}
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label fw-bold">Username</label>
+                  <input type="text" name="username" class="form-control" value="{{ hospital_profile_form.username.value|default:user.username }}" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-bold">Login Email</label>
+                  <input type="email" name="email" class="form-control" value="{{ hospital_profile_form.email.value|default:user.email }}">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-bold">Hospital Name</label>
+                  <input type="text" name="hospital_name" class="form-control" value="{{ hospital_profile_form.hospital_name.value|default:user.hospitalprofile.hospital_name }}" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-bold">Contact Email</label>
+                  <input type="email" name="contact_email" class="form-control" value="{{ hospital_profile_form.contact_email.value|default:user.hospitalprofile.contact_email|default:user.email }}">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-bold">Contact Number</label>
+                  <input type="text" name="contact_number" class="form-control" value="{{ hospital_profile_form.contact_number.value|default:user.hospitalprofile.contact_number }}" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-bold">Hospital Logo</label>
+                  <input type="file" name="profile_picture" class="form-control" accept="image/*">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-bold">Hospital Background</label>
+                  <input type="file" name="background_image" class="form-control" accept="image/*">
+                  <div class="form-text">A wide hospital photo makes the portal background look more professional.</div>
+                </div>
+                <div class="col-md-12">
+                  <label class="form-label fw-bold">Address</label>
+                  <textarea name="address" class="form-control" rows="3" required>{{ hospital_profile_form.address.value|default:user.hospitalprofile.address }}</textarea>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-bold">City</label>
+                  <input type="text" name="city" class="form-control" value="{{ hospital_profile_form.city.value|default:user.hospitalprofile.city }}">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-bold">State</label>
+                  <input type="text" name="state" class="form-control" value="{{ hospital_profile_form.state.value|default:user.hospitalprofile.state }}">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-bold">New Password</label>
+                  <input type="password" name="new_password" class="form-control" autocomplete="new-password" placeholder="Leave blank to keep current password">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-bold">Confirm New Password</label>
+                  <input type="password" name="confirm_password" class="form-control" autocomplete="new-password">
+                </div>
+                <div class="col-12">
+                  <button type="submit" class="btn btn-success ui-action">
+                    <i class="fa-solid fa-floppy-disk me-1"></i>Save Profile, Logo & Password
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
     </section>
   </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const hospContent = document.getElementById("hosp-content");
+    const sectionLinks = document.querySelectorAll("[data-hosp-target]");
+      const sectionKeys = new Set([
+        "hosp-overview", "hosp-donors-mgmt", "hosp-registered-donors",
+        "hosp-available", "hosp-search", "hosp-registered", "hosp-received", "hosp-profile"
+      ]);
+
+    if (hospContent && sectionLinks.length) {
+      function showHospSection(target) {
+        const nextTarget = sectionKeys.has(target) ? target : "hosp-overview";
+
+        Array.from(hospContent.children).forEach((child) => {
+          if (child.dataset && child.dataset.hospSection) {
+            child.classList.toggle(
+              "hosp-section-hidden",
+              child.dataset.hospSection !== nextTarget
+            );
+          }
+        });
+
+        sectionLinks.forEach((link) => {
+          const isActive = link.dataset.hospTarget === nextTarget;
+          link.classList.toggle("active", isActive);
+        });
+
+        if (window.location.hash !== `#${nextTarget}`) {
+          history.replaceState(null, "", `#${nextTarget}`);
+        }
+      }
+
+      sectionLinks.forEach((link) => {
+        link.addEventListener("click", function (event) {
+          event.preventDefault();
+          showHospSection(this.dataset.hospTarget);
+        });
+      });
+
+      const initialSection = window.location.hash.replace("#", "");
+      showHospSection(initialSection || "hosp-overview");
+
+      window.addEventListener("hashchange", function () {
+        const hashSection = window.location.hash.replace("#", "");
+        showHospSection(hashSection || "hosp-overview");
+      });
+    }
+  });
+</script>
 {% endblock %}

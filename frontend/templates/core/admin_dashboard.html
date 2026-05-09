@@ -21,6 +21,38 @@
     padding-right: 1.25rem;
   }
 
+  .admin-bg-shell {
+    position: fixed;
+    inset: 60px 0 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(180deg, rgba(3, 7, 18, 0.72), rgba(3, 7, 18, 0.96)),
+      radial-gradient(circle at 18% 12%, rgba(59, 130, 246, 0.18), transparent 28%),
+      radial-gradient(circle at 82% 20%, rgba(20, 184, 166, 0.12), transparent 30%),
+      var(--dash-bg, #030712);
+  }
+
+  .admin-bg-shell.has-image {
+    background-image:
+      linear-gradient(180deg, rgba(3, 7, 18, 0.52), rgba(3, 7, 18, 0.9)),
+      linear-gradient(90deg, rgba(3, 7, 18, 0.82), rgba(3, 7, 18, 0.28), rgba(3, 7, 18, 0.86)),
+      var(--admin-bg-image);
+    background-size: cover, cover, cover;
+    background-position: center;
+  }
+
+  .admin-bg-shell::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(rgba(34, 211, 238, 0.055) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(34, 211, 238, 0.045) 1px, transparent 1px);
+    background-size: 64px 64px;
+    opacity: 0.32;
+  }
+
   .navbar {
     background: var(--dash-panel, #ffffff) !important;
     border-color: var(--dash-border, #e5e7eb) !important;
@@ -131,6 +163,8 @@
     grid-template-columns: 264px minmax(0, 1fr);
     gap: 1.5rem;
     align-items: start;
+    position: relative;
+    z-index: 1;
   }
 
   .admin-content {
@@ -1001,6 +1035,64 @@
     to { transform: translateX(-50%); }
   }
 
+  /* Blockchain Enhancements */
+  .status-pulse {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #22c55e;
+    margin-right: 8px;
+    box-shadow: 0 0 0 rgba(34, 197, 94, 0.4);
+    animation: pulse-green 2s infinite;
+  }
+
+  @keyframes pulse-green {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+  }
+
+  .status-pulse.offline {
+    background: #ef4444;
+    animation: pulse-red 2s infinite;
+  }
+
+  @keyframes pulse-red {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+  }
+
+  .blockchain-glow {
+    position: relative;
+  }
+
+  .blockchain-glow::after {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    background: linear-gradient(45deg, #f7931a, #ffab40, #f7931a);
+    border-radius: 1.35rem;
+    z-index: -1;
+    filter: blur(15px);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .ui-chain-card:hover .blockchain-glow::after {
+    opacity: 0.15;
+  }
+
+  .ui-chain-card__eth-icon {
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.3));
+    transition: filter 0.3s ease;
+  }
+
+  .ui-chain-card:hover .ui-chain-card__eth-icon {
+    filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.5));
+  }
+
   .neo-toggle-container {
     --toggle-width: 80px;
     --toggle-height: 38px;
@@ -1311,6 +1403,58 @@
     background: var(--dash-bg) !important;
   }
 
+  html[data-ui-theme] body > main.container:has(.admin-bg-shell.has-image) {
+    background: transparent !important;
+  }
+
+  .admin-shell.admin-shell-bg-active .admin-sidebar,
+  .admin-shell.admin-shell-bg-active .card,
+  .admin-shell.admin-shell-bg-active .page-card,
+  .admin-shell.admin-shell-bg-active .stat-card,
+  .admin-shell.admin-shell-bg-active .category-card,
+  .admin-shell.admin-shell-bg-active .admin-hero,
+  html[data-ui-theme] .admin-shell.admin-shell-bg-active .admin-sidebar,
+  html[data-ui-theme] .admin-shell.admin-shell-bg-active .card,
+  html[data-ui-theme] .admin-shell.admin-shell-bg-active .page-card,
+  html[data-ui-theme] .admin-shell.admin-shell-bg-active .stat-card,
+  html[data-ui-theme] .admin-shell.admin-shell-bg-active .category-card,
+  html[data-ui-theme] .admin-shell.admin-shell-bg-active .admin-hero {
+    background: rgba(8, 13, 20, 0.78) !important;
+    border-color: rgba(255, 255, 255, 0.14) !important;
+    color: #ffffff !important;
+    backdrop-filter: blur(14px);
+  }
+
+  .admin-shell.admin-shell-bg-active .table,
+  .admin-shell.admin-shell-bg-active .table td,
+  .admin-shell.admin-shell-bg-active .table th,
+  .admin-shell.admin-shell-bg-active .section-title,
+  .admin-shell.admin-shell-bg-active h1,
+  .admin-shell.admin-shell-bg-active h2,
+  .admin-shell.admin-shell-bg-active h3,
+  .admin-shell.admin-shell-bg-active h4,
+  .admin-shell.admin-shell-bg-active h5,
+  .admin-shell.admin-shell-bg-active h6,
+  .admin-shell.admin-shell-bg-active strong,
+  .admin-shell.admin-shell-bg-active .fw-bold,
+  .admin-shell.admin-shell-bg-active .fw-semibold {
+    color: #ffffff !important;
+  }
+
+  .admin-shell.admin-shell-bg-active .text-muted,
+  .admin-shell.admin-shell-bg-active small.text-muted,
+  .admin-shell.admin-shell-bg-active .form-text {
+    color: rgba(255, 255, 255, 0.64) !important;
+  }
+
+  .admin-shell.admin-shell-bg-active .form-control,
+  .admin-shell.admin-shell-bg-active .form-select,
+  .admin-shell.admin-shell-bg-active textarea.form-control {
+    background: rgba(8, 13, 20, 0.76) !important;
+    border-color: rgba(255, 255, 255, 0.16) !important;
+    color: #ffffff !important;
+  }
+
   html[data-ui-theme] .admin-hero,
   html[data-ui-theme] .category-card {
     background: var(--dash-panel) !important;
@@ -1374,7 +1518,14 @@
 {% endblock %}
 
 {% block content %}
-<div class="admin-shell">
+<div
+  class="admin-bg-shell {% if user.background_image %}has-image{% endif %}"
+  {% if user.background_image %}
+    style="--admin-bg-image: url('{{ user.background_image.url }}');"
+  {% endif %}
+  aria-hidden="true"
+></div>
+<div class="admin-shell {% if user.background_image %}admin-shell-bg-active{% endif %}">
   <aside class="admin-sidebar" aria-label="Admin sidebar">
     <div class="admin-sidebar-user mb-4" style="border-top: none; padding-top: 0;">
       <div class="admin-user-avatar">
@@ -1432,6 +1583,9 @@
       <a class="admin-nav-link ui-action" href="#admin-certificates" data-admin-target="certificates">
         <i class="fa-solid fa-certificate"></i><span>Death Certificates</span>
       </a>
+      <a class="admin-nav-link ui-action" href="#admin-death-cert" data-admin-target="death-cert">
+        <i class="fa-solid fa-skull-crossbones"></i><span>Issue Death Certificate</span>
+      </a>
       <a class="admin-nav-link ui-action" href="#admin-feedback" data-admin-target="feedback">
         <i class="fa-solid fa-comments"></i><span>Feedback Management</span>
         {% if stats.feedbacks %}<span class="admin-nav-badge" style="background:#7c3aed;">{{ stats.feedbacks }}</span>{% endif %}
@@ -1446,8 +1600,6 @@
         <i class="fa-solid fa-user-gear"></i><span>Profile Settings</span>
       </a>
     </nav>
-
-
 
     <nav class="admin-sidebar-footer">
       <a class="admin-nav-link ui-action" href="{% url 'logout' %}">
@@ -1573,66 +1725,84 @@
 
 <div class="row g-3 mb-5">
   <div class="col-xl-7">
-    <button class="ui-chain-card" type="button" aria-label="Local Ethereum node status card">
-      <span class="ui-chain-card__bg" aria-hidden="true"></span>
-      <span class="ui-chain-card__inner">
-        <span class="ui-chain-card__top">
-          <span class="ui-chain-card__icon" aria-hidden="true">
-            <svg class="ui-chain-card__svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 784.37 1277.39" role="img" aria-label="Ethereum">
-              <polygon fill="#ffffff" fill-opacity="0.82" points="392.07,0 383.5,29.11 383.5,873.74 392.07,882.29 784.13,650.54"></polygon>
-              <polygon fill="#ffffff" fill-opacity="0.48" points="392.07,0 -0,650.54 392.07,882.29 392.07,472.33"></polygon>
-              <polygon fill="#ffffff" fill-opacity="0.72" points="392.07,956.52 387.24,962.41 387.24,1263.28 392.07,1277.38 784.37,724.89"></polygon>
-              <polygon fill="#ffffff" fill-opacity="0.44" points="392.07,1277.38 392.07,956.52 -0,724.89"></polygon>
-              <polygon fill="#ffffff" fill-opacity="0.9" points="392.07,882.29 784.13,650.54 392.07,472.33"></polygon>
-              <polygon fill="#ffffff" fill-opacity="0.62" points="0,650.54 392.07,882.29 392.07,472.33"></polygon>
-            </svg>
+    <div class="blockchain-glow">
+      <button class="ui-chain-card" type="button" aria-label="Local Ethereum node status card">
+        <span class="ui-chain-card__bg" aria-hidden="true"></span>
+        <span class="ui-chain-card__inner">
+          <span class="ui-chain-card__top">
+            <span class="ui-chain-card__icon" aria-hidden="true">
+              <svg class="ui-chain-card__svg ui-chain-card__eth-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 784.37 1277.39" role="img" aria-label="Ethereum">
+                <polygon fill="#ffffff" fill-opacity="0.82" points="392.07,0 383.5,29.11 383.5,873.74 392.07,882.29 784.13,650.54"></polygon>
+                <polygon fill="#ffffff" fill-opacity="0.48" points="392.07,0 -0,650.54 392.07,882.29 392.07,472.33"></polygon>
+                <polygon fill="#ffffff" fill-opacity="0.72" points="392.07,956.52 387.24,962.41 387.24,1263.28 392.07,1277.38 784.37,724.89"></polygon>
+                <polygon fill="#ffffff" fill-opacity="0.44" points="392.07,1277.38 392.07,956.52 -0,724.89"></polygon>
+                <polygon fill="#ffffff" fill-opacity="0.9" points="392.07,882.29 784.13,650.54 392.07,472.33"></polygon>
+                <polygon fill="#ffffff" fill-opacity="0.62" points="0,650.54 392.07,882.29 392.07,472.33"></polygon>
+              </svg>
+            </span>
+
+            <span class="ui-chain-card__titles">
+              <span class="ui-chain-card__pair">LOCAL CHAIN CONNECTED</span>
+              <span class="ui-chain-card__sub">Ganache Operation Desk</span>
+            </span>
+
+            <span class="ui-chain-card__badge {% if not blockchain_status.connected %}offline{% endif %}">
+              <span class="status-pulse {% if not blockchain_status.connected %}offline{% endif %}"></span>
+              {% if blockchain_status.connected %}LIVE{% else %}OFFLINE{% endif %}
+            </span>
           </span>
 
-          <span class="ui-chain-card__titles">
-            <span class="ui-chain-card__pair">ETH / LOCAL</span>
-            <span class="ui-chain-card__sub">ganache operations desk</span>
+          <span class="ui-chain-card__mid">
+            <span class="ui-chain-card__metric">
+              <span class="ui-chain-card__sym">BLOCK</span>
+              <span class="ui-chain-card__num">{{ blockchain_status.block_number }}</span>
+              <span class="ui-chain-card__chg">
+                <i class="fa-solid fa-file-contract me-1"></i>
+                {% if blockchain_status.contract_loaded %}Smart Contract Active{% else %}Contract Pending{% endif %}
+              </span>
+            </span>
+
+            <span class="ui-chain-card__meta">
+              <span class="ui-chain-card__pill"><i class="fa-solid fa-server me-2"></i>RPC: {{ blockchain_status.rpc_url }}</span>
+              <span class="ui-chain-card__pill"><i class="fa-solid fa-gas-pump me-2"></i>Gas: {{ blockchain_status.gas_price_gwei }} Gwei</span>
+              <span class="ui-chain-card__pill"><i class="fa-solid fa-wallet me-2"></i>Accounts: {{ blockchain_status.accounts }}</span>
+              <span class="ui-chain-card__pill"><i class="fa-solid fa-network-wired me-2"></i>Network ID: {{ blockchain_status.chain_id }}</span>
+            </span>
           </span>
 
-          <span class="ui-chain-card__badge {% if not blockchain_status.connected %}offline{% endif %}">
-            {% if blockchain_status.connected %}LIVE{% else %}OFFLINE{% endif %}
+          <span class="ui-chain-card__ticker" aria-hidden="true">
+            <span class="ui-chain-card__marquee">
+              <span>LOCAL ETHEREUM NODE READY</span><span>{% if blockchain_status.connected %}Node Status: OK{% else %}Action Required: Start Ganache{% endif %}</span><span>System Readiness: 100%</span><span>Transaction Monitoring Ready</span>
+              <span>LOCAL ETHEREUM NODE READY</span><span>{% if blockchain_status.connected %}Node Status: OK{% else %}Action Required: Start Ganache{% endif %}</span><span>System Readiness: 100%</span><span>Transaction Monitoring Ready</span>
+            </span>
           </span>
         </span>
-
-        <span class="ui-chain-card__mid">
-          <span class="ui-chain-card__metric">
-            <span class="ui-chain-card__sym">block</span>
-            <span class="ui-chain-card__num">{{ blockchain_status.block_number }}</span>
-            <span class="ui-chain-card__chg">{% if blockchain_status.contract_loaded %}contract ready{% else %}contract pending{% endif %}</span>
-          </span>
-
-          <span class="ui-chain-card__meta">
-            <span class="ui-chain-card__pill">rpc {{ blockchain_status.rpc_url }}</span>
-            <span class="ui-chain-card__pill">gas {{ blockchain_status.gas_price_gwei }} gwei</span>
-            <span class="ui-chain-card__pill">accounts {{ blockchain_status.accounts }}</span>
-          </span>
-        </span>
-
-        <span class="ui-chain-card__ticker" aria-hidden="true">
-          <span class="ui-chain-card__marquee">
-            <span>ETH->LOCAL</span><span>{% if blockchain_status.connected %}node OK{% else %}start Ganache{% endif %}</span><span>organs {{ stats.organs }}</span><span>matches {{ stats.matches }}</span><span>tx audit ready</span>
-            <span>ETH->LOCAL</span><span>{% if blockchain_status.connected %}node OK{% else %}start Ganache{% endif %}</span><span>organs {{ stats.organs }}</span><span>matches {{ stats.matches }}</span><span>tx audit ready</span>
-          </span>
-        </span>
-      </span>
-    </button>
+      </button>
+    </div>
   </div>
   <div class="col-xl-5">
-    <div class="card page-card h-100">
-      <div class="card-body d-flex flex-column justify-content-center">
-        <p class="text-muted small mb-2">Blockchain Readiness</p>
+    <div class="card page-card h-100 shadow-sm border-0" style="background: rgba(255,255,255,0.02); backdrop-filter: blur(10px);">
+      <div class="card-body d-flex flex-column justify-content-center p-4">
+        <div class="d-flex align-items-center mb-3">
+          <div class="rounded-circle p-2 me-3" style="background: rgba(13, 110, 253, 0.1); color: #0d6efd;">
+            <i class="fa-solid fa-shield-halved fs-5"></i>
+          </div>
+          <p class="text-muted small mb-0 fw-bold text-uppercase" style="letter-spacing: 1px;">Blockchain Readiness</p>
+        </div>
         <h4 class="fw-bold mb-3">{% if blockchain_status.connected %}Local Ethereum node is connected.{% else %}Ganache is not connected yet.{% endif %}</h4>
         <p class="text-muted mb-0">
           {% if blockchain_status.connected %}
-            Admin actions can use the local chain for organ registration and matching records.
+            <i class="fa-solid fa-circle-check text-success me-2"></i>Admin actions can use the local chain for organ registration and matching records.
           {% else %}
-            Start Ganache at <code>http://127.0.0.1:7545</code> before blockchain-backed transactions.
+            <i class="fa-solid fa-circle-exclamation text-warning me-2"></i>Start Ganache at <code>http://127.0.0.1:7545</code> before blockchain-backed transactions.
           {% endif %}
         </p>
+        <div class="mt-4 pt-3 border-top border-secondary border-opacity-10">
+          <div class="d-flex justify-content-between align-items-center">
+            <span class="small text-muted">System Integrity</span>
+            <span class="badge bg-success-subtle text-success">Verified</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -1644,48 +1814,55 @@
 <h2 id="admin-wallet" class="section-title">Wallet / Local Chain</h2>
 <div class="row g-3 mb-5">
   <div class="col-xl-7">
-    <button class="ui-chain-card" type="button" aria-label="Local Ethereum node status card">
-      <span class="ui-chain-card__bg" aria-hidden="true"></span>
-      <span class="ui-chain-card__inner">
-        <span class="ui-chain-card__top">
-          <span class="ui-chain-card__icon" aria-hidden="true">
-            <svg class="ui-chain-card__svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 784.37 1277.39" role="img" aria-label="Ethereum">
-              <polygon fill="#ffffff" fill-opacity="0.82" points="392.07,0 383.5,29.11 383.5,873.74 392.07,882.29 784.13,650.54"></polygon>
-              <polygon fill="#ffffff" fill-opacity="0.48" points="392.07,0 -0,650.54 392.07,882.29 392.07,472.33"></polygon>
-              <polygon fill="#ffffff" fill-opacity="0.72" points="392.07,956.52 387.24,962.41 387.24,1263.28 392.07,1277.38 784.37,724.89"></polygon>
-              <polygon fill="#ffffff" fill-opacity="0.44" points="392.07,1277.38 392.07,956.52 -0,724.89"></polygon>
-              <polygon fill="#ffffff" fill-opacity="0.9" points="392.07,882.29 784.13,650.54 392.07,472.33"></polygon>
-              <polygon fill="#ffffff" fill-opacity="0.62" points="0,650.54 392.07,882.29 392.07,472.33"></polygon>
-            </svg>
+    <div class="blockchain-glow">
+      <button class="ui-chain-card" type="button" aria-label="Local Ethereum node status card">
+        <span class="ui-chain-card__bg" aria-hidden="true"></span>
+        <span class="ui-chain-card__inner">
+          <span class="ui-chain-card__top">
+            <span class="ui-chain-card__icon" aria-hidden="true">
+              <svg class="ui-chain-card__svg ui-chain-card__eth-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 784.37 1277.39" role="img" aria-label="Ethereum">
+                <polygon fill="#ffffff" fill-opacity="0.82" points="392.07,0 383.5,29.11 383.5,873.74 392.07,882.29 784.13,650.54"></polygon>
+                <polygon fill="#ffffff" fill-opacity="0.48" points="392.07,0 -0,650.54 392.07,882.29 392.07,472.33"></polygon>
+                <polygon fill="#ffffff" fill-opacity="0.72" points="392.07,956.52 387.24,962.41 387.24,1263.28 392.07,1277.38 784.37,724.89"></polygon>
+                <polygon fill="#ffffff" fill-opacity="0.44" points="392.07,1277.38 392.07,956.52 -0,724.89"></polygon>
+                <polygon fill="#ffffff" fill-opacity="0.9" points="392.07,882.29 784.13,650.54 392.07,472.33"></polygon>
+                <polygon fill="#ffffff" fill-opacity="0.62" points="0,650.54 392.07,882.29 392.07,472.33"></polygon>
+              </svg>
+            </span>
+            <span class="ui-chain-card__titles">
+              <span class="ui-chain-card__pair">LOCAL CHAIN CONNECTED</span>
+              <span class="ui-chain-card__sub">Ganache Operation Desk</span>
+            </span>
+            <span class="ui-chain-card__badge {% if not blockchain_status.connected %}offline{% endif %}">
+              <span class="status-pulse {% if not blockchain_status.connected %}offline{% endif %}"></span>
+              {% if blockchain_status.connected %}LIVE{% else %}OFFLINE{% endif %}
+            </span>
           </span>
-          <span class="ui-chain-card__titles">
-            <span class="ui-chain-card__pair">ETH / LOCAL</span>
-            <span class="ui-chain-card__sub">ganache operations desk</span>
+          <span class="ui-chain-card__mid">
+            <span class="ui-chain-card__metric">
+              <span class="ui-chain-card__sym">BLOCK</span>
+              <span class="ui-chain-card__num">{{ blockchain_status.block_number }}</span>
+              <span class="ui-chain-card__chg">
+                <i class="fa-solid fa-file-contract me-1"></i>
+                {% if blockchain_status.contract_loaded %}Smart Contract Active{% else %}Contract Pending{% endif %}
+              </span>
+            </span>
+            <span class="ui-chain-card__meta">
+              <span class="ui-chain-card__pill"><i class="fa-solid fa-server me-2"></i>RPC: {{ blockchain_status.rpc_url }}</span>
+              <span class="ui-chain-card__pill"><i class="fa-solid fa-gas-pump me-2"></i>Gas: {{ blockchain_status.gas_price_gwei }} Gwei</span>
+              <span class="ui-chain-card__pill"><i class="fa-solid fa-wallet me-2"></i>Accounts: {{ blockchain_status.accounts }}</span>
+              <span class="ui-chain-card__pill"><i class="fa-solid fa-network-wired me-2"></i>Network ID: {{ blockchain_status.chain_id }}</span>
+            </span>
           </span>
-          <span class="ui-chain-card__badge {% if not blockchain_status.connected %}offline{% endif %}">
-            {% if blockchain_status.connected %}LIVE{% else %}OFFLINE{% endif %}
+          <span class="ui-chain-card__ticker" aria-hidden="true">
+            <span class="ui-chain-card__marquee">
+              <span>LOCAL ETHEREUM NODE READY</span><span>{% if blockchain_status.connected %}Node Status: OK{% else %}Action Required: Start Ganache{% endif %}</span><span>System Readiness: 100%</span><span>Transaction Monitoring Ready</span>
+              <span>LOCAL ETHEREUM NODE READY</span><span>{% if blockchain_status.connected %}Node Status: OK{% else %}Action Required: Start Ganache{% endif %}</span><span>System Readiness: 100%</span><span>Transaction Monitoring Ready</span>
+            </span>
           </span>
         </span>
-        <span class="ui-chain-card__mid">
-          <span class="ui-chain-card__metric">
-            <span class="ui-chain-card__sym">block</span>
-            <span class="ui-chain-card__num">{{ blockchain_status.block_number }}</span>
-            <span class="ui-chain-card__chg">{% if blockchain_status.contract_loaded %}contract ready{% else %}contract pending{% endif %}</span>
-          </span>
-          <span class="ui-chain-card__meta">
-            <span class="ui-chain-card__pill">rpc {{ blockchain_status.rpc_url }}</span>
-            <span class="ui-chain-card__pill">gas {{ blockchain_status.gas_price_gwei }} gwei</span>
-            <span class="ui-chain-card__pill">accounts {{ blockchain_status.accounts }}</span>
-          </span>
-        </span>
-        <span class="ui-chain-card__ticker" aria-hidden="true">
-          <span class="ui-chain-card__marquee">
-            <span>ETH->LOCAL</span><span>{% if blockchain_status.connected %}node OK{% else %}start Ganache{% endif %}</span><span>organs {{ stats.organs }}</span><span>matches {{ stats.matches }}</span><span>wallet monitor</span>
-            <span>ETH->LOCAL</span><span>{% if blockchain_status.connected %}node OK{% else %}start Ganache{% endif %}</span><span>organs {{ stats.organs }}</span><span>matches {{ stats.matches }}</span><span>wallet monitor</span>
-          </span>
-        </span>
-      </span>
-    </button>
+      </button>
+    </div>
   </div>
   <div class="col-xl-5">
     <div class="card page-card h-100">
@@ -1704,47 +1881,6 @@
   </div>
 </div>
 </section><!-- /wallet -->
-
-<section data-admin-section="users">
-<!-- Category Breakdown -->
-<h2 id="admin-categories" class="section-title">User Categories</h2>
-<div class="row g-3 mb-5">
-  <div class="col-lg-3 col-md-6">
-    <div class="category-card">
-      <div class="category-icon"><i class="fa-solid fa-user-shield"></i></div>
-      <p class="text-muted mb-1 small">Administrators</p>
-      <h3 class="fw-bold mb-2">{{ stats.admins }}</h3>
-      <small class="text-muted">System admins</small>
-    </div>
-  </div>
-  <div class="col-lg-3 col-md-6">
-    <div class="category-card icon-secondary">
-      <div class="category-icon">
-        <i class="fa-solid fa-hand-holding-heart"></i>
-      </div>
-      <p class="text-muted mb-1 small">Organ Donors</p>
-      <h3 class="fw-bold mb-2">{{ stats.donors }}</h3>
-      <small class="text-muted">Active profiles</small>
-    </div>
-  </div>
-  <div class="col-lg-3 col-md-6">
-    <div class="category-card icon-warning">
-      <div class="category-icon"><i class="fa-solid fa-hospital"></i></div>
-      <p class="text-muted mb-1 small">Medical Centers</p>
-      <h3 class="fw-bold mb-2">{{ stats.hospitals }}</h3>
-      <small class="text-muted">Verified hospitals</small>
-    </div>
-  </div>
-  <div class="col-lg-3 col-md-6">
-    <div class="category-card icon-danger">
-      <div class="category-icon"><i class="fa-solid fa-user"></i></div>
-      <p class="text-muted mb-1 small">Other Users</p>
-      <h3 class="fw-bold mb-2">{{ stats.other_users }}</h3>
-      <small class="text-muted">Various roles</small>
-    </div>
-  </div>
-</div>
-</section><!-- /users-categories -->
 
 <!-- ══════════════════════════════════════════
      SECTION: ANALYTICS / REPORTING
@@ -2168,7 +2304,7 @@
         ></textarea>
       </div>
       <div class="col-md-6">
-        <label class="form-label fw-semibold">Profile Picture</label>
+        <label class="form-label fw-semibold">Hospital Logo</label>
         <input
           type="file"
           name="profile_picture"
@@ -2178,6 +2314,18 @@
         <small class="text-muted d-block mt-1"
           >Max size: 5MB. Formats: JPG, PNG</small
         >
+      </div>
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">Hospital Background</label>
+        <input
+          type="file"
+          name="background_image"
+          class="form-control"
+          accept="image/*"
+        />
+        <small class="text-muted d-block mt-1">
+          Use a wide clean hospital image for the hospital portal background.
+        </small>
       </div>
       <div class="col-12 mt-4">
         <button type="submit" class="hospital-register-btn ui-action">
@@ -2275,6 +2423,7 @@
           <table class="table align-middle mb-0">
             <thead>
               <tr>
+                <th>Branding</th>
                 <th>Name</th>
                 <th>Registration</th>
                 <th>Status</th>
@@ -2285,6 +2434,41 @@
             <tbody>
               {% for hospital in hospitals %}
               <tr>
+                <td>
+                  <div class="d-flex align-items-center">
+                    {% if hospital.user.profile_picture %}
+                      <img src="{{ hospital.user.profile_picture.url }}" alt="Logo" class="rounded-circle me-2" style="width: 32px; height: 32px; object-fit: cover; border: 1px solid #ddd;">
+                    {% else %}
+                      <div class="rounded-circle bg-light d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px; border: 1px solid #ddd;">
+                        <i class="fa-solid fa-hospital text-muted" style="font-size: 0.8rem;"></i>
+                      </div>
+                    {% endif %}
+                    <input
+                      form="hospital-update-{{ hospital.user.id }}"
+                      type="file"
+                      name="profile_picture"
+                      class="form-control form-control-sm"
+                      style="max-width: 120px;"
+                      accept="image/*"
+                    />
+                  </div>
+                  <div class="mt-2">
+                    {% if hospital.background_image %}
+                      <img src="{{ hospital.background_image.url }}" alt="Background" class="rounded me-2" style="width: 72px; height: 40px; object-fit: cover; border: 1px solid #ddd;">
+                    {% else %}
+                      <span class="badge text-bg-light border">No bg</span>
+                    {% endif %}
+                    <input
+                      form="hospital-update-{{ hospital.user.id }}"
+                      type="file"
+                      name="background_image"
+                      class="form-control form-control-sm mt-2"
+                      style="max-width: 170px;"
+                      accept="image/*"
+                    />
+                    <small class="text-muted d-block mt-1">Dashboard background</small>
+                  </div>
+                </td>
                 <td class="fw-semibold">
                   <input
                     form="hospital-update-{{ hospital.user.id }}"
@@ -2374,10 +2558,11 @@
                   </div>
                 </td>
                 <td>
-                  <form
+                    <form
                     id="hospital-update-{{ hospital.user.id }}"
                     method="post"
                     action="{% url 'admin_dashboard' %}"
+                    enctype="multipart/form-data"
                   >
                     {% csrf_token %}
                     <input
@@ -2433,8 +2618,7 @@
      SECTION: PROFILE
 ══════════════════════════════════════════ -->
 <section data-admin-section="profile">
-<!-- Profile Settings Section -->
-<h2 id="admin-profile" class="section-title">Admin Profile & Security</h2>
+<h2 id="admin-profile" class="section-title">Admin Profile</h2>
 <div class="card page-card mb-5">
   <div class="card-body">
     <div class="row">
@@ -2490,6 +2674,15 @@
           <div class="col-12 mt-4 pt-3 border-top">
             <h5 class="fw-bold mb-3"><i class="fa-solid fa-image me-2"></i>Profile Picture</h5>
             <input type="file" name="profile_picture" class="form-control" accept="image/*" />
+          </div>
+
+          <div class="col-12 mt-4 pt-3 border-top">
+            <h5 class="fw-bold mb-3"><i class="fa-solid fa-panorama me-2"></i>Dashboard Background</h5>
+            {% if user.background_image %}
+              <img src="{{ user.background_image.url }}" alt="Current dashboard background" class="rounded mb-3" style="width: 220px; height: 90px; object-fit: cover; border: 1px solid var(--dash-border, #334155);">
+            {% endif %}
+            <input type="file" name="background_image" class="form-control" accept="image/*" />
+            <div class="form-text">Upload a wide professional image for the admin dashboard background.</div>
           </div>
 
           <div class="col-12 mt-4">
@@ -3015,8 +3208,9 @@
     const sectionKeys = new Set([
       "overview", "wallet", "analytics",
       "users", "pending", "hospitals", "donors", "ledger",
-      "certificates", "feedback", "sentiment", "profile",
+      "certificates", "death-cert", "feedback", "sentiment", "profile", "analytics",
     ]);
+
 
     if (adminContent && sectionLinks.length) {
       function showAdminSection(target) {
@@ -3057,7 +3251,13 @@
 
       const initialSection = window.location.hash.replace("#admin-", "");
       showAdminSection(initialSection || "overview");
+
+      window.addEventListener("hashchange", function () {
+        const hashSection = window.location.hash.replace("#admin-", "");
+        showAdminSection(hashSection || "overview");
+      });
     }
+
 
     document.querySelectorAll(".neo-toggle-input:not(:disabled)").forEach((input) => {
       const toggle = input.nextElementSibling;

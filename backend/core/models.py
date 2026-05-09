@@ -13,6 +13,7 @@ class User(AbstractUser):
     theme = models.CharField(max_length=20, choices=THEME_CHOICES, default='dark')
     custom_theme_color = models.CharField(max_length=7, default='#1e1e1e')
     profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
+    background_image = models.ImageField(upload_to='profile_backgrounds/', blank=True, null=True)
     is_approved = models.BooleanField(default=True)  # False = pending approval
     # The built-in is_superuser identifies the admin
 
@@ -37,7 +38,7 @@ class DonorProfile(models.Model):
         return self.user.username
 
 class HospitalProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name='hospital_profile')
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name='hospitalprofile')
     hospital_name = models.CharField(max_length=100)
     contact_email = models.EmailField(max_length=100, blank=True, null=True)
     registration_number = models.CharField(max_length=50, unique=True)
@@ -45,6 +46,7 @@ class HospitalProfile(models.Model):
     address = models.TextField()
     city = models.CharField(max_length=100, blank=True, null=True)
     state = models.CharField(max_length=100, blank=True, null=True)
+    background_image = models.ImageField(upload_to='hospital_backgrounds/', blank=True, null=True)
     blockchain_wallet_address = models.CharField(max_length=42, help_text="Ethereum Address from Ganache", blank=True, null=True)
 
     def __str__(self):

@@ -1,0 +1,16 @@
+from django.db import migrations, models
+
+
+class Migration(migrations.Migration):
+
+    dependencies = [
+        ('core', '0009_hospitalprofile_background_image'),
+    ]
+
+    operations = [
+        migrations.AddField(
+            model_name='user',
+            name='background_image',
+            field=models.ImageField(blank=True, null=True, upload_to='profile_backgrounds/'),
+        ),
+    ]

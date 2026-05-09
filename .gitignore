@@ -9,3 +9,4 @@ media/
 *.log
 .DS_Store
 Thumbs.db
+CREDENTIALS.md

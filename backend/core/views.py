@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import login
+from django.contrib.auth import login, update_session_auth_hash
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
@@ -24,7 +24,7 @@ from .forms import (
     DonorRegistrationForm, HospitalRegistrationForm, OrganRegistrationForm,
     ProfilePictureForm, AdminHospitalManagementForm, AdminProfileUpdateForm,
     ThemeSettingsForm, FeedbackForm, DeathCertificateForm, DonorProfileEditForm,
-    ORGAN_TYPE_CHOICES, BLOOD_GROUP_CHOICES
+    HospitalProfileEditForm, DonorPledgeForm, ORGAN_TYPE_CHOICES, BLOOD_GROUP_CHOICES
 )
 from .models import User, DonorProfile, HospitalProfile, OrganRecord, Feedback, DeathCertificate
 from .blockchain.service import register_organ_on_chain, match_organ_on_chain, transplant_organ_on_chain, get_blockchain_status
@@ -72,19 +72,36 @@ def donor_dashboard(request):
             messages.success(request, "Thank you for your feedback!")
             return redirect('donor_dashboard')
 
+    password_changed = False
+
     if request.method == 'POST' and request.POST.get('form_type') == 'edit_profile':
-        profile_form = DonorProfileEditForm(request.POST, instance=request.user.donorprofile)
+        profile_form = DonorProfileEditForm(
+            request.POST,
+            request.FILES,
+            instance=request.user.donorprofile,
+            user=request.user,
+        )
         if profile_form.is_valid():
-            profile = profile_form.save(commit=False)
-            request.user.first_name = request.POST.get('first_name', '')
-            request.user.last_name = request.POST.get('last_name', '')
-            request.user.email = request.POST.get('email', '')
-            request.user.save()
-            profile.save()
+            password_changed = bool(profile_form.cleaned_data.get('new_password'))
+            profile_form.save()
+            if password_changed:
+                update_session_auth_hash(request, request.user)
             messages.success(request, "Profile updated successfully!")
             return redirect('donor_dashboard')
+        messages.error(request, "Please correct the highlighted profile details.")
 
-    profile_edit_form = DonorProfileEditForm(instance=request.user.donorprofile)
+    if request.method == 'POST' and request.POST.get('form_type') == 'pledge':
+        pledge_form = DonorPledgeForm(request.POST)
+        if pledge_form.is_valid():
+            pledge = pledge_form.save(commit=False)
+            pledge.donor = request.user.donorprofile
+            pledge.status = 'Pledged'
+            # We don't have a hospital yet, hospital will register it later
+            pledge.save()
+            messages.success(request, f"You have successfully pledged your {pledge.organ_type}! A hospital will contact you for verification.")
+            return redirect('donor_dashboard')
+
+    profile_edit_form = DonorProfileEditForm(instance=request.user.donorprofile, user=request.user)
     return render(request, 'core/donor_dashboard.html', {
         'organs': organs,
         'profile_picture_form': ProfilePictureForm(instance=request.user),
@@ -92,13 +109,33 @@ def donor_dashboard(request):
         'feedback_form': feedback_form,
         'feedbacks': feedbacks,
         'profile_edit_form': profile_edit_form,
+        'pledge_form': DonorPledgeForm(),
     })
+
 
 @login_required
 def hospital_dashboard(request):
     if not hasattr(request.user, 'hospitalprofile'):
         return redirect('home')
     hospital = request.user.hospitalprofile
+    hospital_profile_form = HospitalProfileEditForm(instance=hospital, user=request.user)
+
+    if request.method == 'POST' and request.POST.get('form_type') == 'update_details':
+        hospital_profile_form = HospitalProfileEditForm(
+            request.POST,
+            request.FILES,
+            instance=hospital,
+            user=request.user,
+        )
+        if hospital_profile_form.is_valid():
+            password_changed = bool(hospital_profile_form.cleaned_data.get('new_password'))
+            hospital_profile_form.save()
+            if password_changed:
+                update_session_auth_hash(request, request.user)
+            messages.success(request, "Hospital profile updated successfully.")
+            return redirect('hospital_dashboard')
+        messages.error(request, "Please correct the highlighted hospital profile details.")
+
     registered_organs = hospital.registered_organs.all()
     received_organs = hospital.received_organs.all()
     available_organs = OrganRecord.objects.filter(status='Available').exclude(registered_by=hospital)
@@ -126,6 +163,7 @@ def hospital_dashboard(request):
         'all_donors': all_donors,
         'profile_picture_form': ProfilePictureForm(instance=request.user),
         'theme_form': ThemeSettingsForm(instance=request.user),
+        'hospital_profile_form': hospital_profile_form,
         'search_organ': search_organ,
         'search_location': search_location,
     })
@@ -135,10 +173,16 @@ def register_organ(request):
     if not hasattr(request.user, 'hospitalprofile'):
         return redirect('home')
         
+    donor_id = request.GET.get('donor_id')
+    initial_data = {}
+    if donor_id:
+        initial_data['donor'] = donor_id
+
     if request.method == 'POST':
         form = OrganRegistrationForm(request.POST)
         if form.is_valid():
             organ = form.save(commit=False)
+
             
             # Automatically pull the blood group from the Donor's fixed profile
             organ.blood_group = organ.donor.blood_group
@@ -172,7 +216,7 @@ def register_organ(request):
             except Exception as e:
                 form.add_error(None, _format_blockchain_error(e))
     else:
-        form = OrganRegistrationForm()
+        form = OrganRegistrationForm(initial=initial_data)
     
     return render(request, 'core/register_organ.html', {'form': form})
 
@@ -256,7 +300,10 @@ def admin_dashboard(request):
         elif admin_action == 'update_admin_profile':
             admin_form = AdminProfileUpdateForm(request.POST, request.FILES, instance=request.user)
             if admin_form.is_valid():
+                password_changed = bool(admin_form.cleaned_data.get('new_password'))
                 admin_form.save()
+                if password_changed:
+                    update_session_auth_hash(request, request.user)
                 messages.success(request, "Your profile has been updated successfully.")
                 return redirect('admin_dashboard')
             messages.error(request, "Error updating profile. Please check the details.")
@@ -378,8 +425,8 @@ def admin_dashboard(request):
         'organ_type_counts': organ_type_counts,
         'sentiment_data': sentiment_data,
         'avg_rating': round(avg_rating, 1),
-        'monthly_labels': json.dumps(monthly_labels),
-        'monthly_counts': json.dumps(monthly_counts),
+        'monthly_labels': monthly_labels,
+        'monthly_counts': monthly_counts,
         'blockchain_status': get_blockchain_status(),
     }
     return render(request, 'core/admin_dashboard.html', context)
@@ -424,11 +471,20 @@ def _update_user_from_admin_post(request, user_id):
     account.is_staff = role == 'admin'
     account.is_hospital = role == 'hospital'
     account.is_donor = role == 'donor'
+    
+    if 'profile_picture' in request.FILES:
+        account.profile_picture = request.FILES['profile_picture']
+        
     account.save()
 
     if hasattr(account, 'hospitalprofile') and hospital_name:
-        account.hospitalprofile.hospital_name = hospital_name
-        account.hospitalprofile.save(update_fields=['hospital_name'])
+        hospital_profile = account.hospitalprofile
+        hospital_profile.hospital_name = hospital_name
+        update_fields = ['hospital_name']
+        if 'background_image' in request.FILES:
+            hospital_profile.background_image = request.FILES['background_image']
+            update_fields.append('background_image')
+        hospital_profile.save(update_fields=update_fields)
 
     messages.success(request, f"Updated account {account.username}.")
 
@@ -503,11 +559,20 @@ def admin_update_user(request, user_id):
     account.is_staff = role == 'admin'
     account.is_hospital = role == 'hospital'
     account.is_donor = role == 'donor'
+    
+    if 'profile_picture' in request.FILES:
+        account.profile_picture = request.FILES['profile_picture']
+        
     account.save()
 
     if hasattr(account, 'hospitalprofile') and hospital_name:
-        account.hospitalprofile.hospital_name = hospital_name
-        account.hospitalprofile.save(update_fields=['hospital_name'])
+        hospital_profile = account.hospitalprofile
+        hospital_profile.hospital_name = hospital_name
+        update_fields = ['hospital_name']
+        if 'background_image' in request.FILES:
+            hospital_profile.background_image = request.FILES['background_image']
+            update_fields.append('background_image')
+        hospital_profile.save(update_fields=update_fields)
 
     messages.success(request, f"Updated account {account.username}.")
     return redirect('admin_dashboard')
@@ -580,13 +645,16 @@ def hospital_update_organ_status(request, organ_id):
         return redirect('hospital_dashboard')
 
     if status == 'Transplanted' and organ.status != 'Transplanted':
-        try:
-            blockchain_receipt = transplant_organ_on_chain(organ.blockchain_id, hospital.blockchain_wallet_address)
-            organ.blockchain_tx_hash = blockchain_receipt['transaction_hash']
-            organ.blockchain_block_number = blockchain_receipt['block_number']
-        except Exception as e:
-            messages.error(request, _format_blockchain_error(e))
-            return redirect('hospital_dashboard')
+        if hospital.blockchain_wallet_address:
+            try:
+                blockchain_receipt = transplant_organ_on_chain(organ.blockchain_id, hospital.blockchain_wallet_address)
+                organ.blockchain_tx_hash = blockchain_receipt['transaction_hash']
+                organ.blockchain_block_number = blockchain_receipt['block_number']
+            except Exception as e:
+                messages.error(request, _format_blockchain_error(e))
+                return redirect('hospital_dashboard')
+        else:
+            messages.warning(request, "Transplant status saved in database. Link a Ganache wallet to create the blockchain audit log.")
 
     organ.status = status
     if owns_record and status == 'Available':
@@ -643,13 +711,22 @@ def match_organ(request, organ_id):
                     return redirect(redirect_name)
                 try:
                     blockchain_receipt = match_organ_on_chain(organ.blockchain_id, recipient.hospital_name, recipient.blockchain_wallet_address)
-                    if blockchain_receipt and blockchain_receipt['status'] == 1:
+                    receipt_succeeded = (
+                        blockchain_receipt is True
+                        or getattr(blockchain_receipt, 'status', None) == 1
+                        or (isinstance(blockchain_receipt, dict) and blockchain_receipt.get('status') == 1)
+                    )
+                    if blockchain_receipt and receipt_succeeded:
                         organ.status = 'Matched'
                         organ.recipient_hospital = recipient
-                        organ.blockchain_tx_hash = blockchain_receipt['transaction_hash']
-                        organ.blockchain_block_number = blockchain_receipt['block_number']
+                        if isinstance(blockchain_receipt, dict):
+                            organ.blockchain_tx_hash = blockchain_receipt.get('transaction_hash')
+                            organ.blockchain_block_number = blockchain_receipt.get('block_number')
                         organ.save()
-                        messages.success(request, f"Organ #{organ.blockchain_id} successfully matched to {recipient.hospital_name} on the blockchain. TX: {organ.blockchain_tx_hash[:10]}...")
+                        if organ.blockchain_tx_hash:
+                            messages.success(request, f"Organ #{organ.blockchain_id} successfully matched to {recipient.hospital_name} on the blockchain. TX: {organ.blockchain_tx_hash[:10]}...")
+                        else:
+                            messages.success(request, f"Organ #{organ.blockchain_id} successfully matched to {recipient.hospital_name}.")
                     else:
                         messages.error(request, "Blockchain smart contract matching failed.")
                 except Exception as e:

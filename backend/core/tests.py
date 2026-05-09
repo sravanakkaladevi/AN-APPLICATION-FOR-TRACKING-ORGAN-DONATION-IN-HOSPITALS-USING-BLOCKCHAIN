@@ -155,6 +155,226 @@ class ProfilePictureUploadTests(TestCase):
         user.refresh_from_db()
         self.assertTrue(bool(user.profile_picture))
 
+    def test_donor_can_update_profile_and_password_from_dashboard(self):
+        user = User.objects.create_user(username='donor_profile', password='OldPass123', is_donor=True)
+        profile = DonorProfile.objects.create(
+            user=user,
+            blood_group='B+',
+            contact_number='7777777777',
+            address='Old Donor Street',
+        )
+        self.client.force_login(user)
+
+        response = self.client.post(
+            reverse('donor_dashboard'),
+            {
+                'form_type': 'edit_profile',
+                'first_name': 'Demo',
+                'last_name': 'Donor',
+                'email': 'donor@example.com',
+                'blood_group': 'O+',
+                'contact_number': '8888888888',
+                'city': 'Pune',
+                'state': 'Maharashtra',
+                'address': 'New Donor Street',
+                'new_password': 'NewPass123',
+                'confirm_password': 'NewPass123',
+            },
+        )
+
+        self.assertRedirects(response, reverse('donor_dashboard'))
+        user.refresh_from_db()
+        profile.refresh_from_db()
+        self.assertEqual(user.first_name, 'Demo')
+        self.assertEqual(user.email, 'donor@example.com')
+        self.assertTrue(user.check_password('NewPass123'))
+        self.assertEqual(profile.blood_group, 'O+')
+        self.assertEqual(profile.city, 'Pune')
+
+    def test_donor_profile_dashboard_renders(self):
+        user = User.objects.create_user(username='render_donor', password='Admin123', is_donor=True)
+        DonorProfile.objects.create(
+            user=user,
+            blood_group='A+',
+            contact_number='7777777777',
+            address='Donor Street',
+        )
+        self.client.force_login(user)
+
+        response = self.client.get(reverse('donor_dashboard') + '#donor-profile')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Save Profile & Password')
+
+    def test_hospital_can_update_profile_logo_fields_and_password_from_dashboard(self):
+        user = User.objects.create_user(
+            username='old_hospital_login',
+            password='OldPass123',
+            email='old@example.com',
+            is_hospital=True,
+        )
+        hospital = HospitalProfile.objects.create(
+            user=user,
+            hospital_name='Old Hospital',
+            registration_number='HOSP-PROF-001',
+            contact_number='1111111111',
+            address='Old Hospital Address',
+        )
+        self.client.force_login(user)
+
+        response = self.client.post(
+            reverse('hospital_dashboard'),
+            {
+                'form_type': 'update_details',
+                'username': 'new_hospital_login',
+                'email': 'new@example.com',
+                'hospital_name': 'New Hospital',
+                'contact_email': 'contact@newhospital.example',
+                'contact_number': '2222222222',
+                'city': 'Mumbai',
+                'state': 'Maharashtra',
+                'address': 'New Hospital Address',
+                'new_password': 'NewPass123',
+                'confirm_password': 'NewPass123',
+            },
+        )
+
+        self.assertRedirects(response, reverse('hospital_dashboard'))
+        user.refresh_from_db()
+        hospital.refresh_from_db()
+        self.assertEqual(user.username, 'new_hospital_login')
+        self.assertEqual(user.email, 'new@example.com')
+        self.assertTrue(user.check_password('NewPass123'))
+        self.assertEqual(hospital.hospital_name, 'New Hospital')
+        self.assertEqual(hospital.contact_email, 'contact@newhospital.example')
+        self.assertEqual(hospital.city, 'Mumbai')
+
+    def test_hospital_profile_dashboard_renders(self):
+        user = User.objects.create_user(username='render_hospital', password='Admin123', is_hospital=True)
+        HospitalProfile.objects.create(
+            user=user,
+            hospital_name='Render Hospital',
+            registration_number='HOSP-RENDER-001',
+            contact_number='1111111111',
+            address='Render Hospital Address',
+        )
+        self.client.force_login(user)
+
+        response = self.client.get(reverse('hospital_dashboard') + '#hosp-profile')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Save Profile, Logo & Password')
+
+    def test_admin_can_upload_hospital_background(self):
+        admin = User.objects.create_superuser(username='bg_admin', password='Admin123', email='admin@example.com')
+        hospital_user = User.objects.create_user(username='bg_hospital', password='Admin123', is_hospital=True)
+        hospital = HospitalProfile.objects.create(
+            user=hospital_user,
+            hospital_name='Background Hospital',
+            registration_number='BG-001',
+            contact_number='1111111111',
+            address='Background Address',
+        )
+        self.client.force_login(admin)
+        background = SimpleUploadedFile(
+            'hospital-bg.gif',
+            b'GIF87a\x01\x00\x01\x00\x80\x00\x00\x00\x00\x00\xff\xff\xff!\xf9\x04\x01\x00\x00\x00\x00,\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;',
+            content_type='image/gif',
+        )
+
+        response = self.client.post(
+            reverse('admin_dashboard'),
+            {
+                'admin_action': 'update_user',
+                'user_id': hospital_user.pk,
+                'username': hospital_user.username,
+                'email': hospital_user.email,
+                'first_name': '',
+                'last_name': '',
+                'hospital_name': 'Background Hospital',
+                'role': 'hospital',
+                'status': 'active',
+                'background_image': background,
+            },
+        )
+
+        self.assertRedirects(response, reverse('admin_dashboard'))
+        hospital.refresh_from_db()
+        self.assertTrue(bool(hospital.background_image))
+
+    def test_admin_can_update_own_dashboard_background(self):
+        admin = User.objects.create_superuser(
+            username='admin_background',
+            password='Admin123',
+            email='admin@example.com',
+            first_name='Admin',
+            last_name='User',
+        )
+        self.client.force_login(admin)
+        background = SimpleUploadedFile(
+            'admin-bg.gif',
+            b'GIF87a\x01\x00\x01\x00\x80\x00\x00\x00\x00\x00\xff\xff\xff!\xf9\x04\x01\x00\x00\x00\x00,\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;',
+            content_type='image/gif',
+        )
+
+        response = self.client.post(
+            reverse('admin_dashboard'),
+            {
+                'admin_action': 'update_admin_profile',
+                'username': admin.username,
+                'email': admin.email,
+                'first_name': admin.first_name,
+                'last_name': admin.last_name,
+                'background_image': background,
+            },
+        )
+
+        self.assertRedirects(response, reverse('admin_dashboard'))
+        admin.refresh_from_db()
+        self.assertTrue(bool(admin.background_image))
+
+    def test_admin_dashboard_background_renders(self):
+        admin = User.objects.create_superuser(username='admin_bg_render', password='Admin123', email='admin@example.com')
+        admin.background_image.save(
+            'admin-render-bg.gif',
+            SimpleUploadedFile(
+                'admin-render-bg.gif',
+                b'GIF87a\x01\x00\x01\x00\x80\x00\x00\x00\x00\x00\xff\xff\xff!\xf9\x04\x01\x00\x00\x00\x00,\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;',
+                content_type='image/gif',
+            ),
+        )
+        self.client.force_login(admin)
+
+        response = self.client.get(reverse('admin_dashboard') + '#admin-profile')
+
+        self.assertContains(response, 'admin-bg-shell has-image')
+        self.assertContains(response, 'Dashboard Background')
+
+    def test_hospital_background_renders_on_home_and_dashboard(self):
+        user = User.objects.create_user(username='bg_render_hospital', password='Admin123', is_hospital=True)
+        hospital = HospitalProfile.objects.create(
+            user=user,
+            hospital_name='Render Background Hospital',
+            registration_number='BG-RENDER-001',
+            contact_number='1111111111',
+            address='Background Address',
+        )
+        hospital.background_image.save(
+            'render-bg.gif',
+            SimpleUploadedFile(
+                'render-bg.gif',
+                b'GIF87a\x01\x00\x01\x00\x80\x00\x00\x00\x00\x00\xff\xff\xff!\xf9\x04\x01\x00\x00\x00\x00,\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;',
+                content_type='image/gif',
+            ),
+        )
+        self.client.force_login(user)
+
+        home_response = self.client.get(reverse('home'))
+        dashboard_response = self.client.get(reverse('hospital_dashboard'))
+
+        self.assertContains(home_response, 'hospital-home-bg')
+        self.assertContains(dashboard_response, 'hospital-bg-shell has-image')
+
 
 class AdminHospitalManagementTests(TestCase):
     def setUp(self):

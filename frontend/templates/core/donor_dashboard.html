@@ -51,7 +51,9 @@
   .sentiment-positive { background: #d1fae5; color: #065f46; }
   .sentiment-negative { background: #fee2e2; color: #7f1d1d; }
   .sentiment-neutral { background: #e0f2fe; color: #0c4a6e; }
+  .donor-section-hidden { display: none !important; }
 </style>
+
 {% endblock %}
 
 {% block content %}
@@ -79,25 +81,26 @@
     </div>
 
     <nav class="role-sidebar-nav">
-      <a class="role-nav-link active" href="#donor-overview" id="nav-overview">
+      <a class="role-nav-link active" href="#donor-overview" data-donor-target="donor-overview">
         <i class="fa-solid fa-gauge-high"></i><span>Dashboard</span>
       </a>
-      <a class="role-nav-link" href="#donor-donate" id="nav-donate">
+      <a class="role-nav-link" href="#donor-donate" data-donor-target="donor-donate">
         <i class="fa-solid fa-heart-pulse"></i><span>Donate Organ</span>
       </a>
-      <a class="role-nav-link" href="#donor-status" id="nav-status">
+      <a class="role-nav-link" href="#donor-status" data-donor-target="donor-status">
         <i class="fa-solid fa-chart-line"></i><span>My Status</span>
       </a>
-      <a class="role-nav-link" href="#donor-profile" id="nav-profile">
+      <a class="role-nav-link" href="#donor-profile" data-donor-target="donor-profile">
         <i class="fa-solid fa-user-pen"></i><span>My Profile</span>
       </a>
-      <a class="role-nav-link" href="#donor-feedback" id="nav-feedback">
+      <a class="role-nav-link" href="#donor-feedback" data-donor-target="donor-feedback">
         <i class="fa-solid fa-comments"></i><span>Feedback</span>
       </a>
       <a class="role-nav-link" href="{% url 'logout' %}">
         <i class="fa-solid fa-right-from-bracket"></i><span>Logout</span>
       </a>
     </nav>
+
 
     <form action="{% url 'update_theme' %}" method="post" class="theme-panel">
       {% csrf_token %}
@@ -120,7 +123,13 @@
     </form>
 
     <div class="role-sidebar-user">
-      <span class="role-user-avatar">{{ request.user.username|first|upper }}</span>
+      <span class="role-user-avatar">
+        {% if user.profile_picture %}
+          <img src="{{ user.profile_picture.url }}" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;">
+        {% else %}
+          {{ request.user.username|first|upper }}
+        {% endif %}
+      </span>
       <span class="role-user-meta">
         <strong>{{ request.user.get_full_name|default:request.user.username }}</strong>
         <small>{{ request.user.email|default:"Donor account" }}</small>
@@ -128,9 +137,10 @@
     </div>
   </aside>
 
-  <div class="role-content">
-    <!-- ── SECTION: Dashboard Overview ── -->
-    <section id="donor-overview">
+  <div class="role-content" id="donor-content">
+    <!-- ── Overview Section ── -->
+    <section id="donor-overview" data-donor-section="donor-overview">
+
       <div class="donor-hero">
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
           <div>
@@ -173,64 +183,85 @@
       </div>
     </section>
 
-    <!-- ── SECTION: Donate Organ ── -->
-    <section id="donor-donate" class="card page-card mb-4">
+    {% if messages %}
+    <div class="alert alert-info border-0 shadow-sm mb-4">
+      {% for msg in messages %}<div class="d-flex align-items-center gap-2"><i class="fa-solid fa-circle-info"></i>{{ msg }}</div>{% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- ── Donate Organ Section ── -->
+    <section id="donor-donate" data-donor-section="donor-donate" class="card page-card mb-4 donor-section-hidden">
+
       <div class="card-body">
-        <div class="section-header"><i class="fa-solid fa-heart-pulse text-danger"></i>Donate Organ</div>
-        <p class="text-muted mb-3">Organ donation is registered by hospitals. Contact a registered hospital to process your donation officially through the blockchain network.</p>
-        <div class="row g-3">
-          <div class="col-md-6">
-            <div class="p-3 border rounded-3" style="background: linear-gradient(135deg, rgba(124,58,237,0.05), rgba(37,99,235,0.05));">
-              <h5 class="fw-bold mb-2"><i class="fa-solid fa-dna me-2 text-primary"></i>Your Registered Organs</h5>
-              <div class="table-responsive">
-                <table class="table table-sm align-middle mb-0">
-                  <thead>
-                    <tr>
-                      <th>Organ</th>
-                      <th>Blood Group</th>
-                      <th>Status</th>
-                      <th>Chain ID</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for organ in organs %}
-                    <tr data-status="{{ organ.status }}">
-                      <td class="fw-semibold">{{ organ.organ_type }}</td>
-                      <td>{{ organ.blood_group }}</td>
-                      <td>
-                        {% if organ.status == 'Available' %}<span class="badge text-bg-success">{{ organ.status }}</span>
-                        {% elif organ.status == 'Matched' %}<span class="badge text-bg-warning">{{ organ.status }}</span>
-                        {% elif organ.status == 'Transplanted' %}<span class="badge text-bg-info">{{ organ.status }}</span>
-                        {% else %}<span class="badge text-bg-secondary">{{ organ.status }}</span>{% endif %}
-                      </td>
-                      <td><code>#{{ organ.blockchain_id }}</code></td>
-                    </tr>
-                    {% empty %}
-                    <tr><td colspan="4" class="text-center text-muted py-3">No organs registered yet.</td></tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
-              </div>
+        <div class="section-header"><i class="fa-solid fa-heart-pulse text-danger"></i>Donate Organ / Pledge</div>
+        <p class="text-muted mb-3">You can pledge an organ for donation. A registered hospital will then verify and officially register it on the blockchain.</p>
+        
+        <div class="row g-4">
+          <!-- Pledge Form -->
+          <div class="col-md-5">
+            <div class="p-4 rounded-4 border" style="background: rgba(124, 58, 237, 0.03);">
+              <h5 class="fw-bold mb-3">Pledge a New Organ</h5>
+              <form method="post" action="{% url 'donor_dashboard' %}">
+                {% csrf_token %}
+                <input type="hidden" name="form_type" value="pledge">
+                <div class="mb-3">
+                  <label class="form-label fw-semibold small">SELECT ORGAN TYPE</label>
+                  {{ pledge_form.organ_type }}
+                  <div class="form-text">Choose the organ you wish to pledge for donation.</div>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 ui-action">
+                  <i class="fa-solid fa-hand-holding-heart me-1"></i>Pledge Organ Now
+                </button>
+              </form>
             </div>
           </div>
-          <div class="col-md-6">
-            <div class="p-3 border rounded-3">
-              <h5 class="fw-bold mb-3"><i class="fa-solid fa-circle-info me-2 text-info"></i>Donation Information</h5>
-              <ul class="list-unstyled mb-0">
-                <li class="mb-2"><i class="fa-solid fa-check text-success me-2"></i>Organs you donate save lives</li>
-                <li class="mb-2"><i class="fa-solid fa-check text-success me-2"></i>All records are stored on blockchain</li>
-                <li class="mb-2"><i class="fa-solid fa-check text-success me-2"></i>Your blood group: <strong>{{ user.donorprofile.blood_group }}</strong></li>
-                <li class="mb-2"><i class="fa-solid fa-check text-success me-2"></i>Organs: Kidney, Liver, Heart, Lung, Cornea & more</li>
-                <li><i class="fa-solid fa-check text-success me-2"></i>Contact a registered hospital to initiate</li>
-              </ul>
+
+          <!-- Registered Organs List -->
+          <div class="col-md-7">
+            <h5 class="fw-bold mb-3">Your Donation Records</h5>
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th>Organ</th>
+                    <th>Status</th>
+                    <th>Chain ID</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for organ in organs %}
+                  <tr>
+                    <td class="fw-semibold">{{ organ.organ_type }}</td>
+                    <td>
+                      {% if organ.status == 'Available' %}<span class="badge text-bg-success">Available</span>
+                      {% elif organ.status == 'Pledged' %}<span class="badge text-bg-warning">Pledged</span>
+                      {% elif organ.status == 'Matched' %}<span class="badge text-bg-primary">Matched</span>
+                      {% elif organ.status == 'Transplanted' %}<span class="badge text-bg-info">Transplanted</span>
+                      {% else %}<span class="badge text-bg-secondary">{{ organ.status }}</span>{% endif %}
+                    </td>
+                    <td>
+                      {% if organ.blockchain_id %}
+                        <code class="text-primary">#{{ organ.blockchain_id }}</code>
+                      {% else %}
+                        <span class="text-muted small">Awaiting Registration</span>
+                      {% endif %}
+                    </td>
+                  </tr>
+                  {% empty %}
+                  <tr><td colspan="3" class="text-center text-muted py-4">No organs pledged or registered yet.</td></tr>
+                  {% endfor %}
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ── SECTION: My Status ── -->
-    <section id="donor-status" class="card page-card mb-4">
+
+    <!-- ── My Status Section ── -->
+    <section id="donor-status" data-donor-section="donor-status" class="card page-card mb-4 donor-section-hidden">
+
       <div class="card-body">
         <div class="section-header"><i class="fa-solid fa-chart-line text-primary"></i>My Donation Status</div>
         {% if organs %}
@@ -279,8 +310,9 @@
       </div>
     </section>
 
-    <!-- ── SECTION: My Profile ── -->
-    <section id="donor-profile" class="card page-card mb-4">
+    <!-- ── My Profile Section ── -->
+    <section id="donor-profile" data-donor-section="donor-profile" class="card page-card mb-4 donor-section-hidden">
+
       <div class="card-body">
         <div class="section-header"><i class="fa-solid fa-user-pen text-primary"></i>My Profile</div>
         <div class="row g-4">
@@ -312,29 +344,34 @@
           <!-- Edit Profile -->
           <div class="col-md-7">
             <h6 class="fw-bold mb-3">Edit Profile</h6>
-            <form method="post" action="{% url 'donor_dashboard' %}">
+            <form method="post" action="{% url 'donor_dashboard' %}" enctype="multipart/form-data">
               {% csrf_token %}
               <input type="hidden" name="form_type" value="edit_profile">
+              {% if profile_edit_form.errors %}
+                <div class="alert alert-danger">
+                  Please check the profile form. Passwords must match before the password is changed.
+                </div>
+              {% endif %}
               <div class="row g-3">
                 <div class="col-md-6">
                   <label class="form-label small">First Name</label>
-                  <input type="text" name="first_name" value="{{ user.first_name }}" class="form-control">
+                  <input type="text" name="first_name" value="{{ profile_edit_form.first_name.value|default:user.first_name }}" class="form-control">
                 </div>
                 <div class="col-md-6">
                   <label class="form-label small">Last Name</label>
-                  <input type="text" name="last_name" value="{{ user.last_name }}" class="form-control">
+                  <input type="text" name="last_name" value="{{ profile_edit_form.last_name.value|default:user.last_name }}" class="form-control">
                 </div>
                 <div class="col-md-6">
                   <label class="form-label small">Email</label>
-                  <input type="email" name="email" value="{{ user.email }}" class="form-control">
+                  <input type="email" name="email" value="{{ profile_edit_form.email.value|default:user.email }}" class="form-control">
                 </div>
                 <div class="col-md-6">
                   <label class="form-label small">Contact Number</label>
-                  <input type="text" name="contact_number" value="{{ user.donorprofile.contact_number }}" class="form-control" form="profile-edit-form">
+                  <input type="text" name="contact_number" value="{{ profile_edit_form.contact_number.value|default:user.donorprofile.contact_number }}" class="form-control" required>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label small">Blood Group</label>
-                  <select name="blood_group" class="form-select" form="profile-edit-form">
+                  <select name="blood_group" class="form-select">
                     {% for val, label in profile_edit_form.fields.blood_group.choices %}
                       <option value="{{ val }}" {% if user.donorprofile.blood_group == val %}selected{% endif %}>{{ label }}</option>
                     {% endfor %}
@@ -342,28 +379,34 @@
                 </div>
                 <div class="col-md-6">
                   <label class="form-label small">City</label>
-                  <input type="text" name="city" value="{{ user.donorprofile.city|default:'' }}" class="form-control" form="profile-edit-form">
+                  <input type="text" name="city" value="{{ profile_edit_form.city.value|default:user.donorprofile.city }}" class="form-control">
                 </div>
                 <div class="col-md-6">
                   <label class="form-label small">State</label>
-                  <input type="text" name="state" value="{{ user.donorprofile.state|default:'' }}" class="form-control" form="profile-edit-form">
+                  <input type="text" name="state" value="{{ profile_edit_form.state.value|default:user.donorprofile.state }}" class="form-control">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label small">Profile Picture</label>
+                  <input type="file" name="profile_picture" class="form-control" accept="image/*">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label small">New Password</label>
+                  <input type="password" name="new_password" class="form-control" autocomplete="new-password" placeholder="Leave blank to keep current">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label small">Confirm New Password</label>
+                  <input type="password" name="confirm_password" class="form-control" autocomplete="new-password">
                 </div>
                 <div class="col-12">
                   <label class="form-label small">Address</label>
-                  <textarea name="address" class="form-control" rows="2" form="profile-edit-form">{{ user.donorprofile.address }}</textarea>
+                  <textarea name="address" class="form-control" rows="2" required>{{ profile_edit_form.address.value|default:user.donorprofile.address }}</textarea>
                 </div>
                 <div class="col-12">
                   <button type="submit" class="btn btn-primary ui-action">
-                    <i class="fa-solid fa-save me-1"></i>Save Changes
+                    <i class="fa-solid fa-save me-1"></i>Save Profile & Password
                   </button>
                 </div>
               </div>
-            </form>
-
-            <!-- Hidden form for profile fields -->
-            <form id="profile-edit-form" method="post" action="{% url 'donor_dashboard' %}">
-              {% csrf_token %}
-              <input type="hidden" name="form_type" value="edit_profile">
             </form>
 
             <!-- Profile Picture Upload -->
@@ -454,25 +497,63 @@
 
 {% block extra_js %}
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-  const rows = document.querySelectorAll("tr[data-status]");
-  let available = 0, matched = 0, transplanted = 0;
-  rows.forEach(row => {
-    if (row.dataset.status === "Available") available++;
-    if (row.dataset.status === "Matched") matched++;
-    if (row.dataset.status === "Transplanted") transplanted++;
-  });
-  document.getElementById("availableCount").textContent = available;
-  document.getElementById("matchedCount").textContent = matched;
-  document.getElementById("transplantedCount").textContent = transplanted;
+  document.addEventListener("DOMContentLoaded", function () {
+    const donorContent = document.getElementById("donor-content");
+    const sectionLinks = document.querySelectorAll("[data-donor-target]");
+    const sectionKeys = new Set([
+      "donor-overview", "donor-donate", "donor-status", "donor-profile", "donor-feedback"
+    ]);
 
-  // Smooth scroll for sidebar links
-  document.querySelectorAll('.donor-scroll-link, .role-nav-link[href^="#"]').forEach(link => {
-    link.addEventListener('click', e => {
-      const target = document.querySelector(link.getAttribute('href'));
-      if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth' }); }
+    function showDonorSection(target) {
+      const nextTarget = sectionKeys.has(target) ? target : "donor-overview";
+
+      Array.from(donorContent.children).forEach((child) => {
+        if (child.dataset && child.dataset.donorSection) {
+          child.classList.toggle(
+            "donor-section-hidden",
+            child.dataset.hospSection !== nextTarget && child.dataset.donorSection !== nextTarget
+          );
+        }
+      });
+
+      sectionLinks.forEach((link) => {
+        const isActive = link.dataset.donorTarget === nextTarget;
+        link.classList.toggle("active", isActive);
+      });
+
+      if (window.location.hash !== `#${nextTarget}`) {
+        history.replaceState(null, "", `#${nextTarget}`);
+      }
+    }
+
+    if (donorContent && sectionLinks.length) {
+      sectionLinks.forEach((link) => {
+        link.addEventListener("click", function (event) {
+          event.preventDefault();
+          showDonorSection(this.dataset.donorTarget);
+        });
+      });
+
+      const initialSection = window.location.hash.replace("#", "");
+      showDonorSection(initialSection || "donor-overview");
+
+      window.addEventListener("hashchange", function () {
+        const hashSection = window.location.hash.replace("#", "");
+        showDonorSection(hashSection || "overview");
+      });
+    }
+
+    // Status Counters
+    const rows = document.querySelectorAll("tr[data-status]");
+    let available = 0, matched = 0, transplanted = 0;
+    rows.forEach(row => {
+      if (row.dataset.status === "Available") available++;
+      if (row.dataset.status === "Matched") matched++;
+      if (row.dataset.status === "Transplanted") transplanted++;
     });
+    if(document.getElementById("availableCount")) document.getElementById("availableCount").textContent = available;
+    if(document.getElementById("matchedCount")) document.getElementById("matchedCount").textContent = matched;
+    if(document.getElementById("transplantedCount")) document.getElementById("transplantedCount").textContent = transplanted;
   });
-});
 </script>
 {% endblock %}
