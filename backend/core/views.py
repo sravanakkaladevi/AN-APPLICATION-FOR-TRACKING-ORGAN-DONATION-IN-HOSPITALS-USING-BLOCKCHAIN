@@ -24,9 +24,10 @@ from .forms import (
     DonorRegistrationForm, HospitalRegistrationForm, OrganRegistrationForm,
     ProfilePictureForm, AdminHospitalManagementForm, AdminProfileUpdateForm,
     ThemeSettingsForm, FeedbackForm, DeathCertificateForm, DonorProfileEditForm,
-    HospitalProfileEditForm, DonorPledgeForm, ORGAN_TYPE_CHOICES, BLOOD_GROUP_CHOICES
+    HospitalProfileEditForm, DonorPledgeForm, ORGAN_TYPE_CHOICES, BLOOD_GROUP_CHOICES,
+    RecipientForm
 )
-from .models import User, DonorProfile, HospitalProfile, OrganRecord, Feedback, DeathCertificate
+from .models import User, DonorProfile, HospitalProfile, OrganRecord, Feedback, DeathCertificate, Recipient, BlockchainTransaction, Transplant, AuditLog
 from .blockchain.service import register_organ_on_chain, match_organ_on_chain, transplant_organ_on_chain, get_blockchain_status
 
 def home(request):
@@ -101,6 +102,8 @@ def donor_dashboard(request):
             messages.success(request, f"You have successfully pledged your {pledge.organ_type}! A hospital will contact you for verification.")
             return redirect('donor_dashboard')
 
+    blockchain_transactions = BlockchainTransaction.objects.filter(donor=request.user.donorprofile).order_by('-timestamp')
+
     profile_edit_form = DonorProfileEditForm(instance=request.user.donorprofile, user=request.user)
     return render(request, 'core/donor_dashboard.html', {
         'organs': organs,
@@ -108,6 +111,7 @@ def donor_dashboard(request):
         'theme_form': ThemeSettingsForm(instance=request.user),
         'feedback_form': feedback_form,
         'feedbacks': feedbacks,
+        'blockchain_transactions': blockchain_transactions,
         'profile_edit_form': profile_edit_form,
         'pledge_form': DonorPledgeForm(),
     })
@@ -143,6 +147,18 @@ def hospital_dashboard(request):
     # All donors registered in the system
     all_donors = DonorProfile.objects.select_related('user').all()
 
+    recipients = hospital.recipients.all()
+    recipient_form = RecipientForm()
+
+    if request.method == 'POST' and request.POST.get('form_type') == 'add_recipient':
+        recipient_form = RecipientForm(request.POST)
+        if recipient_form.is_valid():
+            recipient = recipient_form.save(commit=False)
+            recipient.hospital = hospital
+            recipient.save()
+            messages.success(request, "Recipient added successfully.")
+            return redirect('hospital_dashboard')
+
     # Search functionality
     search_organ = request.GET.get('search_organ', '').strip()
     search_location = request.GET.get('search_location', '').strip()
@@ -156,11 +172,18 @@ def hospital_dashboard(request):
             registered_by__state__icontains=search_location
         )
 
+    transplants = hospital.transplants_managed.all().order_by('-created_at')
+    blockchain_transactions = BlockchainTransaction.objects.filter(hospital=hospital).order_by('-timestamp')
+
     return render(request, 'core/hospital_dashboard.html', {
         'registered_organs': registered_organs,
         'received_organs': received_organs,
         'available_organs': available_organs,
         'all_donors': all_donors,
+        'recipients': recipients,
+        'transplants': transplants,
+        'blockchain_transactions': blockchain_transactions,
+        'recipient_form': recipient_form,
         'profile_picture_form': ProfilePictureForm(instance=request.user),
         'theme_form': ThemeSettingsForm(instance=request.user),
         'hospital_profile_form': hospital_profile_form,
@@ -346,6 +369,11 @@ def admin_dashboard(request):
     pending_users = User.objects.filter(is_approved=False).order_by('date_joined')
     feedbacks = Feedback.objects.select_related('user').all().order_by('-submitted_at')
     certificates = DeathCertificate.objects.select_related('donor', 'issued_by').all().order_by('-issued_at')
+    
+    transplants = Transplant.objects.all().order_by('-created_at')
+    recipients = Recipient.objects.select_related('hospital').all().order_by('-created_at')
+    audit_logs = AuditLog.objects.all().order_by('-timestamp')[:50]
+    blockchain_txs = BlockchainTransaction.objects.all().order_by('-timestamp')
 
     donors_count = DonorProfile.objects.count()
     hospitals_count = hospitals.count()
@@ -355,6 +383,8 @@ def admin_dashboard(request):
     available_count = organs.filter(status='Available').count()
     admins_count = users.filter(is_superuser=True).count()
     other_users_count = plain_users.count()
+    blockchain_tx_count = blockchain_txs.count()
+    recipients_count = Recipient.objects.count()
     organ_type_counts = list(
         organs.values('organ_type')
         .annotate(total=Count('id'))
@@ -394,6 +424,10 @@ def admin_dashboard(request):
         'pending_users': pending_users,
         'feedbacks': feedbacks,
         'certificates': certificates,
+        'transplants': transplants,
+        'recipients': recipients,
+        'audit_logs': audit_logs,
+        'blockchain_txs': blockchain_txs,
         'profile_picture_form': ProfilePictureForm(instance=request.user),
         'theme_form': ThemeSettingsForm(instance=request.user),
         'hospital_management_form': hospital_form,
@@ -401,6 +435,7 @@ def admin_dashboard(request):
         'cert_form': cert_form,
         'stats': {
             'donors': donors_count,
+            'recipients': recipients_count,
             'hospitals': hospitals_count,
             'admins': admins_count,
             'other_users': other_users_count,
@@ -410,6 +445,7 @@ def admin_dashboard(request):
             'available': available_count,
             'pending': pending_users.count(),
             'feedbacks': feedbacks.count(),
+            'blockchain_txs': blockchain_tx_count,
         },
         'chart_data': {
             'available': available_count,
@@ -420,7 +456,7 @@ def admin_dashboard(request):
             {'label': 'Admins', 'total': admins_count},
             {'label': 'Donors', 'total': donors_count},
             {'label': 'Hospitals', 'total': hospitals_count},
-            {'label': 'Other Users', 'total': other_users_count},
+            {'label': 'Recipients', 'total': recipients_count},
         ],
         'organ_type_counts': organ_type_counts,
         'sentiment_data': sentiment_data,

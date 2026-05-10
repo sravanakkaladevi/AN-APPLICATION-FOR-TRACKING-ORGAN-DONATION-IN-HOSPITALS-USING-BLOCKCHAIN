@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from .models import User, DonorProfile, HospitalProfile, OrganRecord, Feedback, DeathCertificate
+from .models import User, DonorProfile, HospitalProfile, OrganRecord, Feedback, DeathCertificate, Recipient
 
 BLOOD_GROUP_CHOICES = [
     ('A+', 'A+ (Positive)'),
@@ -32,6 +32,10 @@ ORGAN_TYPE_CHOICES = [
 ]
 
 class DonorRegistrationForm(UserCreationForm):
+    first_name = forms.CharField(max_length=150, required=True)
+    last_name = forms.CharField(max_length=150, required=True)
+    age = forms.IntegerField(required=True)
+    medical_history = forms.CharField(widget=forms.Textarea, required=False)
     blood_group = forms.ChoiceField(choices=BLOOD_GROUP_CHOICES)
     gender = forms.ChoiceField(choices=GENDER_CHOICES)
     contact_number = forms.CharField(max_length=15)
@@ -52,11 +56,15 @@ class DonorRegistrationForm(UserCreationForm):
     def save(self, commit=True):
         user = super().save(commit=False)
         user.is_donor = True
+        user.first_name = self.cleaned_data.get('first_name')
+        user.last_name = self.cleaned_data.get('last_name')
         user.profile_picture = self.cleaned_data.get('profile_picture')
         if commit:
             user.save()
             DonorProfile.objects.create(
                 user=user,
+                age=self.cleaned_data.get('age'),
+                medical_history=self.cleaned_data.get('medical_history'),
                 blood_group=self.cleaned_data.get('blood_group'),
                 gender=self.cleaned_data.get('gender'),
                 contact_number=self.cleaned_data.get('contact_number'),
@@ -179,6 +187,8 @@ class AdminProfileUpdateForm(forms.ModelForm):
     background_image = forms.ImageField(required=False, label="Dashboard Background")
     new_password = forms.CharField(widget=forms.PasswordInput, required=False, label="New Password")
     confirm_password = forms.CharField(widget=forms.PasswordInput, required=False, label="Confirm New Password")
+    remove_profile_picture = forms.BooleanField(required=False, label="Remove Profile Picture")
+    remove_background_image = forms.BooleanField(required=False, label="Remove Dashboard Background")
 
     class Meta:
         model = User
@@ -199,6 +209,13 @@ class AdminProfileUpdateForm(forms.ModelForm):
         new_password = self.cleaned_data.get('new_password')
         if new_password:
             user.set_password(new_password)
+
+        if self.cleaned_data.get('remove_profile_picture'):
+            user.profile_picture = None
+            
+        if self.cleaned_data.get('remove_background_image'):
+            user.background_image = None
+
         if commit:
             user.save()
         return user
@@ -240,7 +257,7 @@ class DonorProfileEditForm(forms.ModelForm):
 
     class Meta:
         model = DonorProfile
-        fields = ['blood_group', 'contact_number', 'address', 'city', 'state']
+        fields = ['blood_group', 'contact_number', 'address', 'city', 'state', 'age', 'medical_history', 'availability_status']
         widgets = {
             'blood_group': forms.Select(choices=BLOOD_GROUP_CHOICES),
             'address': forms.Textarea(attrs={'rows': 3}),
@@ -343,4 +360,15 @@ class DonorPledgeForm(forms.ModelForm):
         fields = ['organ_type']
         widgets = {
             'organ_type': forms.Select(choices=ORGAN_TYPE_CHOICES),
+        }
+
+class RecipientForm(forms.ModelForm):
+    class Meta:
+        model = Recipient
+        fields = ['full_name', 'age', 'gender', 'blood_group', 'organ_needed', 'doctor_assigned', 'emergency_priority', 'medical_notes']
+        widgets = {
+            'gender': forms.Select(choices=GENDER_CHOICES),
+            'blood_group': forms.Select(choices=BLOOD_GROUP_CHOICES),
+            'organ_needed': forms.Select(choices=ORGAN_TYPE_CHOICES),
+            'medical_notes': forms.Textarea(attrs={'rows': 3}),
         }

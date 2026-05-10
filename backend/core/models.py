@@ -31,6 +31,9 @@ class DonorProfile(models.Model):
     city = models.CharField(max_length=100, blank=True, null=True)
     state = models.CharField(max_length=100, blank=True, null=True)
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES, blank=True, null=True)
+    age = models.IntegerField(blank=True, null=True)
+    medical_history = models.TextField(blank=True, null=True)
+    availability_status = models.CharField(max_length=50, default='Available')
     blockchain_hash = models.CharField(max_length=255, blank=True, null=True)
     is_deceased = models.BooleanField(default=False)
 
@@ -97,3 +100,66 @@ class Feedback(models.Model):
 
     def __str__(self):
         return f"Feedback by {self.user.username} - {self.subject}"
+
+class Recipient(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
+    full_name = models.CharField(max_length=150)
+    age = models.IntegerField()
+    gender = models.CharField(max_length=10, choices=[('male', 'Male'), ('female', 'Female'), ('other', 'Other')])
+    blood_group = models.CharField(max_length=5)
+    organ_needed = models.CharField(max_length=50)
+    hospital = models.ForeignKey(HospitalProfile, on_delete=models.CASCADE, related_name="recipients")
+    doctor_assigned = models.CharField(max_length=100)
+    emergency_priority = models.CharField(max_length=20, choices=[('High', 'High'), ('Medium', 'Medium'), ('Low', 'Low')], default='Medium')
+    medical_notes = models.TextField(blank=True, null=True)
+    status_choices = [
+        ('Requested', 'Requested'),
+        ('Matched', 'Matched'),
+        ('Approved', 'Approved'),
+        ('Organ Transported', 'Organ Transported'),
+        ('Transplant Completed', 'Transplant Completed')
+    ]
+    status = models.CharField(max_length=30, choices=status_choices, default='Requested')
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"{self.full_name} - {self.organ_needed}"
+
+class Transplant(models.Model):
+    donor = models.ForeignKey(DonorProfile, on_delete=models.CASCADE, related_name="donated_organs")
+    recipient = models.ForeignKey(Recipient, on_delete=models.CASCADE, related_name="received_organs")
+    organ = models.ForeignKey(OrganRecord, on_delete=models.CASCADE, related_name="transplant")
+    hospital = models.ForeignKey(HospitalProfile, on_delete=models.CASCADE, related_name="transplants_managed")
+    match_status_choices = [
+        ('Pending Approval', 'Pending Approval'),
+        ('Approved', 'Approved'),
+        ('Completed', 'Completed'),
+        ('Rejected', 'Rejected')
+    ]
+    match_status = models.CharField(max_length=20, choices=match_status_choices, default='Pending Approval')
+    blockchain_tx_hash = models.CharField(max_length=66, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.donor} to {self.recipient} - {self.organ.organ_type}"
+
+class BlockchainTransaction(models.Model):
+    donor = models.ForeignKey(DonorProfile, on_delete=models.SET_NULL, null=True, blank=True)
+    recipient = models.ForeignKey(Recipient, on_delete=models.SET_NULL, null=True, blank=True)
+    hospital = models.ForeignKey(HospitalProfile, on_delete=models.SET_NULL, null=True, blank=True)
+    organ_type = models.CharField(max_length=50)
+    tx_hash = models.CharField(max_length=66, unique=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return self.tx_hash
+
+class AuditLog(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    action = models.CharField(max_length=255)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user} - {self.action} at {self.timestamp}"

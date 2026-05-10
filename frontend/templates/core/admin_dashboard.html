@@ -264,6 +264,11 @@
     background: var(--dash-panel, rgba(255, 255, 255, 0.08));
     transform: translateX(4px);
   }
+  .admin-nav-group-label { font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--dash-muted, #64748b); margin: 1.25rem 0 0.5rem 0.5rem; letter-spacing: 0.5px; }
+  .admin-nav-sub { display: flex; flex-direction: column; gap: 0.15rem; padding-left: 1rem; margin-left: 0.75rem; border-left: 1px solid var(--dash-border, rgba(255, 255, 255, 0.1)); margin-bottom: 0.5rem; }
+  .admin-nav-sub .admin-nav-link { padding: 0.5rem 1rem; font-size: 0.85rem; }
+  .dropdown-toggle-link[aria-expanded="true"] .fa-chevron-down { transform: rotate(180deg); }
+  .dropdown-toggle-link .fa-chevron-down { transition: transform 0.2s ease; }
 
   .admin-sidebar-user {
     margin-top: auto;
@@ -1561,41 +1566,109 @@
       <a class="admin-nav-link ui-action active" href="#admin-overview" data-admin-target="overview">
         <i class="fa-solid fa-gauge-high"></i><span>Dashboard</span>
       </a>
+
+      <div class="admin-nav-group-label">Blockchain & Network</div>
       <a class="admin-nav-link ui-action" href="#admin-wallet" data-admin-target="wallet">
-        <i class="fa-brands fa-ethereum"></i><span>Wallet / Local Chain</span>
+        <i class="fa-brands fa-ethereum"></i><span>Ganache Status & Wallet</span>
       </a>
-      <a class="admin-nav-link ui-action" href="#admin-users" data-admin-target="users">
+
+      <div class="admin-nav-group-label">Management</div>
+
+      <a class="admin-nav-link dropdown-toggle-link" data-bs-toggle="collapse" href="#collapseUsers" role="button" aria-expanded="false">
         <i class="fa-solid fa-users-gear"></i><span>User Management</span>
+        <i class="fa-solid fa-chevron-down ms-auto font-size-sm"></i>
       </a>
-      <a class="admin-nav-link ui-action" href="#admin-pending" data-admin-target="pending">
-        <i class="fa-solid fa-user-clock"></i><span>Pending Users</span>
-        {% if stats.pending %}<span class="admin-nav-badge" style="background:#f59e0b;">{{ stats.pending }}</span>{% endif %}
-      </a>
-      <a class="admin-nav-link ui-action" href="#admin-hospitals" data-admin-target="hospitals">
+      <div class="collapse" id="collapseUsers">
+        <div class="admin-nav-sub">
+          <a class="admin-nav-link ui-action" href="#admin-users" data-admin-target="users"><span>All Users</span></a>
+          <a class="admin-nav-link ui-action" href="#admin-pending" data-admin-target="pending">
+            <span>Pending Users</span>
+            {% if stats.pending %}<span class="admin-nav-badge" style="background:#f59e0b; margin-left:auto;">{{ stats.pending }}</span>{% endif %}
+          </a>
+        </div>
+      </div>
+
+      <a class="admin-nav-link dropdown-toggle-link" data-bs-toggle="collapse" href="#collapseHospitals" role="button" aria-expanded="false">
         <i class="fa-solid fa-hospital"></i><span>Hospital Management</span>
+        <i class="fa-solid fa-chevron-down ms-auto font-size-sm"></i>
       </a>
-      <a class="admin-nav-link ui-action" href="#admin-donors" data-admin-target="donors">
+      <div class="collapse" id="collapseHospitals">
+        <div class="admin-nav-sub">
+          <a class="admin-nav-link ui-action" href="#admin-hospitals" data-admin-target="hospitals"><span>Registered Hospitals</span></a>
+        </div>
+      </div>
+
+      <a class="admin-nav-link dropdown-toggle-link" data-bs-toggle="collapse" href="#collapseDonors" role="button" aria-expanded="false">
         <i class="fa-solid fa-hand-holding-heart"></i><span>Donor Management</span>
+        <i class="fa-solid fa-chevron-down ms-auto font-size-sm"></i>
       </a>
-      <a class="admin-nav-link ui-action" href="#admin-ledger" data-admin-target="ledger">
-        <i class="fa-solid fa-heart-pulse"></i><span>Organ Donation Details</span>
+      <div class="collapse" id="collapseDonors">
+        <div class="admin-nav-sub">
+          <a class="admin-nav-link ui-action" href="#admin-donors" data-admin-target="donors"><span>Registered Donors</span></a>
+        </div>
+      </div>
+
+      <a class="admin-nav-link dropdown-toggle-link" data-bs-toggle="collapse" href="#collapseRecipients" role="button" aria-expanded="false">
+        <i class="fa-solid fa-bed-pulse"></i><span>Recipient Management</span>
+        <i class="fa-solid fa-chevron-down ms-auto font-size-sm"></i>
       </a>
-      <a class="admin-nav-link ui-action" href="#admin-certificates" data-admin-target="certificates">
-        <i class="fa-solid fa-certificate"></i><span>Death Certificates</span>
+      <div class="collapse" id="collapseRecipients">
+        <div class="admin-nav-sub">
+          <a class="admin-nav-link ui-action" href="#admin-recipients" data-admin-target="recipients"><span>Recipients List</span></a>
+        </div>
+      </div>
+
+      <a class="admin-nav-link dropdown-toggle-link" data-bs-toggle="collapse" href="#collapseTransplants" role="button" aria-expanded="false">
+        <i class="fa-solid fa-heart-pulse"></i><span>Organ Matching</span>
+        <i class="fa-solid fa-chevron-down ms-auto font-size-sm"></i>
       </a>
-      <a class="admin-nav-link ui-action" href="#admin-death-cert" data-admin-target="death-cert">
-        <i class="fa-solid fa-skull-crossbones"></i><span>Issue Death Certificate</span>
+      <div class="collapse" id="collapseTransplants">
+        <div class="admin-nav-sub">
+          <a class="admin-nav-link ui-action" href="#admin-ledger" data-admin-target="ledger"><span>Match Donor & Recipient</span></a>
+          <a class="admin-nav-link ui-action" href="#admin-transplants" data-admin-target="transplants"><span>Transplant Tracking</span></a>
+        </div>
+      </div>
+
+      <div class="admin-nav-group-label">Records & Reports</div>
+
+      <a class="admin-nav-link dropdown-toggle-link" data-bs-toggle="collapse" href="#collapseCertificates" role="button" aria-expanded="false">
+        <i class="fa-solid fa-certificate"></i><span>Certificates</span>
+        <i class="fa-solid fa-chevron-down ms-auto font-size-sm"></i>
       </a>
-      <a class="admin-nav-link ui-action" href="#admin-feedback" data-admin-target="feedback">
-        <i class="fa-solid fa-comments"></i><span>Feedback Management</span>
-        {% if stats.feedbacks %}<span class="admin-nav-badge" style="background:#7c3aed;">{{ stats.feedbacks }}</span>{% endif %}
+      <div class="collapse" id="collapseCertificates">
+        <div class="admin-nav-sub">
+          <a class="admin-nav-link ui-action" href="#admin-death-cert" data-admin-target="death-cert"><span>Issue Death Certificate</span></a>
+          <a class="admin-nav-link ui-action" href="#admin-certificates" data-admin-target="certificates"><span>Certificates History</span></a>
+        </div>
+      </div>
+
+      <a class="admin-nav-link dropdown-toggle-link" data-bs-toggle="collapse" href="#collapseFeedback" role="button" aria-expanded="false">
+        <i class="fa-solid fa-comments"></i><span>Feedback & Sentiment</span>
+        <i class="fa-solid fa-chevron-down ms-auto font-size-sm"></i>
       </a>
-      <a class="admin-nav-link ui-action" href="#admin-sentiment" data-admin-target="sentiment">
-        <i class="fa-solid fa-chart-line"></i><span>Sentiment Analysis</span>
+      <div class="collapse" id="collapseFeedback">
+        <div class="admin-nav-sub">
+          <a class="admin-nav-link ui-action" href="#admin-feedback" data-admin-target="feedback">
+            <span>Feedback List</span>
+            {% if stats.feedbacks %}<span class="admin-nav-badge" style="background:#7c3aed; margin-left:auto;">{{ stats.feedbacks }}</span>{% endif %}
+          </a>
+          <a class="admin-nav-link ui-action" href="#admin-sentiment" data-admin-target="sentiment"><span>Sentiment Analysis</span></a>
+        </div>
+      </div>
+
+      <a class="admin-nav-link dropdown-toggle-link" data-bs-toggle="collapse" href="#collapseReports" role="button" aria-expanded="false">
+        <i class="fa-solid fa-chart-simple"></i><span>Reports & Logs</span>
+        <i class="fa-solid fa-chevron-down ms-auto font-size-sm"></i>
       </a>
-      <a class="admin-nav-link ui-action" href="#admin-analytics" data-admin-target="analytics">
-        <i class="fa-solid fa-chart-simple"></i><span>Reporting</span>
-      </a>
+      <div class="collapse" id="collapseReports">
+        <div class="admin-nav-sub">
+          <a class="admin-nav-link ui-action" href="#admin-analytics" data-admin-target="analytics"><span>System Reports</span></a>
+          <a class="admin-nav-link ui-action" href="#admin-blockchain-logs" data-admin-target="blockchain-logs"><span>Blockchain Transactions</span></a>
+          <a class="admin-nav-link ui-action" href="#admin-audit-logs" data-admin-target="audit-logs"><span>User Audit Trail</span></a>
+        </div>
+      </div>
+
+      <div class="admin-nav-group-label">Settings</div>
       <a class="admin-nav-link ui-action" href="#admin-profile" data-admin-target="profile">
         <i class="fa-solid fa-user-gear"></i><span>Profile Settings</span>
       </a>
@@ -1662,29 +1735,10 @@
       <div class="card-body">
         <div class="d-flex justify-content-between align-items-start">
           <div>
-            <p class="text-muted mb-1 small">Total Users</p>
-            <h3 class="fw-bold mb-0">{{ users|length }}</h3>
-          </div>
-          <i
-            class="fa-solid fa-users fs-4 text-primary"
-            style="opacity: 0.3"
-          ></i>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="col-lg-3 col-md-6">
-    <div class="card stat-card h-100">
-      <div class="card-body">
-        <div class="d-flex justify-content-between align-items-start">
-          <div>
-            <p class="text-muted mb-1 small">Active Donors</p>
+            <p class="text-muted mb-1 small">Total Donors</p>
             <h3 class="fw-bold text-primary mb-0">{{ stats.donors }}</h3>
           </div>
-          <i
-            class="fa-solid fa-hand-holding-heart fs-4"
-            style="color: #0d6efd; opacity: 0.3"
-          ></i>
+          <i class="fa-solid fa-hand-holding-heart fs-4 text-primary" style="opacity: 0.3"></i>
         </div>
       </div>
     </div>
@@ -1694,13 +1748,23 @@
       <div class="card-body">
         <div class="d-flex justify-content-between align-items-start">
           <div>
-            <p class="text-muted mb-1 small">Registered Hospitals</p>
+            <p class="text-muted mb-1 small">Total Recipients</p>
+            <h3 class="fw-bold text-primary mb-0">{{ stats.recipients }}</h3>
+          </div>
+          <i class="fa-solid fa-bed-pulse fs-4 text-primary" style="opacity: 0.3"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-3 col-md-6">
+    <div class="card stat-card h-100">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <p class="text-muted mb-1 small">Total Hospitals</p>
             <h3 class="fw-bold text-success mb-0">{{ stats.hospitals }}</h3>
           </div>
-          <i
-            class="fa-solid fa-hospital fs-4 text-success"
-            style="opacity: 0.3"
-          ></i>
+          <i class="fa-solid fa-hospital fs-4 text-success" style="opacity: 0.3"></i>
         </div>
       </div>
     </div>
@@ -1710,13 +1774,65 @@
       <div class="card-body">
         <div class="d-flex justify-content-between align-items-start">
           <div>
-            <p class="text-muted mb-1 small">Total Organs</p>
-            <h3 class="fw-bold text-warning mb-0">{{ stats.organs }}</h3>
+            <p class="text-muted mb-1 small">Total Matches</p>
+            <h3 class="fw-bold text-warning mb-0">{{ stats.matches }}</h3>
           </div>
-          <i
-            class="fa-solid fa-heart-pulse fs-4 text-warning"
-            style="opacity: 0.3"
-          ></i>
+          <i class="fa-solid fa-link fs-4 text-warning" style="opacity: 0.3"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-lg-3 col-md-6">
+    <div class="card stat-card h-100">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <p class="text-muted mb-1 small">Completed Transplants</p>
+            <h3 class="fw-bold text-danger mb-0">{{ stats.transplants }}</h3>
+          </div>
+          <i class="fa-solid fa-heart-pulse fs-4 text-danger" style="opacity: 0.3"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-3 col-md-6">
+    <div class="card stat-card h-100">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <p class="text-muted mb-1 small">Pending Requests</p>
+            <h3 class="fw-bold mb-0" style="color: #f59e0b;">{{ stats.pending }}</h3>
+          </div>
+          <i class="fa-solid fa-user-clock fs-4" style="color: #f59e0b; opacity: 0.3"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-3 col-md-6">
+    <div class="card stat-card h-100">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <p class="text-muted mb-1 small">Blockchain Transactions</p>
+            <h3 class="fw-bold text-info mb-0">{{ stats.blockchain_txs }}</h3>
+          </div>
+          <i class="fa-brands fa-ethereum fs-4 text-info" style="opacity: 0.3"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-3 col-md-6">
+    <div class="card stat-card h-100">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <p class="text-muted mb-1 small">Total Users</p>
+            <h3 class="fw-bold text-secondary mb-0">{{ users|length }}</h3>
+          </div>
+          <i class="fa-solid fa-users fs-4 text-secondary" style="opacity: 0.3"></i>
         </div>
       </div>
     </div>
@@ -1969,6 +2085,170 @@
   </div>
 </div>
 </section><!-- /analytics -->
+
+<!-- ══════════════════════════════════════════
+     SECTION: TRANSPLANTS
+══════════════════════════════════════════ -->
+<section data-admin-section="transplants">
+<h2 id="admin-transplants" class="section-title">Transplant Tracking</h2>
+<div class="card page-card mb-5">
+  <div class="card-body">
+    <div class="d-flex align-items-center gap-2 mb-4">
+      <i class="fa-solid fa-heart-pulse text-danger" style="font-size: 1.25rem;"></i>
+      <h5 class="fw-bold mb-0">Transplant Lifecycle</h5>
+      <span class="badge bg-light text-dark ms-auto">{{ transplants|length }} total</span>
+    </div>
+    <div class="table-responsive">
+      <table class="table align-middle">
+        <thead>
+          <tr>
+            <th>Transplant ID</th>
+            <th>Donor / Recipient</th>
+            <th>Organ / Blood</th>
+            <th>Hospital</th>
+            <th>Status</th>
+            <th>Blockchain Verification</th>
+            <th>Surgery Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for t in transplants %}
+          <tr>
+            <td class="fw-semibold">#{{ t.id }}</td>
+            <td>
+              <div class="small fw-bold text-primary">{{ t.donor.user.get_full_name|default:t.donor.user.username }}</div>
+              <div class="small text-muted"><i class="fa-solid fa-arrow-right mx-1"></i>{{ t.recipient.full_name }}</div>
+            </td>
+            <td>
+              <span class="badge text-bg-secondary me-1">{{ t.organ.organ_type|default:"Unknown" }}</span>
+              <span class="badge text-bg-danger">{{ t.donor.blood_group }}</span>
+            </td>
+            <td><small class="text-muted">{{ t.hospital.hospital_name }}</small></td>
+            <td>
+              {% if t.match_status == 'Approved' %}
+                <span class="badge text-bg-info">Approved</span>
+              {% elif t.match_status == 'Completed' %}
+                <span class="badge text-bg-success">Completed</span>
+              {% elif t.match_status == 'Rejected' %}
+                <span class="badge text-bg-danger">Rejected</span>
+              {% else %}
+                <span class="badge text-bg-secondary">{{ t.match_status }}</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if t.blockchain_tx_hash %}
+                <span class="badge bg-success-subtle text-success border border-success-subtle"><i class="fa-solid fa-check-circle me-1"></i>Verified</span>
+              {% else %}
+                <span class="badge bg-warning-subtle text-warning border border-warning-subtle"><i class="fa-solid fa-clock me-1"></i>Pending Tx</span>
+              {% endif %}
+            </td>
+            <td><small class="text-muted">{{ t.created_at|date:"d M Y"|default:"TBD" }}</small></td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="7" class="text-center text-muted py-4">
+              <i class="fa-solid fa-inbox me-2"></i>No transplants recorded
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</section><!-- /transplants -->
+
+<!-- ══════════════════════════════════════════
+     SECTION: BLOCKCHAIN LOGS
+══════════════════════════════════════════ -->
+<section data-admin-section="blockchain-logs">
+<h2 id="admin-blockchain-logs" class="section-title">Blockchain Transactions</h2>
+<div class="card page-card mb-5">
+  <div class="card-body">
+    <div class="d-flex align-items-center gap-2 mb-4">
+      <i class="fa-brands fa-ethereum text-info" style="font-size: 1.25rem;"></i>
+      <h5 class="fw-bold mb-0">Smart Contract Log</h5>
+    </div>
+    <div class="table-responsive">
+      <table class="table align-middle">
+        <thead>
+          <tr>
+            <th>Tx Hash</th>
+            <th>Organ Type</th>
+            <th>Donor</th>
+            <th>Hospital</th>
+            <th>Timestamp</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for tx in blockchain_txs %}
+          <tr>
+            <td>
+              <code class="text-primary" title="{{ tx.tx_hash }}">{{ tx.tx_hash|truncatechars:20 }}</code>
+            </td>
+            <td><span class="badge text-bg-info">{{ tx.organ_type|default:"—" }}</span></td>
+            <td><small>{{ tx.donor.user.get_full_name|default:tx.donor.user.username|default:"—" }}</small></td>
+            <td><small class="text-muted">{{ tx.hospital.hospital_name|default:"System" }}</small></td>
+            <td><small class="text-muted">{{ tx.timestamp|date:"d M Y, H:i" }}</small></td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="5" class="text-center text-muted py-4">
+              <i class="fa-solid fa-inbox me-2"></i>No blockchain transactions found. Start Ganache and register organs to populate this log.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</section><!-- /blockchain-logs -->
+
+<!-- ══════════════════════════════════════════
+     SECTION: AUDIT LOGS
+══════════════════════════════════════════ -->
+<section data-admin-section="audit-logs">
+<h2 id="admin-audit-logs" class="section-title">System Audit Trail</h2>
+<div class="card page-card mb-5">
+  <div class="card-body">
+    <div class="d-flex align-items-center gap-2 mb-4">
+      <i class="fa-solid fa-clipboard-list text-secondary" style="font-size: 1.25rem;"></i>
+      <h5 class="fw-bold mb-0">Recent Activity</h5>
+    </div>
+    <div class="table-responsive">
+      <table class="table align-middle">
+        <thead>
+          <tr>
+            <th>Action</th>
+            <th>Performed By</th>
+            <th>IP Address</th>
+            <th>Details</th>
+            <th>Timestamp</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for log in audit_logs %}
+          <tr>
+            <td class="fw-semibold">{{ log.action }}</td>
+            <td>{{ log.user.username|default:"System" }}</td>
+            <td><small class="text-muted">{{ log.ip_address|default:"Unknown" }}</small></td>
+            <td><small>{{ log.action|truncatechars:50 }}</small></td>
+            <td><small class="text-muted">{{ log.timestamp|date:"d M Y, H:i:s" }}</small></td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="5" class="text-center text-muted py-4">
+              <i class="fa-solid fa-inbox me-2"></i>No audit logs available
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</section><!-- /audit-logs -->
 
 <!-- ══════════════════════════════════════════
      SECTION: USER MANAGEMENT
@@ -2673,6 +2953,16 @@
 
           <div class="col-12 mt-4 pt-3 border-top">
             <h5 class="fw-bold mb-3"><i class="fa-solid fa-image me-2"></i>Profile Picture</h5>
+            {% if user.profile_picture %}
+              <div class="mb-2">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="remove_profile_picture" id="remove_profile_picture">
+                  <label class="form-check-label text-danger" for="remove_profile_picture">
+                    Remove current profile picture
+                  </label>
+                </div>
+              </div>
+            {% endif %}
             <input type="file" name="profile_picture" class="form-control" accept="image/*" />
           </div>
 
@@ -2680,6 +2970,14 @@
             <h5 class="fw-bold mb-3"><i class="fa-solid fa-panorama me-2"></i>Dashboard Background</h5>
             {% if user.background_image %}
               <img src="{{ user.background_image.url }}" alt="Current dashboard background" class="rounded mb-3" style="width: 220px; height: 90px; object-fit: cover; border: 1px solid var(--dash-border, #334155);">
+              <div class="mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="remove_background_image" id="remove_background_image">
+                  <label class="form-check-label text-danger" for="remove_background_image">
+                    Remove current background image
+                  </label>
+                </div>
+              </div>
             {% endif %}
             <input type="file" name="background_image" class="form-control" accept="image/*" />
             <div class="form-text">Upload a wide professional image for the admin dashboard background.</div>
@@ -2749,6 +3047,78 @@
 </div>
 
 </section><!-- /donors -->
+
+<!-- ══════════════════════════════════════════
+     SECTION: RECIPIENTS
+══════════════════════════════════════════ -->
+<section data-admin-section="recipients">
+<h2 id="admin-recipients" class="section-title">Recipient & Patient Monitor</h2>
+<div class="row g-4 mb-5">
+  <div class="col-12">
+    <div class="card page-card h-100">
+      <div class="card-body">
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <i class="fa-solid fa-bed-pulse text-primary" style="font-size: 1.25rem;"></i>
+          <h5 class="fw-bold mb-0">Registered Recipients</h5>
+          <span class="badge bg-light text-dark ms-auto">{{ recipients|length }}</span>
+        </div>
+        <div class="table-responsive">
+          <table class="table align-middle mb-0">
+            <thead>
+              <tr>
+                <th>Patient Name</th>
+                <th>Organ Needed</th>
+                <th>Blood Group</th>
+                <th>Urgency</th>
+                <th>Hospital</th>
+                <th>Status</th>
+                <th>Registered Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for recipient in recipients %}
+              <tr>
+                <td class="fw-semibold">{{ recipient.full_name }}</td>
+                <td><span class="badge text-bg-secondary">{{ recipient.organ_needed }}</span></td>
+                <td><span class="badge text-bg-danger">{{ recipient.blood_group }}</span></td>
+                <td>
+                  {% if recipient.emergency_priority == 'High' %}
+                    <span class="badge text-bg-danger">High</span>
+                  {% elif recipient.emergency_priority == 'Medium' %}
+                    <span class="badge text-bg-warning">Medium</span>
+                  {% else %}
+                    <span class="badge text-bg-info">{{ recipient.emergency_priority }}</span>
+                  {% endif %}
+                </td>
+                <td><small class="text-muted">{{ recipient.hospital.hospital_name }}</small></td>
+                <td>
+                  {% if recipient.status == 'Requested' %}
+                    <span class="badge text-bg-warning">Requested</span>
+                  {% elif recipient.status == 'Matched' %}
+                    <span class="badge text-bg-success">Matched</span>
+                  {% elif recipient.status == 'Transplant Completed' %}
+                    <span class="badge text-bg-primary">Transplant Completed</span>
+                  {% else %}
+                    <span class="badge text-bg-secondary">{{ recipient.status }}</span>
+                  {% endif %}
+                </td>
+                <td><small class="text-muted">{{ recipient.created_at|date:"d M Y" }}</small></td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="7" class="text-center text-muted py-4">
+                  <i class="fa-solid fa-inbox me-2"></i>No recipients registered
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</section><!-- /recipients -->
 
 <!-- ══════════════════════════════════════════
      SECTION: LEDGER
@@ -3209,6 +3579,7 @@
       "overview", "wallet", "analytics",
       "users", "pending", "hospitals", "donors", "ledger",
       "certificates", "death-cert", "feedback", "sentiment", "profile", "analytics",
+      "transplants", "blockchain-logs", "audit-logs", "recipients"
     ]);
 
 

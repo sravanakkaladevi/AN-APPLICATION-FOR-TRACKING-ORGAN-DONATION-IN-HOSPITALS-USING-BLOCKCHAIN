@@ -57,29 +57,94 @@
     .auth-brand-panel {
         position: relative;
         min-height: 560px;
-        padding: clamp(2rem, 5vw, 3.5rem);
         display: flex;
         flex-direction: column;
-        justify-content: space-between;
+        justify-content: flex-end;
         overflow: hidden;
-        background:
-            linear-gradient(rgba(34, 211, 238, 0.09) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(34, 211, 238, 0.07) 1px, transparent 1px),
-            radial-gradient(circle at 20% 18%, rgba(34, 211, 238, 0.2), transparent 32%),
-            radial-gradient(circle at 88% 72%, rgba(251, 113, 133, 0.16), transparent 30%),
-            #05070b;
-        background-size: 48px 48px, 48px 48px, auto, auto, auto;
+        background-image: url("{% static 'core/images/hospital_blockchain_corridor.png' %}");
+        background-size: cover;
+        background-position: center;
     }
 
-    .auth-brand-panel::after {
+    .hero-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, rgba(5, 10, 18, 0.1) 0%, rgba(5, 10, 18, 0.8) 70%, rgba(5, 10, 18, 0.95) 100%),
+                    linear-gradient(90deg, rgba(5, 10, 18, 0.6) 0%, transparent 100%);
+        z-index: 1;
+    }
+
+    .hero-particles {
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+        background-image: 
+            radial-gradient(circle at 15% 50%, rgba(103, 232, 249, 0.15) 2px, transparent 4px),
+            radial-gradient(circle at 85% 30%, rgba(59, 130, 246, 0.15) 3px, transparent 6px),
+            radial-gradient(circle at 50% 80%, rgba(103, 232, 249, 0.2) 1.5px, transparent 3px);
+        background-size: 100px 100px;
+        animation: particles-drift 20s linear infinite;
+        opacity: 0.6;
+    }
+
+    .hero-particles::after {
         content: "";
         position: absolute;
-        inset: auto -18% 14% 36%;
-        height: 120px;
-        border-radius: 999px;
-        border: 1px solid rgba(255, 255, 255, 0.12);
-        background: linear-gradient(90deg, rgba(34, 211, 238, 0.18), transparent);
-        transform: rotate(-16deg);
+        inset: 0;
+        background: linear-gradient(45deg, rgba(103, 232, 249, 0.05) 1px, transparent 1px);
+        background-size: 40px 40px;
+        opacity: 0.3;
+    }
+
+    @keyframes particles-drift {
+        0% { background-position: 0px 0px; }
+        100% { background-position: 100px 100px; }
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 3;
+        padding: clamp(2rem, 5vw, 3.5rem);
+        transform: translateY(0);
+        animation: fadeUpIn 1s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.45rem 1rem;
+        background: rgba(3, 3, 3, 0.6);
+        border: 1px solid rgba(103, 232, 249, 0.3);
+        border-radius: 30px;
+        font-size: 0.75rem;
+        font-weight: 800;
+        letter-spacing: 1px;
+        color: #67e8f9;
+        margin-bottom: 1.5rem;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 0 20px rgba(103, 232, 249, 0.15);
+    }
+
+    .hero-title {
+        font-size: clamp(2rem, 4vw, 3.2rem);
+        font-weight: 800;
+        color: #fff;
+        line-height: 1.1;
+        margin-bottom: 1rem;
+        text-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+    }
+
+    .hero-subtitle {
+        font-size: 1.05rem;
+        color: rgba(255, 255, 255, 0.75);
+        line-height: 1.6;
+        max-width: 400px;
+        margin-bottom: 0;
+    }
+
+    @keyframes fadeUpIn {
+        0% { opacity: 0; transform: translateY(20px); }
+        100% { opacity: 1; transform: translateY(0); }
     }
 
     .auth-kicker {
@@ -532,27 +597,15 @@
 <section class="auth-gateway">
     <div class="auth-shell">
         <div class="auth-brand-panel">
-            <div class="security-card-container">
-                <div class="security-card">
-                    <div class="scanner-line"></div>
-                    <div class="avatar-container">
-                        <svg class="avatar-svg" viewBox="0 0 100 100">
-                            <circle cx="50" cy="50" r="46" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="2"></circle>
-                            <circle cx="50" cy="50" r="46" fill="none" stroke="#67e8f9" stroke-width="2" stroke-linecap="round" class="animate-draw-outline"></circle>
-                        </svg>
-                        <img src="{% static 'core/images/avatars/avatar_system.png' %}" class="avatar-icon" id="dynamic-avatar" alt="User Avatar" style="width: 76px; height: 76px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(103, 232, 249, 0.4);">
-                        <div class="verification-badge"><i class="fa-solid fa-shield-halved me-1"></i>SECURE</div>
-                    </div>
-                    
-                    <div class="identity-details">
-                        <div class="identity-role" id="dynamic-role">SYSTEM READY</div>
-                        <h3 class="identity-name" id="dynamic-name">Awaiting Login</h3>
-                    </div>
-
-                    <div class="data-stream-container">
-                        <div class="scramble-text" id="scramble-stream"></div>
-                    </div>
+            <div class="hero-overlay"></div>
+            <div class="hero-particles"></div>
+            
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <i class="fa-solid fa-link me-2 text-info"></i> ORGANCHAIN VERIFIED
                 </div>
+                <h1 class="hero-title">Securing Life's Greatest Gift</h1>
+                <p class="hero-subtitle">Immutable ledger technology bringing transparency and trust to organ donation across healthcare networks.</p>
             </div>
         </div>
 
@@ -629,53 +682,6 @@
             });
         }
 
-        // Security Card Scramble Effect
-        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*<>_[]{}';
-        const streamEl = document.getElementById('scramble-stream');
-        const dynamicRole = document.getElementById('dynamic-role');
-        const dynamicName = document.getElementById('dynamic-name');
-        
-        const keywords = [
-            '<span class="scramble-highlight">USER_AUTH</span>', 
-            '<span class="scramble-highlight">HOSPITAL_NODE</span>', 
-            '<span class="scramble-highlight">BLOCKCHAIN_TX</span>', 
-            '<span class="scramble-alert">ENCRYPTING...</span>', 
-            '<span class="scramble-highlight">VERIFIED</span>'
-        ];
-        
-        function generateStream() {
-            if (!streamEl) return;
-            let streamContent = '';
-            for(let i=0; i<150; i++) {
-                if (Math.random() > 0.98) {
-                    streamContent += keywords[Math.floor(Math.random() * keywords.length)] + ' ';
-                } else {
-                    streamContent += characters.charAt(Math.floor(Math.random() * characters.length));
-                }
-            }
-            streamEl.innerHTML = streamContent;
-        }
-        
-        setInterval(generateStream, 80);
-
-        const dynamicAvatar = document.getElementById('dynamic-avatar');
-
-        const identities = [
-            { role: 'SYSTEM READY', name: 'Awaiting Login', avatar: "{% static 'core/images/avatars/avatar_system.png' %}" },
-            { role: 'DONOR GATEWAY', name: 'Secure User Access', avatar: "{% static 'core/images/avatars/avatar_donor.png' %}" },
-            { role: 'MEDICAL NODE', name: 'Hospital Verification', avatar: "{% static 'core/images/avatars/avatar_hospital.png' %}" },
-            { role: 'ADMIN PORTAL', name: 'Network Ledger', avatar: "{% static 'core/images/avatars/avatar_admin.png' %}" }
-        ];
-        let idIndex = 0;
-        
-        setInterval(() => {
-            if(dynamicRole && dynamicName && dynamicAvatar) {
-                idIndex = (idIndex + 1) % identities.length;
-                dynamicRole.innerText = identities[idIndex].role;
-                dynamicName.innerText = identities[idIndex].name;
-                dynamicAvatar.src = identities[idIndex].avatar;
-            }
-        }, 4000);
     });
 </script>
 {% endblock %}
