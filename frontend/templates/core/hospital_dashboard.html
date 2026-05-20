@@ -122,6 +122,91 @@
   .dropdown-toggle-link .fa-chevron-down {
     transition: transform 0.2s ease;
   }
+
+  .hospital-bg-shell::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 12% 20%, rgba(103, 232, 249, 0.35) 0 1px, transparent 2px),
+      radial-gradient(circle at 78% 42%, rgba(59, 130, 246, 0.28) 0 1px, transparent 2px),
+      radial-gradient(circle at 46% 80%, rgba(94, 234, 212, 0.22) 0 1px, transparent 2px);
+    background-size: 165px 165px, 235px 235px, 205px 205px;
+    opacity: 0.4;
+    animation: hospitalParticleDrift 30s linear infinite;
+  }
+
+  @keyframes hospitalParticleDrift {
+    from { transform: translate3d(0, 0, 0); }
+    to { transform: translate3d(-38px, 30px, 0); }
+  }
+
+  .hospital-hero {
+    background:
+      radial-gradient(circle at 18% 0%, rgba(103, 232, 249, 0.2), transparent 38%),
+      linear-gradient(135deg, rgba(6, 13, 25, 0.92), rgba(9, 24, 38, 0.88)) !important;
+    border-color: rgba(103, 232, 249, 0.2);
+    box-shadow: 0 24px 68px rgba(0, 0, 0, 0.46), 0 0 44px rgba(34, 211, 238, 0.08);
+    padding: clamp(1.35rem, 2.2vw, 1.85rem);
+  }
+
+  .quick-card,
+  .card.page-card {
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.052), rgba(255, 255, 255, 0.018)),
+      rgba(6, 12, 22, 0.86) !important;
+    border-color: rgba(103, 232, 249, 0.16) !important;
+  }
+
+  .quick-card {
+    min-height: 118px;
+    box-shadow: 0 18px 46px rgba(0, 0, 0, 0.36);
+  }
+
+  .quick-icon {
+    box-shadow: 0 0 22px rgba(103, 232, 249, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  }
+
+  .section-hdr {
+    border-bottom-color: rgba(103, 232, 249, 0.16);
+  }
+
+  .section-hdr::before {
+    background: linear-gradient(180deg, #67e8f9, #3b82f6);
+    box-shadow: 0 0 14px rgba(103, 232, 249, 0.38);
+  }
+
+  .donor-chip,
+  .search-bar {
+    background: rgba(255, 255, 255, 0.045);
+    border-color: rgba(103, 232, 249, 0.14);
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  .neo-toggle-input:checked + .neo-toggle .neo-status-dot {
+    animation: hospitalStatusPulse 1.8s ease-out infinite;
+  }
+
+  @keyframes hospitalStatusPulse {
+    0% { box-shadow: 0 0 0 0 rgba(54, 249, 199, 0.5); }
+    70% { box-shadow: 0 0 0 8px rgba(54, 249, 199, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(54, 249, 199, 0); }
+  }
+
+  @media (max-width: 575.98px) {
+    .hospital-hero .d-flex,
+    .card-body > .d-flex {
+      align-items: flex-start !important;
+    }
+
+    .quick-card {
+      min-height: 104px;
+    }
+
+    form.d-flex {
+      flex-wrap: wrap;
+    }
+  }
 </style>
 {% endblock %}
 

@@ -10,3 +10,7 @@ media/
 .DS_Store
 Thumbs.db
 CREDENTIALS.md
+.env
+*.env
+.mcp.json
+graphify-out/

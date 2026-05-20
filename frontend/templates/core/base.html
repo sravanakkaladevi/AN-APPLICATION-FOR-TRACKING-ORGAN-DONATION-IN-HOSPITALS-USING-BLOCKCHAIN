@@ -858,6 +858,293 @@
             color: var(--dash-muted, rgba(255, 255, 255, 0.56));
         }
 
+        body::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+            opacity: 0.28;
+            background:
+                radial-gradient(circle at 18% 24%, rgba(103, 232, 249, 0.42) 0 1px, transparent 2px),
+                radial-gradient(circle at 72% 18%, rgba(59, 130, 246, 0.34) 0 1px, transparent 2px),
+                radial-gradient(circle at 44% 78%, rgba(94, 234, 212, 0.24) 0 1px, transparent 2px);
+            background-size: 180px 180px, 240px 240px, 210px 210px;
+            animation: ambientGridDrift 28s linear infinite;
+        }
+
+        @keyframes ambientGridDrift {
+            from { transform: translate3d(0, 0, 0); }
+            to { transform: translate3d(-48px, 36px, 0); }
+        }
+
+        .app-navbar {
+            box-shadow: 0 12px 34px rgba(0, 0, 0, 0.36), 0 1px 0 rgba(103, 232, 249, 0.14) !important;
+        }
+
+        .app-navbar .navbar-nav {
+            row-gap: 0.35rem;
+        }
+
+        .app-navbar .nav-link {
+            position: relative;
+            padding-inline: 0.15rem !important;
+        }
+
+        .app-navbar .nav-link::after {
+            content: "";
+            position: absolute;
+            left: 0.15rem;
+            right: 0.15rem;
+            bottom: 0.18rem;
+            height: 2px;
+            border-radius: 999px;
+            background: linear-gradient(90deg, transparent, var(--app-cyan), var(--app-blue), transparent);
+            opacity: 0;
+            transform: scaleX(0.35);
+            transition: opacity 0.22s ease, transform 0.22s ease;
+        }
+
+        .app-navbar .nav-link:hover::after,
+        .app-navbar .nav-link:focus::after {
+            opacity: 0.9;
+            transform: scaleX(1);
+        }
+
+        .app-navbar .nav-btn-login,
+        .app-navbar .nav-btn-logout {
+            min-height: 38px;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.09), 0 10px 22px rgba(0, 0, 0, 0.24);
+            transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .app-navbar .nav-btn-login:hover,
+        .app-navbar .nav-btn-logout:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 0 0 3px rgba(103, 232, 249, 0.08), 0 14px 28px rgba(0, 0, 0, 0.34);
+        }
+
+        .card,
+        .page-card,
+        .stat-card,
+        .quick-card,
+        .category-card,
+        .donor-stat-card,
+        .feedback-card {
+            border-color: rgba(103, 232, 249, 0.16) !important;
+            box-shadow:
+                0 20px 54px rgba(0, 0, 0, 0.38),
+                0 0 0 1px rgba(255, 255, 255, 0.025),
+                inset 0 1px 0 rgba(255, 255, 255, 0.055) !important;
+            backdrop-filter: blur(18px) saturate(118%);
+        }
+
+        .card:hover,
+        .page-card:hover,
+        .stat-card:hover,
+        .quick-card:hover,
+        .category-card:hover,
+        .donor-stat-card:hover,
+        .feedback-card:hover {
+            border-color: rgba(103, 232, 249, 0.32) !important;
+            box-shadow:
+                0 24px 62px rgba(0, 0, 0, 0.44),
+                0 0 28px rgba(34, 211, 238, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 0.075) !important;
+        }
+
+        .stat-card,
+        .donor-stat-card,
+        .quick-card {
+            min-height: 118px;
+        }
+
+        .stat-card h3,
+        .donor-stat-card h3 {
+            line-height: 1;
+            letter-spacing: 0;
+        }
+
+        .btn::before,
+        .btn::after,
+        button:not(.navbar-toggler):not(.btn-close)::before,
+        button:not(.navbar-toggler):not(.btn-close)::after {
+            display: none;
+        }
+
+        .btn,
+        .portal-submit,
+        .portal-link,
+        .auth-submit,
+        .auth-link-button,
+        .theme-choice {
+            transition:
+                transform 0.2s ease,
+                background 0.2s ease,
+                border-color 0.2s ease,
+                box-shadow 0.2s ease,
+                color 0.2s ease;
+        }
+
+        .btn:hover,
+        .portal-submit:hover,
+        .portal-link:hover,
+        .auth-submit:hover,
+        .auth-link-button:hover,
+        .theme-choice:hover {
+            box-shadow: 0 0 0 3px rgba(103, 232, 249, 0.08), 0 14px 28px rgba(0, 0, 0, 0.24);
+        }
+
+        .form-control,
+        .form-select,
+        textarea.form-control,
+        .portal-field input,
+        .portal-field select,
+        .portal-field textarea,
+        .auth-field input {
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, transform 0.2s ease;
+        }
+
+        .form-control:focus,
+        .form-select:focus,
+        textarea.form-control:focus,
+        .portal-field input:focus,
+        .portal-field select:focus,
+        .portal-field textarea:focus,
+        .auth-field input:focus {
+            transform: translateY(-1px);
+            box-shadow: 0 0 0 0.2rem rgba(34, 211, 238, 0.12), 0 14px 28px rgba(0, 0, 0, 0.22);
+        }
+
+        .role-shell,
+        .admin-shell {
+            gap: clamp(1rem, 2vw, 1.35rem);
+        }
+
+        .role-sidebar,
+        .admin-sidebar {
+            border-color: rgba(103, 232, 249, 0.18) !important;
+            background:
+                linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.018)),
+                rgba(5, 10, 18, 0.88) !important;
+            box-shadow: 0 22px 58px rgba(0, 0, 0, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.055) !important;
+            backdrop-filter: blur(20px) saturate(120%);
+        }
+
+        .role-nav-link,
+        .admin-nav-link {
+            position: relative;
+            overflow: hidden;
+            border: 1px solid transparent;
+            transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+        }
+
+        .role-nav-link::before,
+        .admin-nav-link::before {
+            content: "";
+            position: absolute;
+            inset: 0 auto 0 0;
+            width: 3px;
+            background: linear-gradient(180deg, var(--dash-accent, #67e8f9), #3b82f6);
+            opacity: 0;
+            transform: scaleY(0.35);
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+
+        .role-nav-link:hover,
+        .role-nav-link.active,
+        .admin-nav-link:hover,
+        .admin-nav-link.active {
+            border-color: rgba(103, 232, 249, 0.18);
+            background: rgba(103, 232, 249, 0.075) !important;
+            color: var(--dash-text, #ffffff) !important;
+            transform: translateX(2px);
+        }
+
+        .role-nav-link:hover::before,
+        .role-nav-link.active::before,
+        .admin-nav-link:hover::before,
+        .admin-nav-link.active::before {
+            opacity: 1;
+            transform: scaleY(1);
+        }
+
+        .portal-auth,
+        .auth-gateway {
+            position: relative;
+        }
+
+        .portal-auth::before,
+        .auth-gateway::before {
+            filter: blur(28px);
+        }
+
+        .portal-shell,
+        .auth-shell {
+            border-color: rgba(103, 232, 249, 0.24) !important;
+            box-shadow: 0 30px 90px rgba(0, 0, 0, 0.52), 0 0 44px rgba(34, 211, 238, 0.07) !important;
+        }
+
+        .portal-side,
+        .auth-brand-panel {
+            isolation: isolate;
+        }
+
+        .portal-side::after,
+        .auth-brand-panel::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            pointer-events: none;
+            background:
+                radial-gradient(circle at 28% 22%, rgba(103, 232, 249, 0.16), transparent 28%),
+                linear-gradient(115deg, transparent 0 42%, rgba(255, 255, 255, 0.055) 48%, transparent 54% 100%);
+            mix-blend-mode: screen;
+            animation: authLightSweep 9s ease-in-out infinite;
+        }
+
+        @keyframes authLightSweep {
+            0%, 100% { opacity: 0.28; transform: translateX(-8%); }
+            50% { opacity: 0.56; transform: translateX(8%); }
+        }
+
+        .portal-form,
+        .auth-form-panel {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .security-card,
+        .data-stream-container {
+            border-color: rgba(103, 232, 249, 0.24) !important;
+            box-shadow: 0 22px 60px rgba(0, 0, 0, 0.42), 0 0 34px rgba(34, 211, 238, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.055) !important;
+        }
+
+        .badge,
+        .ledger-id,
+        code {
+            max-width: 100%;
+            overflow-wrap: anywhere;
+        }
+
+        .table-responsive {
+            border-radius: 8px;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.001ms !important;
+                animation-iteration-count: 1 !important;
+                scroll-behavior: auto !important;
+                transition-duration: 0.001ms !important;
+            }
+        }
+
         @media (max-width: 991.98px) {
             .role-shell {
                 grid-template-columns: 1fr;
@@ -875,6 +1162,33 @@
         }
 
         @media (max-width: 575.98px) {
+            main.container {
+                padding-left: 0.9rem;
+                padding-right: 0.9rem;
+            }
+
+            .app-navbar .navbar-brand {
+                font-size: 1rem;
+                max-width: calc(100vw - 88px);
+            }
+
+            .app-navbar .navbar-brand span:last-child {
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+            .portal-shell,
+            .auth-shell {
+                border-radius: 10px;
+            }
+
+            .portal-form,
+            .auth-form-panel,
+            .hero-content {
+                padding: 1.25rem !important;
+            }
+
             .role-sidebar-nav,
             .theme-options {
                 grid-template-columns: 1fr;

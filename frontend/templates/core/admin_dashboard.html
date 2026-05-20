@@ -1513,6 +1513,216 @@
       grid-template-columns: 1fr;
     }
   }
+
+  /* Premium dark SaaS refinement layer. Keeps data and behavior unchanged. */
+  body {
+    background: #030303 !important;
+  }
+
+  .admin-bg-shell {
+    background:
+      linear-gradient(180deg, rgba(3, 7, 18, 0.7), rgba(3, 7, 18, 0.96)),
+      radial-gradient(circle at 18% 12%, rgba(34, 211, 238, 0.2), transparent 28%),
+      radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.14), transparent 30%),
+      #030303;
+  }
+
+  .admin-bg-shell::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 12% 22%, rgba(103, 232, 249, 0.34) 0 1px, transparent 2px),
+      radial-gradient(circle at 78% 38%, rgba(59, 130, 246, 0.28) 0 1px, transparent 2px),
+      radial-gradient(circle at 48% 82%, rgba(94, 234, 212, 0.22) 0 1px, transparent 2px);
+    background-size: 160px 160px, 230px 230px, 190px 190px;
+    opacity: 0.42;
+    animation: adminParticleDrift 30s linear infinite;
+  }
+
+  @keyframes adminParticleDrift {
+    from { transform: translate3d(0, 0, 0); }
+    to { transform: translate3d(-42px, 28px, 0); }
+  }
+
+  .admin-hero,
+  .card,
+  .page-card,
+  .stat-card,
+  .category-card,
+  .hospital-item,
+  .tx-item,
+  .donor-card {
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.018)),
+      rgba(6, 12, 22, 0.86) !important;
+    color: #ffffff !important;
+    border-color: rgba(103, 232, 249, 0.16) !important;
+    border-radius: 10px;
+    box-shadow:
+      0 22px 62px rgba(0, 0, 0, 0.42),
+      0 0 0 1px rgba(255, 255, 255, 0.025),
+      inset 0 1px 0 rgba(255, 255, 255, 0.055) !important;
+    backdrop-filter: blur(18px) saturate(118%);
+  }
+
+  .admin-hero {
+    padding: clamp(1.35rem, 2vw, 1.75rem);
+    margin-bottom: 1.25rem;
+  }
+
+  .section-title {
+    margin-top: 1.65rem;
+    margin-bottom: 1rem;
+    color: #ffffff !important;
+    border-bottom-color: rgba(103, 232, 249, 0.16) !important;
+  }
+
+  .section-title::before {
+    background: linear-gradient(180deg, #67e8f9, #3b82f6);
+    box-shadow: 0 0 16px rgba(103, 232, 249, 0.42);
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+  }
+
+  .stat-card {
+    min-height: 120px;
+    border-left: 0 !important;
+    overflow: hidden;
+  }
+
+  .stat-card::before {
+    width: 120px;
+    height: 120px;
+    background: radial-gradient(circle, rgba(103, 232, 249, 0.14), transparent 62%);
+  }
+
+  .stat-card h3 {
+    color: #ffffff !important;
+    font-size: clamp(1.65rem, 2.6vw, 2.2rem);
+  }
+
+  .admin-sidebar {
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .admin-nav-link.active {
+    background: rgba(103, 232, 249, 0.11) !important;
+    color: #ffffff !important;
+    box-shadow: inset 0 0 0 1px rgba(103, 232, 249, 0.18);
+  }
+
+  .table,
+  .table-light {
+    --bs-table-bg: transparent;
+    --bs-table-color: rgba(255, 255, 255, 0.86);
+    --bs-table-border-color: rgba(255, 255, 255, 0.08);
+    --bs-table-hover-bg: rgba(34, 211, 238, 0.06);
+    color: rgba(255, 255, 255, 0.86) !important;
+  }
+
+  .table th {
+    color: rgba(255, 255, 255, 0.54) !important;
+    border-bottom-color: rgba(103, 232, 249, 0.16) !important;
+  }
+
+  .table td,
+  .person span strong {
+    color: rgba(255, 255, 255, 0.82) !important;
+  }
+
+  .form-control,
+  .form-select {
+    background: rgba(255, 255, 255, 0.045) !important;
+    border-color: rgba(255, 255, 255, 0.13) !important;
+    color: #ffffff !important;
+  }
+
+  .ui-chain-card__bg {
+    background:
+      radial-gradient(30em 18em at 18% 18%, rgba(34, 211, 238, 0.22), transparent 62%),
+      radial-gradient(24em 16em at 82% 78%, rgba(59, 130, 246, 0.16), transparent 62%),
+      linear-gradient(rgba(103, 232, 249, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(103, 232, 249, 0.04) 1px, transparent 1px),
+      linear-gradient(135deg, #05070b, #08111d) !important;
+    background-size: auto, auto, 44px 44px, 44px 44px, auto !important;
+    border-color: rgba(103, 232, 249, 0.2) !important;
+    box-shadow: 0 26px 72px rgba(0, 0, 0, 0.48), 0 0 42px rgba(34, 211, 238, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.07) !important;
+  }
+
+  .ui-chain-card__icon {
+    background: linear-gradient(135deg, rgba(103, 232, 249, 0.28), rgba(59, 130, 246, 0.36)) !important;
+    box-shadow: 0 0 28px rgba(103, 232, 249, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.22) !important;
+  }
+
+  .ui-chain-card__badge {
+    background: rgba(16, 185, 129, 0.1) !important;
+    border-color: rgba(45, 212, 191, 0.34) !important;
+    color: #99f6e4 !important;
+  }
+
+  .ui-chain-card__badge.offline {
+    background: rgba(251, 113, 133, 0.11) !important;
+    border-color: rgba(251, 113, 133, 0.36) !important;
+    color: #fecdd3 !important;
+  }
+
+  .status-pulse {
+    animation: chainStatusPulse 1.8s ease-out infinite;
+  }
+
+  .status-pulse.offline {
+    animation-name: chainStatusPulseOffline;
+  }
+
+  @keyframes chainStatusPulse {
+    0% { box-shadow: 0 0 0 0 rgba(45, 212, 191, 0.5); }
+    70% { box-shadow: 0 0 0 9px rgba(45, 212, 191, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(45, 212, 191, 0); }
+  }
+
+  @keyframes chainStatusPulseOffline {
+    0% { box-shadow: 0 0 0 0 rgba(251, 113, 133, 0.48); }
+    70% { box-shadow: 0 0 0 9px rgba(251, 113, 133, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(251, 113, 133, 0); }
+  }
+
+  .ui-chain-card__pill {
+    background: rgba(255, 255, 255, 0.045) !important;
+    border-color: rgba(103, 232, 249, 0.14) !important;
+    color: rgba(255, 255, 255, 0.74) !important;
+  }
+
+  .ui-chain-card__num {
+    color: #ffffff !important;
+    text-shadow: 0 0 22px rgba(103, 232, 249, 0.22);
+  }
+
+  .btn-primary,
+  .btn-success {
+    background: rgba(59, 130, 246, 0.13) !important;
+    border-color: rgba(103, 232, 249, 0.34) !important;
+  }
+
+  .btn-primary:hover,
+  .btn-success:hover {
+    background: rgba(34, 211, 238, 0.16) !important;
+    border-color: rgba(103, 232, 249, 0.62) !important;
+  }
+
+  @media (max-width: 575.98px) {
+    .stats-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .ui-chain-card__meta {
+      grid-template-columns: 1fr;
+    }
+  }
 </style>
 {{ user_category_data|json_script:"user-category-data" }}
 {{ chart_data|json_script:"organ-status-data" }}
@@ -1888,8 +2098,8 @@
 
           <span class="ui-chain-card__ticker" aria-hidden="true">
             <span class="ui-chain-card__marquee">
-              <span>LOCAL ETHEREUM NODE READY</span><span>{% if blockchain_status.connected %}Node Status: OK{% else %}Action Required: Start Ganache{% endif %}</span><span>System Readiness: 100%</span><span>Transaction Monitoring Ready</span>
-              <span>LOCAL ETHEREUM NODE READY</span><span>{% if blockchain_status.connected %}Node Status: OK{% else %}Action Required: Start Ganache{% endif %}</span><span>System Readiness: 100%</span><span>Transaction Monitoring Ready</span>
+              <span>LOCAL ETHEREUM NODE READY</span><span>{% if blockchain_status.connected %}Node Status: OK{% else %}Action Required: Start Ganache{% endif %}</span><span>Contract Status: {% if blockchain_status.contract_loaded %}Active{% else %}Pending{% endif %}</span><span>Transaction Monitoring Ready</span>
+              <span>LOCAL ETHEREUM NODE READY</span><span>{% if blockchain_status.connected %}Node Status: OK{% else %}Action Required: Start Ganache{% endif %}</span><span>Contract Status: {% if blockchain_status.contract_loaded %}Active{% else %}Pending{% endif %}</span><span>Transaction Monitoring Ready</span>
             </span>
           </span>
         </span>
@@ -1972,8 +2182,8 @@
           </span>
           <span class="ui-chain-card__ticker" aria-hidden="true">
             <span class="ui-chain-card__marquee">
-              <span>LOCAL ETHEREUM NODE READY</span><span>{% if blockchain_status.connected %}Node Status: OK{% else %}Action Required: Start Ganache{% endif %}</span><span>System Readiness: 100%</span><span>Transaction Monitoring Ready</span>
-              <span>LOCAL ETHEREUM NODE READY</span><span>{% if blockchain_status.connected %}Node Status: OK{% else %}Action Required: Start Ganache{% endif %}</span><span>System Readiness: 100%</span><span>Transaction Monitoring Ready</span>
+              <span>LOCAL ETHEREUM NODE READY</span><span>{% if blockchain_status.connected %}Node Status: OK{% else %}Action Required: Start Ganache{% endif %}</span><span>Contract Status: {% if blockchain_status.contract_loaded %}Active{% else %}Pending{% endif %}</span><span>Transaction Monitoring Ready</span>
+              <span>LOCAL ETHEREUM NODE READY</span><span>{% if blockchain_status.connected %}Node Status: OK{% else %}Action Required: Start Ganache{% endif %}</span><span>Contract Status: {% if blockchain_status.contract_loaded %}Active{% else %}Pending{% endif %}</span><span>Transaction Monitoring Ready</span>
             </span>
           </span>
         </span>
