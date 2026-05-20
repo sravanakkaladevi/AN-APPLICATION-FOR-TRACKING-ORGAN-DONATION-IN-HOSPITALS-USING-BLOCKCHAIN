@@ -330,6 +330,7 @@ Local machine-specific config mappings are ignored via Git but configured at you
 | Field | Detail |
 |---|---|
 | Project Title | Organ Donation Tracking using Blockchain |
+| Author | **Akkaladevi Sravan Kumar** |
 | Course | MCA (Master of Computer Applications) |
 | Technologies | Django, Solidity, Web3.py, Ganache, Bootstrap 5 |
 | Key Concepts | Blockchain immutability, Smart contracts, Role-based access, Sentiment analysis |
@@ -337,4 +338,4 @@ Local machine-specific config mappings are ignored via Git but configured at you
 
 ---
 
-*Built with ❤️ for transparent, trustworthy healthcare.*
+*Built with ❤️ by **Akkaladevi.Sravan kumar** for transparent, trustworthy healthcare.*
