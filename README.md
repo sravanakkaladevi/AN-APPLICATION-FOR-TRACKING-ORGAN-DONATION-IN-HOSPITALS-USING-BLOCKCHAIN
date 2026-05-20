@@ -5,7 +5,7 @@
 
 ---
 
-## 📋 Table of Contents
+## Table of Contents
 
 - [Overview](#overview)
 - [Features](#features)
@@ -16,11 +16,12 @@
 - [Login Credentials](#login-credentials)
 - [Blockchain Integration](#blockchain-integration)
 - [Configuration](#configuration)
+- [Knowledge Graph & MCP](#knowledge-graph--mcp)
 - [Academic Info](#academic-info)
 
 ---
 
-## 📌 Overview
+## Overview
 
 OrganChain is a full-stack web application that tracks the complete lifecycle of organ donation — from donor registration and organ availability, through hospital matching and transplantation, to final blockchain verification. Every organ registration and transplant event is logged as an immutable transaction on a local Ethereum blockchain (Ganache), ensuring auditability and transparency.
 
@@ -36,7 +37,7 @@ OrganChain is a full-stack web application that tracks the complete lifecycle of
 
 ---
 
-## 🚀 Features
+## Features
 
 - **🔗 Immutable Ledger** — Every organ registration and transplant is stored on-chain via a Solidity smart contract
 - **🏥 Multi-Hospital Network** — Hospitals register, match, and transfer organs across the network
@@ -49,7 +50,7 @@ OrganChain is a full-stack web application that tracks the complete lifecycle of
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 ```text
 organ_donation/
@@ -121,7 +122,7 @@ organ_donation/
 
 ---
 
-## 🏗️ System Architecture
+## System Architecture
 
 ```
 Donor/Hospital/Admin Browser
@@ -148,7 +149,7 @@ Donor/Hospital/Admin Browser
 
 ---
 
-## 👥 Role Modules
+## Role Modules
 
 ### 🔴 Admin Portal
 | Section | Description |
@@ -189,7 +190,7 @@ Donor/Hospital/Admin Browser
 
 ---
 
-## 🛠️ Setup Instructions
+## Setup Instructions
 
 ### Prerequisites
 - **Python 3.10+**
@@ -255,7 +256,7 @@ start_project.bat
 
 ---
 
-## 🔐 Login Credentials
+## Login Credentials
 
 > [!NOTE]
 > Default credentials are set during seeding. For security, sensitive credentials are not committed to the repository.
@@ -271,7 +272,7 @@ python manage.py createsuperuser
 
 ---
 
-## ⛓️ Blockchain Integration
+## Blockchain Integration
 
 The system uses a **Solidity smart contract** (`OrganDonation.sol`) deployed on **Ganache** (local Ethereum testnet).
 
@@ -298,7 +299,7 @@ Results saved to `blockchain/tests/test_results.txt`.
 
 ---
 
-## ⚙️ Configuration
+## Configuration
 
 | Setting | Location | Default |
 |---|---|---|
@@ -310,7 +311,21 @@ Results saved to `blockchain/tests/test_results.txt`.
 
 ---
 
-## 🎓 Academic Info
+## Knowledge Graph & MCP
+
+The codebase features an integrated AST-based **Knowledge Graph** via `graphify` and `code-review-graph`. This allows any MCP-compliant AI Coding Assistant (like Claude Code, Cursor, Windsurf) to navigate the workspace with **500x lower token consumption** and 100% structural accuracy.
+
+### Exploring the Visual Graph
+An interactive D3 visual map of the codebase is compiled and available offline:
+*   [graph.html](file:///c:/Users/srava/.gemini/antigravity/scratch/organ_donation/documentation/graphfy/graph.html) — Open directly in your web browser to explore classes, files, smart contracts, and their dependencies interactively.
+*   [GRAPH_REPORT.md](file:///c:/Users/srava/.gemini/antigravity/scratch/organ_donation/documentation/graphfy/GRAPH_REPORT.md) — Comprehensive structural and community dependency analysis report.
+
+### Setting Up the MCP Servers
+Local machine-specific config mappings are ignored via Git but configured at your project root in `.mcp.json`.
+
+---
+
+## Academic Info
 
 | Field | Detail |
 |---|---|
