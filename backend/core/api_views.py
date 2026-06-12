@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
-from backend.blockchain_service import (
+from core.blockchain.service import (
     register_donor,
     get_donor,
     verify_transaction

@@ -3,9 +3,7 @@
 import os
 import sys
 
-# Add the parent directory to sys.path so that 'backend' can be imported as a package
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
+# Parent directory addition removed to prevent Django test double-discovery issues
 
 def main():
     """Run administrative tasks."""

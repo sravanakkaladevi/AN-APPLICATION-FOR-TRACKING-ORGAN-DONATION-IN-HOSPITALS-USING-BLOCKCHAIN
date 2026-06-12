@@ -148,5 +148,6 @@ ORGAN_DONATION_CONTRACT_ADDRESS = os.environ.get('ORGAN_DONATION_CONTRACT_ADDRES
 ORGAN_DONATION_FROM_ADDRESS = os.environ.get('ORGAN_DONATION_FROM_ADDRESS', '')
 ORGAN_DONATION_ARTIFACT_PATH = os.environ.get(
     'ORGAN_DONATION_ARTIFACT_PATH',
-    str(BASE_DIR / 'build' / 'contracts' / 'OrganDonation.json'),
+    str(BASE_DIR.parent / 'blockchain' / 'compiled' / 'abi.json'),
 )
+

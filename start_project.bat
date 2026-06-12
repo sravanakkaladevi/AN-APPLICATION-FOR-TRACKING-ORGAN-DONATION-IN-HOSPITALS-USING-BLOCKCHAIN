@@ -10,12 +10,12 @@ call venv\Scripts\activate
 
 echo.
 echo Please ensure Ganache is already running...
-timeout /t 5
+timeout /t 2 >nul
 
 echo.
 echo Deploying Smart Contract...
 
-python blockchain\scripts\deploy_contract.py
+python blockchain\scripts\deploy_contract.py || echo Blockchain not connected. Continuing without blockchain...
 
 echo.
 echo Starting Django Server...

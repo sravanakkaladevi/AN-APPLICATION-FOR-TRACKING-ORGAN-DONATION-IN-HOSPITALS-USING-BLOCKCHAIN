@@ -6,12 +6,19 @@ import time
 from web3 import Web3
 from web3.exceptions import Web3Exception
 
-# Add root directory to path to import backend modules
+# Add root and backend directories to path to import backend modules
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+BACKEND_DIR = os.path.join(ROOT_DIR, "backend")
 if ROOT_DIR not in sys.path:
     sys.path.insert(0, ROOT_DIR)
+if BACKEND_DIR not in sys.path:
+    sys.path.insert(0, BACKEND_DIR)
 
-from backend import blockchain_service
+import django
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'organ_donation_project.settings')
+django.setup()
+
+from core.blockchain import service as blockchain_service
 
 class TestBlockchainModule(unittest.TestCase):
     """

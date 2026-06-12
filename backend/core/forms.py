@@ -257,7 +257,7 @@ class DonorProfileEditForm(forms.ModelForm):
 
     class Meta:
         model = DonorProfile
-        fields = ['blood_group', 'contact_number', 'address', 'city', 'state', 'age', 'medical_history', 'availability_status']
+        fields = ['blood_group', 'contact_number', 'address', 'city', 'state', 'age', 'medical_history']
         widgets = {
             'blood_group': forms.Select(choices=BLOOD_GROUP_CHOICES),
             'address': forms.Textarea(attrs={'rows': 3}),

@@ -16,7 +16,6 @@
 - [Login Credentials](#login-credentials)
 - [Blockchain Integration](#blockchain-integration)
 - [Configuration](#configuration)
-- [Knowledge Graph & MCP](#knowledge-graph--mcp)
 - [Academic Info](#academic-info)
 
 ---
@@ -309,19 +308,6 @@ Results saved to `blockchain/tests/test_results.txt`.
 | Media Uploads | `MEDIA_ROOT` in settings.py | `frontend/media/` |
 | Static Files | `STATIC_ROOT` in settings.py | `frontend/static/` |
 
----
-
-## Knowledge Graph & MCP
-
-The codebase features an integrated AST-based **Knowledge Graph** via `graphify` and `code-review-graph`. This allows any MCP-compliant AI Coding Assistant (like Claude Code, Cursor, Windsurf) to navigate the workspace with **500x lower token consumption** and 100% structural accuracy.
-
-### Exploring the Visual Graph
-An interactive D3 visual map of the codebase is compiled and available offline:
-*   [graph.html](file:///c:/Users/srava/.gemini/antigravity/scratch/organ_donation/documentation/graphfy/graph.html) — Open directly in your web browser to explore classes, files, smart contracts, and their dependencies interactively.
-*   [GRAPH_REPORT.md](file:///c:/Users/srava/.gemini/antigravity/scratch/organ_donation/documentation/graphfy/GRAPH_REPORT.md) — Comprehensive structural and community dependency analysis report.
-
-### Setting Up the MCP Servers
-Local machine-specific config mappings are ignored via Git but configured at your project root in `.mcp.json`.
 
 ---
 

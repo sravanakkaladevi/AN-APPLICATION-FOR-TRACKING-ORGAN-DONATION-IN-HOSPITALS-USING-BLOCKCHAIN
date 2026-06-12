@@ -13,7 +13,10 @@ def _load_contract_artifact():
     artifact_path = settings.ORGAN_DONATION_ARTIFACT_PATH
     if os.path.exists(artifact_path):
         with open(artifact_path, 'r', encoding='utf-8') as artifact_file:
-            return json.load(artifact_file)
+            data = json.load(artifact_file)
+            if isinstance(data, list):
+                return {'abi': data, 'networks': {}}
+            return data
 
     legacy_abi_path = os.path.join(os.path.dirname(__file__), 'abi.json')
     if os.path.exists(legacy_abi_path):
@@ -21,8 +24,7 @@ def _load_contract_artifact():
             return {'abi': json.load(abi_file), 'networks': {}}
 
     raise FileNotFoundError(
-        "OrganDonation contract artifact was not found. Run "
-        "`truffle migrate --network development` from the backend folder."
+        "OrganDonation contract artifact was not found. Please compile the contract first."
     )
 
 
@@ -30,6 +32,13 @@ def _get_contract_address(artifact):
     configured_address = settings.ORGAN_DONATION_CONTRACT_ADDRESS.strip()
     if configured_address:
         return Web3.to_checksum_address(configured_address)
+
+    if hasattr(settings, 'ORGAN_DONATION_ARTIFACT_PATH') and settings.ORGAN_DONATION_ARTIFACT_PATH:
+        abi_dir = os.path.dirname(settings.ORGAN_DONATION_ARTIFACT_PATH)
+        address_path = os.path.join(abi_dir, 'contract_address.txt')
+        if os.path.exists(address_path):
+            with open(address_path, 'r', encoding='utf-8') as address_file:
+                return Web3.to_checksum_address(address_file.read().strip())
 
     network = artifact.get('networks', {}).get(str(settings.GANACHE_CHAIN_ID), {})
     artifact_address = network.get('address')
@@ -174,3 +183,79 @@ def transplant_organ_on_chain(organ_id, hospital_address=None):
         'block_number': receipt.blockNumber,
         'status': receipt.status
     }
+
+
+# --- VERSION A COMPATIBILITY WRAPPERS (formerly in blockchain_service.py) ---
+
+def connect_blockchain():
+    """Connects to the local Ganache blockchain, caching the connection for performance."""
+    if w3.is_connected():
+        return w3
+    return None
+
+
+def get_contract_instance(w3_conn):
+    """Loads the contract ABI and address and returns a contract instance."""
+    try:
+        return get_contract()
+    except Exception:
+        return None
+
+
+def register_donor(name, organ_type, hospital_id):
+    """Registers a donor on the blockchain (for REST API and legacy tests)."""
+    if not w3.is_connected():
+        return {"error": "Ganache not running"}
+
+    try:
+        contract = get_contract()
+        account = w3.eth.accounts[0]
+        tx_hash = contract.functions.registerDonor(name, organ_type, hospital_id).transact({'from': account})
+        receipt = w3.eth.wait_for_transaction_receipt(tx_hash)
+        
+        return {
+            "success": True,
+            "transaction_hash": tx_hash.hex() if isinstance(tx_hash, bytes) else tx_hash,
+            "block_number": receipt.blockNumber,
+            "gas_used": receipt.gasUsed
+        }
+    except Exception as e:
+        return {"error": str(e)}
+
+
+def get_donor(donor_id):
+    """Retrieves donor details from the blockchain (for REST API and legacy tests)."""
+    if not w3.is_connected():
+        return {"error": "Ganache not running"}
+
+    try:
+        contract = get_contract()
+        donor_data = contract.functions.getDonor(int(donor_id)).call()
+        
+        return {
+            "id": donor_data[0],
+            "name": donor_data[1],
+            "organ_type": donor_data[2],
+            "hospital_id": donor_data[3],
+            "is_approved": donor_data[4],
+            "timestamp": donor_data[5]
+        }
+    except Exception as e:
+        return {"error": f"Failed to retrieve donor: {str(e)}"}
+
+
+def verify_transaction(tx_hash):
+    """Verifies a transaction by its hash (for REST API and legacy tests)."""
+    if not w3.is_connected():
+        return {"error": "Ganache not running"}
+
+    try:
+        receipt = w3.eth.get_transaction_receipt(tx_hash)
+        return {
+            "status": "Success" if receipt.status == 1 else "Failed",
+            "block_number": receipt.blockNumber,
+            "from": receipt['from'],
+            "to": receipt['to']
+        }
+    except Exception as e:
+        return {"error": f"Transaction not found or invalid: {str(e)}"}
