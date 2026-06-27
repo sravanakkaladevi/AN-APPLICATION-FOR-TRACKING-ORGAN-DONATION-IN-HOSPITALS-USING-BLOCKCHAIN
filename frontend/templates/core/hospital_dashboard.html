@@ -243,62 +243,40 @@
       </a>
 
       <div class="role-nav-group-label">Donor Management</div>
-      <a class="role-nav-link dropdown-toggle-link" data-bs-toggle="collapse" href="#collapseDonors" role="button" aria-expanded="false">
-        <i class="fa-solid fa-hand-holding-heart"></i><span>Donors</span>
-        <i class="fa-solid fa-chevron-down ms-auto font-size-sm"></i>
+      <a class="role-nav-link ui-action" href="#hosp-pending-donors" data-hosp-target="hosp-pending-donors">
+        <i class="fa-solid fa-user-clock"></i><span>Pending Approvals</span>
+        {% if pending_donors %}<span class="badge bg-warning text-dark ms-auto" style="font-size:.7rem;">{{ pending_donors|length }}</span>{% endif %}
       </a>
-      <div class="collapse" id="collapseDonors">
-        <div class="role-nav-sub">
-          <a class="role-nav-link ui-action" href="#hosp-registered-donors" data-hosp-target="hosp-registered-donors"><span>Registered Donors</span></a>
-          <a class="role-nav-link ui-action" href="#hosp-available" data-hosp-target="hosp-available"><span>Available Donors</span></a>
-          <a class="role-nav-link ui-action" href="#hosp-donors-mgmt" data-hosp-target="hosp-donors-mgmt"><span>Donor Verification</span></a>
-          <a class="role-nav-link ui-action" href="{% url 'register_organ' %}"><span>Register Organ</span></a>
-        </div>
-      </div>
+      <a class="role-nav-link ui-action" href="#hosp-donors-mgmt" data-hosp-target="hosp-donors-mgmt">
+        <i class="fa-solid fa-users"></i><span>All Donors</span>
+      </a>
+      <a class="role-nav-link ui-action" href="#hosp-registered-donors" data-hosp-target="hosp-registered-donors">
+        <i class="fa-solid fa-user-check"></i><span>Registered Donors</span>
+      </a>
 
-      <div class="role-nav-group-label">Recipient Management</div>
-      <a class="role-nav-link dropdown-toggle-link" data-bs-toggle="collapse" href="#collapseRecipients" role="button" aria-expanded="false">
-        <i class="fa-solid fa-bed-pulse"></i><span>Recipients</span>
-        <i class="fa-solid fa-chevron-down ms-auto font-size-sm"></i>
+      <div class="role-nav-group-label">Organ Management</div>
+      <a class="role-nav-link ui-action" href="#hosp-registered" data-hosp-target="hosp-registered">
+        <i class="fa-solid fa-file-medical"></i><span>Registered Organs</span>
       </a>
-      <div class="collapse" id="collapseRecipients">
-        <div class="role-nav-sub">
-          <a class="role-nav-link ui-action" href="#hosp-recipients" data-hosp-target="hosp-recipients"><span>Recipients List & Add</span></a>
-        </div>
-      </div>
+      <a class="role-nav-link ui-action" href="#hosp-available" data-hosp-target="hosp-available">
+        <i class="fa-solid fa-circle-plus"></i><span>Available Organs</span>
+      </a>
+      <a class="role-nav-link ui-action" href="#hosp-received" data-hosp-target="hosp-received">
+        <i class="fa-solid fa-rotate"></i><span>Transplant Tracking</span>
+      </a>
 
-      <div class="role-nav-group-label">Transplants & Matching</div>
-      <a class="role-nav-link dropdown-toggle-link" data-bs-toggle="collapse" href="#collapseMatching" role="button" aria-expanded="false">
-        <i class="fa-solid fa-link"></i><span>Organ Matching</span>
-        <i class="fa-solid fa-chevron-down ms-auto font-size-sm"></i>
+      <div class="role-nav-group-label">Patient Management</div>
+      <a class="role-nav-link ui-action" href="#hosp-recipients" data-hosp-target="hosp-recipients">
+        <i class="fa-solid fa-bed-pulse"></i><span>Recipients / Patients</span>
       </a>
-      <div class="collapse" id="collapseMatching">
-        <div class="role-nav-sub">
-          <a class="role-nav-link ui-action" href="#hosp-registered" data-hosp-target="hosp-registered"><span>Match Donor & Recipient</span></a>
-          <a class="role-nav-link ui-action" href="#hosp-search" data-hosp-target="hosp-search"><span>Search Records</span></a>
-        </div>
-      </div>
 
-      <a class="role-nav-link dropdown-toggle-link" data-bs-toggle="collapse" href="#collapseTransplants" role="button" aria-expanded="false">
-        <i class="fa-solid fa-heart-pulse"></i><span>Transplant Tracking</span>
-        <i class="fa-solid fa-chevron-down ms-auto font-size-sm"></i>
+      <div class="role-nav-group-label">Tools</div>
+      <a class="role-nav-link ui-action" href="#hosp-search" data-hosp-target="hosp-search">
+        <i class="fa-solid fa-magnifying-glass"></i><span>Search Organs</span>
       </a>
-      <div class="collapse" id="collapseTransplants">
-        <div class="role-nav-sub">
-          <a class="role-nav-link ui-action" href="#hosp-received" data-hosp-target="hosp-received"><span>Tracking & Status</span></a>
-        </div>
-      </div>
-
-      <div class="role-nav-group-label">Blockchain & Reports</div>
-      <a class="role-nav-link dropdown-toggle-link" data-bs-toggle="collapse" href="#collapseBlockchain" role="button" aria-expanded="false">
-        <i class="fa-brands fa-ethereum"></i><span>Blockchain Records</span>
-        <i class="fa-solid fa-chevron-down ms-auto font-size-sm"></i>
+      <a class="role-nav-link ui-action" href="#hosp-blockchain-tx" data-hosp-target="hosp-blockchain-tx">
+        <i class="fa-solid fa-network-wired"></i><span>Blockchain Logs</span>
       </a>
-      <div class="collapse" id="collapseBlockchain">
-        <div class="role-nav-sub">
-          <a class="role-nav-link ui-action" href="#hosp-blockchain-tx" data-hosp-target="hosp-blockchain-tx"><span>Verification History</span></a>
-        </div>
-      </div>
 
       <div class="role-nav-group-label">Settings</div>
       <a class="role-nav-link ui-action" href="#hosp-profile" data-hosp-target="hosp-profile">
@@ -387,7 +365,6 @@
               </div>
             </label>
           </div>
-          <a href="{% url 'register_organ' %}" class="btn btn-light text-primary fw-semibold ui-action">Register Organ</a>
         </div>
       </div>
       
@@ -462,6 +439,62 @@
       </div>
     </div>
 
+    <!-- ── Pending Donor Approvals ── -->
+    <section id="hosp-pending-donors" data-hosp-section="hosp-pending-donors" class="card page-card mb-4 hosp-section-hidden">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div class="section-hdr mb-0"><i class="fa-solid fa-user-clock text-warning"></i> Pending Donor Approvals</div>
+          <span class="badge text-bg-warning text-dark">{{ pending_donors|length }} pending</span>
+        </div>
+        <p class="text-muted">Donors assigned to your hospital awaiting your medical review. Accept to proceed with organ registration, or reject to decline.</p>
+        <div class="table-responsive">
+          <table class="table align-middle">
+            <thead class="table-light">
+              <tr><th>Donor</th><th>Blood Group</th><th>Pledged Organ</th><th>Contact</th><th>Location</th><th>Registered</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+              {% for dp in pending_donors %}
+              <tr>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold" style="width:34px;height:34px;min-width:34px;background:linear-gradient(135deg,#f59e0b,#ef4444);font-size:.85rem;">{{ dp.user.username|first|upper }}</div>
+                    <div><strong>{{ dp.user.get_full_name|default:dp.user.username }}</strong><br><small class="text-muted">@{{ dp.user.username }}</small></div>
+                  </div>
+                </td>
+                <td><span class="badge text-bg-danger">{{ dp.blood_group }}</span></td>
+                <td class="fw-semibold">{{ dp.pledged_organ|default:"—" }}</td>
+                <td>{{ dp.contact_number|default:"—" }}</td>
+                <td>{{ dp.city|default:"—" }}{% if dp.state %}, {{ dp.state }}{% endif %}</td>
+                <td><small class="text-muted">{{ dp.user.date_joined|date:"d M Y" }}</small></td>
+                <td>
+                  <div class="d-flex gap-2">
+                    <form method="post" action="{% url 'hospital_update_organ_status' dp.organrecord_set.first.id %}" style="display:inline">
+                      {% csrf_token %}
+                      <input type="hidden" name="status" value="Under Testing">
+                      <button type="submit" class="btn btn-sm btn-success ui-action" title="Accept Donor">
+                        <i class="fa-solid fa-check me-1"></i>Accept
+                      </button>
+                    </form>
+                    <form method="post" action="{% url 'hospital_update_organ_status' dp.organrecord_set.first.id %}" style="display:inline">
+                      {% csrf_token %}
+                      <input type="hidden" name="status" value="Rejected">
+                      <button type="submit" class="btn btn-sm btn-danger ui-action" title="Reject Donor"
+                        onclick="return confirm('Reject donor {{ dp.user.username }}?')">
+                        <i class="fa-solid fa-xmark me-1"></i>Reject
+                      </button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+              {% empty %}
+              <tr><td colspan="7" class="text-center text-muted py-4"><i class="fa-solid fa-circle-check text-success me-2"></i>No pending donors — all caught up!</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
     <!-- ── Donors Management ── -->
     <section id="hosp-donors-mgmt" data-hosp-section="hosp-donors-mgmt" class="card page-card mb-4">
 
@@ -471,7 +504,7 @@
         <div class="table-responsive">
           <table class="table align-middle">
             <thead class="table-light">
-              <tr><th>Donor</th><th>Blood Group</th><th>Contact</th><th>Location</th><th>Organs Donated</th><th>Status</th><th>Action</th></tr>
+              <tr><th>Donor</th><th>Blood Group</th><th>Contact</th><th>Location</th><th>Organs Donated</th><th>Status</th></tr>
             </thead>
             <tbody>
               {% for dp in all_donors %}
@@ -485,11 +518,6 @@
                 <td>{{ dp.city|default:"—" }}{% if dp.state %}, {{ dp.state }}{% endif %}</td>
                 <td>{{ dp.organrecord_set.count }}</td>
                 <td>{% if dp.is_deceased %}<span class="badge text-bg-secondary">Deceased</span>{% else %}<span class="badge text-bg-success">Active</span>{% endif %}</td>
-                <td>
-                  <a href="{% url 'register_organ' %}?donor_id={{ dp.id }}" class="btn btn-sm btn-outline-primary ui-action">
-                    <i class="fa-solid fa-plus me-1"></i>Register Organ
-                  </a>
-                </td>
               </tr>
 
               {% empty %}
@@ -519,7 +547,7 @@
                 <td class="fw-semibold">{{ organ.organ_type }}</td>
                 <td><span class="ledger-id">#{{ organ.blockchain_id }}</span></td>
                 <td>
-                  {% if organ.status == 'Available' %}<span class="badge text-bg-success">{{ organ.status }}</span>
+                  {% if organ.status == 'Available' or organ.status == 'Blockchain Verified' %}<span class="badge text-bg-success">{{ organ.status }}</span>
                   {% elif organ.status == 'Matched' %}<span class="badge text-bg-warning">{{ organ.status }}</span>
                   {% else %}<span class="badge text-bg-info">{{ organ.status }}</span>{% endif %}
                 </td>
@@ -555,10 +583,7 @@
                 <td>{{ organ.registered_by.hospital_name }}</td>
                 <td><span class="ledger-id">#{{ organ.blockchain_id }}</span></td>
                 <td>
-                  <form method="post" action="{% url 'match_organ' organ.id %}">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-sm btn-success ui-action">Match to My Hospital</button>
-                  </form>
+                  <span class="badge text-bg-warning text-dark"><i class="fa-solid fa-clock me-1"></i>Admin Match Only</span>
                 </td>
               </tr>
               {% empty %}
@@ -609,10 +634,7 @@
                 <td>{{ organ.registered_by.city|default:"—" }}{% if organ.registered_by.state %}, {{ organ.registered_by.state }}{% endif %}</td>
                 <td><span class="ledger-id">#{{ organ.blockchain_id }}</span></td>
                 <td>
-                  <form method="post" action="{% url 'match_organ' organ.id %}">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-sm btn-success ui-action">Match</button>
-                  </form>
+                  <span class="badge text-bg-warning text-dark"><i class="fa-solid fa-clock me-1"></i>Admin Match Only</span>
                 </td>
               </tr>
               {% empty %}
@@ -665,8 +687,7 @@
                     <option value="AB-" {% if organ.blood_group == 'AB-' %}selected{% endif %}>AB-</option>
                   </select>
                 </td>
-                <td>
-                  {% if organ.status == 'Available' %}<span class="badge text-bg-success">{{ organ.status }}</span>
+                  {% if organ.status == 'Available' or organ.status == 'Blockchain Verified' %}<span class="badge text-bg-success">{{ organ.status }}</span>
                   {% elif organ.status == 'Matched' %}<span class="badge text-bg-warning">{{ organ.status }}</span>
                   {% else %}<span class="badge text-bg-info">{{ organ.status }}</span>{% endif %}
                 </td>
@@ -683,15 +704,27 @@
                   {% endif %}
                 </td>
                 <td>
-                  <form id="organ-edit-{{ organ.id }}" method="post" action="{% url 'hospital_update_organ_status' organ.id %}" class="d-flex gap-2">
-                    {% csrf_token %}
-                    <select name="status" class="form-select form-select-sm" required>
-                      <option value="Available" {% if organ.status == 'Available' %}selected{% endif %}>Available</option>
-                      <option value="Matched" {% if organ.status == 'Matched' %}selected{% endif %}>Matched</option>
-                      <option value="Transplanted" {% if organ.status == 'Transplanted' %}selected{% endif %}>Transplanted</option>
-                    </select>
-                    <button type="submit" class="btn btn-sm btn-primary ui-action">Save</button>
-                  </form>
+                  {% if organ.blockchain_id %}
+                    <span class="badge text-bg-success">{{ organ.status }}</span>
+                  {% else %}
+                    <form id="organ-edit-{{ organ.id }}" method="post" action="{% url 'hospital_update_organ_status' organ.id %}" class="d-flex gap-2">
+                      {% csrf_token %}
+                      <select name="status" class="form-select form-select-sm" required>
+                        <option value="Pending" {% if organ.status == 'Pending' %}selected{% endif %}>Pending</option>
+                        <option value="Under Testing" {% if organ.status == 'Under Testing' %}selected{% endif %}>Under Testing</option>
+                        <option value="Accepted" {% if organ.status == 'Accepted' %}selected{% endif %}>Accepted</option>
+                        <option value="Approved" {% if organ.status == 'Approved' %}selected{% endif %}>Approved</option>
+                        <option value="Eligible" {% if organ.status == 'Eligible' or organ.status == 'Waiting For Blockchain Approval' %}selected{% endif %}>Eligible</option>
+                        <option value="Not Eligible" {% if organ.status == 'Not Eligible' %}selected{% endif %}>Not Eligible</option>
+                        <option value="Organ Failure" {% if organ.status == 'Organ Failure' %}selected{% endif %}>Organ Failure</option>
+                        <option value="Rejected" {% if organ.status == 'Rejected' %}selected{% endif %}>Rejected</option>
+                        <option value="Deceased" {% if organ.status == 'Deceased' %}selected{% endif %}>Deceased</option>
+                        <option value="Death but Eligible Transplant" {% if organ.status == 'Death but Eligible Transplant' %}selected{% endif %}>Death but Eligible Transplant</option>
+                        <option value="Death but Ineligible Transplant" {% if organ.status == 'Death but Ineligible Transplant' %}selected{% endif %}>Death but Ineligible Transplant</option>
+                      </select>
+                      <button type="submit" class="btn btn-sm btn-primary ui-action">Save</button>
+                    </form>
+                  {% endif %}
                 </td>
               </tr>
               {% empty %}
@@ -714,7 +747,7 @@
         <div class="table-responsive">
           <table class="table align-middle">
             <thead class="table-light">
-              <tr><th>Organ</th><th>Blood Group</th><th>Source Hospital</th><th>Status</th><th>Blockchain ID</th><th>Edit</th></tr>
+              <tr><th>Organ</th><th>Blood Group</th><th>Source Hospital</th><th>Status</th><th>Blockchain ID</th><th>Blockchain Verification</th><th>Edit Status</th></tr>
             </thead>
             <tbody>
               {% for organ in received_organs %}
@@ -734,14 +767,21 @@
                   {% endif %}
                 </td>
                 <td>
-                  <form method="post" action="{% url 'hospital_update_organ_status' organ.id %}" class="d-flex gap-2">
-                    {% csrf_token %}
-                    <select name="status" class="form-select form-select-sm" required>
-                      <option value="Matched" {% if organ.status == 'Matched' %}selected{% endif %}>Matched</option>
-                      <option value="Transplanted" {% if organ.status == 'Transplanted' %}selected{% endif %}>Transplanted</option>
-                    </select>
-                    <button type="submit" class="btn btn-sm btn-primary ui-action">Save</button>
-                  </form>
+                  {% if organ.status == 'Matched' %}
+                    <form method="post" action="{% url 'hospital_transition_organ' organ.id %}" class="d-flex gap-2">
+                      {% csrf_token %}
+                      <input type="hidden" name="status" value="Transplanted">
+                      <button type="submit" class="btn btn-sm btn-success ui-action">
+                        <i class="fa-solid fa-heart-pulse me-1"></i>Start Transplant
+                      </button>
+                    </form>
+                  {% elif organ.status == 'Transplanted' %}
+                    <span class="badge text-bg-success">
+                      <i class="fa-solid fa-circle-check me-1"></i>Transplanted
+                    </span>
+                  {% else %}
+                    <span class="badge text-bg-secondary">{{ organ.status }}</span>
+                  {% endif %}
                 </td>
               </tr>
               {% empty %}
@@ -768,7 +808,7 @@
         <div class="table-responsive">
           <table class="table align-middle">
             <thead class="table-light">
-              <tr><th>Patient Name</th><th>Age</th><th>Blood Group</th><th>Organ Needed</th><th>Priority</th><th>Doctor</th><th>Status</th></tr>
+              <tr><th>Patient Name</th><th>Age</th><th>Blood Group</th><th>Organ Needed</th><th>Priority</th><th>Doctor</th><th>Status</th><th>Actions</th></tr>
             </thead>
             <tbody>
               {% for recipient in recipients %}
@@ -787,6 +827,39 @@
                   <span class="badge {% if recipient.status == 'Requested' %}text-bg-secondary{% elif recipient.status == 'Matched' %}text-bg-warning{% elif recipient.status == 'Transplant Completed' %}text-bg-success{% else %}text-bg-info{% endif %}">
                     {{ recipient.status }}
                   </span>
+                </td>
+                <td>
+                  <div class="d-flex gap-2 flex-nowrap align-items-center">
+                    {% if not recipient.blockchain_id and not recipient.blockchain_tx_hash %}
+                      <!-- Edit Button (Triggers Modal) -->
+                      <button type="button" class="btn btn-sm btn-outline-primary ui-action" 
+                              data-bs-toggle="modal" data-bs-target="#editRecipientModal" 
+                              data-recipient-id="{{ recipient.id }}"
+                              data-full-name="{{ recipient.full_name }}"
+                              data-age="{{ recipient.age }}"
+                              data-gender="{{ recipient.gender }}"
+                              data-blood-group="{{ recipient.blood_group }}"
+                              data-organ-needed="{{ recipient.organ_needed }}"
+                              data-doctor-assigned="{{ recipient.doctor_assigned }}"
+                              data-emergency-priority="{{ recipient.emergency_priority }}"
+                              data-medical-notes="{{ recipient.medical_notes|default:'' }}">
+                        <i class="fa-solid fa-pen-to-square me-1"></i>Edit
+                      </button>
+                      
+                      <!-- Delete Button -->
+                      <form method="post" action="{% url 'hospital_delete_recipient' recipient.id %}" class="d-inline"
+                            onsubmit="return confirm('Permanently delete recipient {{ recipient.full_name }}?');">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-outline-danger ui-action" title="Delete">
+                          <i class="fa-solid fa-trash me-1"></i>Delete
+                        </button>
+                      </form>
+                    {% else %}
+                      <span class="badge text-bg-success px-2 py-1" title="Already on blockchain">
+                        <i class="fa-solid fa-lock me-1"></i>On Chain
+                      </span>
+                    {% endif %}
+                  </div>
                 </td>
               </tr>
               {% empty %}
@@ -967,6 +1040,94 @@
     </div>
   </div>
 </div>
+
+<!-- Edit Recipient Modal -->
+<div class="modal fade" id="editRecipientModal" tabindex="-1" aria-labelledby="editRecipientModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="background: var(--dash-panel, #1e293b); border: 1px solid var(--dash-border, #475569); color: var(--dash-text, #f8fafc);">
+      <div class="modal-header" style="border-bottom: 1px solid var(--dash-border, #475569);">
+        <h5 class="modal-title fw-bold" id="editRecipientModalLabel">
+          <i class="fa-solid fa-pen-to-square text-primary me-2"></i>Edit Recipient Details
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form id="editRecipientForm" method="post" action="">
+        {% csrf_token %}
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="edit_full_name" class="form-label fw-semibold">Patient Full Name</label>
+            <input type="text" name="full_name" id="edit_full_name" class="form-control" style="background: var(--dash-bg, #0f172a); color: var(--dash-text, #f8fafc); border: 1px solid var(--dash-border, #475569);" required>
+          </div>
+          <div class="row mb-3">
+            <div class="col-6">
+              <label for="edit_age" class="form-label fw-semibold">Age</label>
+              <input type="number" name="age" id="edit_age" class="form-control" min="0" max="120" style="background: var(--dash-bg, #0f172a); color: var(--dash-text, #f8fafc); border: 1px solid var(--dash-border, #475569);" required>
+            </div>
+            <div class="col-6">
+              <label for="edit_gender" class="form-label fw-semibold">Gender</label>
+              <select name="gender" id="edit_gender" class="form-select" style="background: var(--dash-bg, #0f172a); color: var(--dash-text, #f8fafc); border: 1px solid var(--dash-border, #475569);" required>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-6">
+              <label for="edit_blood_group" class="form-label fw-semibold">Blood Group</label>
+              <select name="blood_group" id="edit_blood_group" class="form-select" style="background: var(--dash-bg, #0f172a); color: var(--dash-text, #f8fafc); border: 1px solid var(--dash-border, #475569);" required>
+                <option value="A+">A+</option>
+                <option value="A-">A-</option>
+                <option value="B+">B+</option>
+                <option value="B-">B-</option>
+                <option value="O+">O+</option>
+                <option value="O-">O-</option>
+                <option value="AB+">AB+</option>
+                <option value="AB-">AB-</option>
+              </select>
+            </div>
+            <div class="col-6">
+              <label for="edit_organ_needed" class="form-label fw-semibold">Organ Needed</label>
+              <select name="organ_needed" id="edit_organ_needed" class="form-select" style="background: var(--dash-bg, #0f172a); color: var(--dash-text, #f8fafc); border: 1px solid var(--dash-border, #475569);" required>
+                <option value="Kidney">Kidney</option>
+                <option value="Liver">Liver</option>
+                <option value="Heart">Heart</option>
+                <option value="Lung">Lung</option>
+                <option value="Pancreas">Pancreas</option>
+                <option value="Intestine">Intestine</option>
+                <option value="Cornea">Cornea</option>
+                <option value="Bone Marrow">Bone Marrow</option>
+                <option value="Skin Tissue">Skin Tissue</option>
+              </select>
+            </div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-6">
+              <label for="edit_doctor_assigned" class="form-label fw-semibold">Assigned Doctor</label>
+              <input type="text" name="doctor_assigned" id="edit_doctor_assigned" class="form-control" style="background: var(--dash-bg, #0f172a); color: var(--dash-text, #f8fafc); border: 1px solid var(--dash-border, #475569);" required>
+            </div>
+            <div class="col-6">
+              <label for="edit_emergency_priority" class="form-label fw-semibold">Priority</label>
+              <select name="emergency_priority" id="edit_emergency_priority" class="form-select" style="background: var(--dash-bg, #0f172a); color: var(--dash-text, #f8fafc); border: 1px solid var(--dash-border, #475569);" required>
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+              </select>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="edit_medical_notes" class="form-label fw-semibold">Medical Notes</label>
+            <textarea name="medical_notes" id="edit_medical_notes" class="form-control" rows="3" style="background: var(--dash-bg, #0f172a); color: var(--dash-text, #f8fafc); border: 1px solid var(--dash-border, #475569);"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer" style="border-top: 1px solid var(--dash-border, #475569);">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary ui-action">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}
@@ -975,7 +1136,7 @@
     const hospContent = document.getElementById("hosp-content");
     const sectionLinks = document.querySelectorAll("[data-hosp-target]");
       const sectionKeys = new Set([
-        "hosp-overview", "hosp-donors-mgmt", "hosp-registered-donors",
+        "hosp-overview", "hosp-pending-donors", "hosp-donors-mgmt", "hosp-registered-donors",
         "hosp-available", "hosp-search", "hosp-registered", "hosp-received", "hosp-profile",
         "hosp-recipients", "hosp-blockchain-tx"
       ]);
@@ -1016,6 +1177,37 @@
       window.addEventListener("hashchange", function () {
         const hashSection = window.location.hash.replace("#", "");
         showHospSection(hashSection || "hosp-overview");
+      });
+    }
+
+    // Prefill editRecipientModal fields when triggered
+    const editRecipientModal = document.getElementById('editRecipientModal');
+    if (editRecipientModal) {
+      editRecipientModal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
+        const recipientId = button.getAttribute('data-recipient-id');
+        const fullName = button.getAttribute('data-full-name');
+        const age = button.getAttribute('data-age');
+        const gender = button.getAttribute('data-gender');
+        const bloodGroup = button.getAttribute('data-blood-group');
+        const organNeeded = button.getAttribute('data-organ-needed');
+        const doctorAssigned = button.getAttribute('data-doctor-assigned');
+        const emergencyPriority = button.getAttribute('data-emergency-priority');
+        const medicalNotes = button.getAttribute('data-medical-notes');
+        
+        // Update form action dynamically
+        const form = document.getElementById('editRecipientForm');
+        form.action = `/dashboard/hospital/recipient/${recipientId}/edit/`;
+        
+        // Fill form fields
+        document.getElementById('edit_full_name').value = fullName;
+        document.getElementById('edit_age').value = age;
+        document.getElementById('edit_gender').value = gender;
+        document.getElementById('edit_blood_group').value = bloodGroup;
+        document.getElementById('edit_organ_needed').value = organNeeded;
+        document.getElementById('edit_doctor_assigned').value = doctorAssigned;
+        document.getElementById('edit_emergency_priority').value = emergencyPriority;
+        document.getElementById('edit_medical_notes').value = medicalNotes;
       });
     }
   });

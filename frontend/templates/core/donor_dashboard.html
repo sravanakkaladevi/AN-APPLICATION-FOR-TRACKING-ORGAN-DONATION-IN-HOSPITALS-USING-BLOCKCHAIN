@@ -1,5 +1,6 @@
 {% extends 'core/base.html' %}
 {% block title %}Donor Dashboard{% endblock %}
+{% block container_class %}container-fluid px-4 px-xl-5{% endblock %}
 
 {% block extra_head %}
 <style>
@@ -53,7 +54,74 @@
   .sentiment-neutral { background: #e0f2fe; color: #0c4a6e; }
   .donor-section-hidden { display: none !important; }
 
-  .donor-hero {
+  /* Premium light SaaS refinement layer */
+  html[data-ui-theme="white"] body,
+  html[data-ui-theme="black_white"] body {
+    background: var(--dash-bg, #f5f7fb) !important;
+    color: var(--dash-text, #1f2937) !important;
+  }
+
+  html[data-ui-theme="white"] .role-sidebar,
+  html[data-ui-theme="black_white"] .role-sidebar {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    color: #0f172a !important;
+    --sidebar-scroll-thumb: rgba(0, 0, 0, 0.15) !important;
+    --sidebar-scroll-thumb-hover: rgba(0, 0, 0, 0.25) !important;
+  }
+
+  html[data-ui-theme="white"] .role-sidebar-brand,
+  html[data-ui-theme="black_white"] .role-sidebar-brand {
+    border-bottom: 1px solid #e2e8f0 !important;
+  }
+
+  html[data-ui-theme="white"] .role-sidebar-logo,
+  html[data-ui-theme="black_white"] .role-sidebar-logo {
+    background: #f1f5f9 !important;
+    color: #0d6efd !important;
+    border-color: #cbd5e1 !important;
+  }
+
+  html[data-ui-theme="white"] .role-sidebar-title,
+  html[data-ui-theme="black_white"] .role-sidebar-title {
+    color: #0f172a !important;
+  }
+
+  html[data-ui-theme="white"] .role-nav-link,
+  html[data-ui-theme="black_white"] .role-nav-link {
+    color: #475569 !important;
+  }
+
+  html[data-ui-theme="white"] .role-nav-link:hover,
+  html[data-ui-theme="white"] .role-nav-link:focus,
+  html[data-ui-theme="black_white"] .role-nav-link:hover,
+  html[data-ui-theme="black_white"] .role-nav-link:focus {
+    background: #f1f5f9 !important;
+    color: #0f172a !important;
+  }
+
+  html[data-ui-theme="white"] .role-nav-link.active,
+  html[data-ui-theme="black_white"] .role-nav-link.active {
+    background: #e0f2fe !important;
+    color: #0369a1 !important;
+    font-weight: 700;
+  }
+
+  html[data-ui-theme="white"] .role-sidebar-user,
+  html[data-ui-theme="black_white"] .role-sidebar-user {
+    border-top: 1px solid #e2e8f0 !important;
+  }
+
+  html[data-ui-theme="white"] .project-logo-card,
+  html[data-ui-theme="black_white"] .project-logo-card {
+    background: #f8fafc !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #0f172a !important;
+  }
+
+  /* Premium dark SaaS refinement layer. Keeps data and behavior unchanged. */
+  html[data-ui-theme="dark"] .donor-hero,
+  html[data-ui-theme="custom"] .donor-hero {
     background:
       radial-gradient(circle at 18% 0%, rgba(103, 232, 249, 0.18), transparent 38%),
       linear-gradient(135deg, rgba(6, 13, 25, 0.92), rgba(10, 24, 44, 0.88)) !important;
@@ -62,9 +130,12 @@
     padding: clamp(1.35rem, 2.2vw, 1.85rem);
   }
 
-  .donor-stat-card,
-  .feedback-card,
-  .card.page-card {
+  html[data-ui-theme="dark"] .donor-stat-card,
+  html[data-ui-theme="dark"] .feedback-card,
+  html[data-ui-theme="dark"] .card.page-card,
+  html[data-ui-theme="custom"] .donor-stat-card,
+  html[data-ui-theme="custom"] .feedback-card,
+  html[data-ui-theme="custom"] .card.page-card {
     background:
       linear-gradient(180deg, rgba(255, 255, 255, 0.052), rgba(255, 255, 255, 0.018)),
       rgba(6, 12, 22, 0.86) !important;
@@ -72,13 +143,15 @@
     box-shadow: 0 18px 46px rgba(0, 0, 0, 0.36);
   }
 
-  .donor-stat-card {
+  html[data-ui-theme="dark"] .donor-stat-card,
+  html[data-ui-theme="custom"] .donor-stat-card {
     min-height: 118px;
     position: relative;
     overflow: hidden;
   }
 
-  .donor-stat-card::after {
+  html[data-ui-theme="dark"] .donor-stat-card::after,
+  html[data-ui-theme="custom"] .donor-stat-card::after {
     content: "";
     position: absolute;
     top: -38px;
@@ -90,40 +163,48 @@
     pointer-events: none;
   }
 
-  .section-header {
+  html[data-ui-theme="dark"] .section-header,
+  html[data-ui-theme="custom"] .section-header {
     border-bottom-color: rgba(103, 232, 249, 0.16);
   }
 
-  .section-header::before {
+  html[data-ui-theme="dark"] .section-header::before,
+  html[data-ui-theme="custom"] .section-header::before {
     background: linear-gradient(180deg, #67e8f9, #3b82f6);
     box-shadow: 0 0 14px rgba(103, 232, 249, 0.38);
   }
 
-  .sentiment-positive {
+  html[data-ui-theme="dark"] .sentiment-positive,
+  html[data-ui-theme="custom"] .sentiment-positive {
     background: rgba(45, 212, 191, 0.12);
     color: #99f6e4;
     border: 1px solid rgba(45, 212, 191, 0.24);
   }
 
-  .sentiment-negative {
+  html[data-ui-theme="dark"] .sentiment-negative,
+  html[data-ui-theme="custom"] .sentiment-negative {
     background: rgba(251, 113, 133, 0.12);
     color: #fecdd3;
     border: 1px solid rgba(251, 113, 133, 0.24);
   }
 
-  .sentiment-neutral {
+  html[data-ui-theme="dark"] .sentiment-neutral,
+  html[data-ui-theme="custom"] .sentiment-neutral {
     background: rgba(103, 232, 249, 0.1);
     color: #cffafe;
     border: 1px solid rgba(103, 232, 249, 0.22);
   }
 
   @media (max-width: 575.98px) {
-    .donor-hero .d-flex,
-    .card-body > .d-flex {
+    html[data-ui-theme="dark"] .donor-hero .d-flex,
+    html[data-ui-theme="dark"] .card-body > .d-flex,
+    html[data-ui-theme="custom"] .donor-hero .d-flex,
+    html[data-ui-theme="custom"] .card-body > .d-flex {
       align-items: flex-start !important;
     }
 
-    .donor-stat-card {
+    html[data-ui-theme="dark"] .donor-stat-card,
+    html[data-ui-theme="custom"] .donor-stat-card {
       min-height: 104px;
     }
   }
@@ -235,13 +316,62 @@
       <div class="donor-hero">
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
           <div>
-            <span class="badge bg-white text-primary mb-2">Donor Portal</span>
+            <div class="mb-2">
+              <span class="badge bg-white text-primary">Donor Portal</span>
+              {% if request.user.donorprofile.approval_status == 'Pending' %}
+                <span class="badge bg-warning text-dark ms-2"><i class="fa-solid fa-clock me-1"></i> Pending Approval</span>
+              {% elif request.user.donorprofile.approval_status == 'Accepted' %}
+                <span class="badge bg-success ms-2"><i class="fa-solid fa-circle-check me-1"></i> Accepted</span>
+              {% elif request.user.donorprofile.approval_status == 'Rejected' %}
+                <span class="badge bg-danger ms-2"><i class="fa-solid fa-circle-xmark me-1"></i> Rejected</span>
+              {% endif %}
+            </div>
             <h1 class="h3 fw-bold mb-1">Welcome, {{ user.get_full_name|default:user.username }}!</h1>
-            <p class="mb-0">Manage your organ donations, track status, and update your profile.</p>
+            <p class="mb-0">
+              {% if request.user.donorprofile.approval_status == 'Pending' %}
+                Your profile is currently under review by hospital administrators.
+              {% elif request.user.donorprofile.approval_status == 'Rejected' %}
+                Your donor application was declined. You cannot donate organs at this time.
+              {% else %}
+                Manage your organ donations, track status, and update your profile.
+              {% endif %}
+            </p>
           </div>
           <a href="#donor-donate" class="btn btn-light text-primary fw-semibold donor-scroll-link">
             <i class="fa-solid fa-plus me-1"></i>Donate Organ
           </a>
+        </div>
+      </div>
+
+      <!-- Pledged Organ & Blockchain Status -->
+      <div class="row g-3 mb-4">
+        <div class="col-md-6">
+          <div class="card page-card border-info h-100">
+            <div class="card-body">
+              <h5 class="card-title text-info"><i class="fa-solid fa-hand-holding-heart me-2"></i>Pledged Organ</h5>
+              <p class="card-text fs-4 fw-bold mb-0">{{ request.user.donorprofile.pledged_organ|default:"Not specified" }}</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card page-card border-secondary h-100">
+            <div class="card-body">
+              <h5 class="card-title text-secondary"><i class="fa-solid fa-link me-2"></i>Blockchain Registration</h5>
+              <p class="card-text mb-0 mt-1">
+                {% if request.user.donorprofile.approval_status == 'Pending' %}
+                  <span class="badge text-bg-warning">Pending Hospital Approval</span>
+                {% elif request.user.donorprofile.approval_status == 'Rejected' %}
+                  <span class="badge text-bg-danger">Registration Blocked</span>
+                {% else %}
+                  {% if organs %}
+                    <span class="badge text-bg-success">Registered on Blockchain</span>
+                  {% else %}
+                    <span class="badge text-bg-info">Awaiting Organ Registration</span>
+                  {% endif %}
+                {% endif %}
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -250,7 +380,7 @@
         <div class="col-md-3">
           <div class="donor-stat-card">
             <p class="text-muted mb-1"><i class="fa-solid fa-heart me-1 text-danger"></i>Total Organs</p>
-            <h3 class="fw-bold">{{ organs|length }}</h3>
+            <h3 class="fw-bold stat-count" data-target="{{ organs|length }}">{{ organs|length }}</h3>
           </div>
         </div>
         <div class="col-md-3">
@@ -382,7 +512,13 @@
                   {% elif organ.status == 'Transplanted' %}<span class="badge text-bg-info">Transplanted</span>
                   {% else %}<span class="badge text-bg-secondary">{{ organ.status }}</span>{% endif %}
                 </td>
-                <td><code class="text-primary">#{{ organ.blockchain_id }}</code></td>
+                <td>
+                  {% if organ.blockchain_id %}
+                    <code class="text-primary">#{{ organ.blockchain_id }}</code>
+                  {% else %}
+                    <span class="text-muted small">Awaiting Approval</span>
+                  {% endif %}
+                </td>
                 <td>{{ organ.registered_by.hospital_name }}</td>
                 <td>{{ organ.recipient_hospital.hospital_name|default:"—" }}</td>
                 <td><small class="text-muted">{{ organ.created_at|date:"d M Y" }}</small></td>
@@ -463,7 +599,7 @@
                 <div class="col-md-6">
                   <label class="form-label small">Blood Group</label>
                   <select name="blood_group" class="form-select">
-                    {% for val, label in profile_edit_form.fields.blood_group.choices %}
+                    {% for val, label in profile_edit_form.blood_group.field.choices %}
                       <option value="{{ val }}" {% if user.donorprofile.blood_group == val %}selected{% endif %}>{{ label }}</option>
                     {% endfor %}
                   </select>
@@ -682,9 +818,93 @@
       if (row.dataset.status === "Matched") matched++;
       if (row.dataset.status === "Transplanted") transplanted++;
     });
-    if(document.getElementById("availableCount")) document.getElementById("availableCount").textContent = available;
-    if(document.getElementById("matchedCount")) document.getElementById("matchedCount").textContent = matched;
-    if(document.getElementById("transplantedCount")) document.getElementById("transplantedCount").textContent = transplanted;
+    if(document.getElementById("availableCount")) {
+      document.getElementById("availableCount").setAttribute("data-target", available);
+      document.getElementById("availableCount").classList.add("stat-count");
+    }
+    if(document.getElementById("matchedCount")) {
+      document.getElementById("matchedCount").setAttribute("data-target", matched);
+      document.getElementById("matchedCount").classList.add("stat-count");
+    }
+    if(document.getElementById("transplantedCount")) {
+      document.getElementById("transplantedCount").setAttribute("data-target", transplanted);
+      document.getElementById("transplantedCount").classList.add("stat-count");
+    }
+
+    // Stat counters animation
+    document.querySelectorAll(".stat-count").forEach(counter => {
+      const target = parseInt(counter.getAttribute("data-target") || counter.textContent, 10);
+      if (isNaN(target)) return;
+      
+      counter.textContent = "0";
+      const duration = 1000;
+      const startTime = performance.now();
+      
+      function updateCounter(currentTime) {
+        const elapsedTime = currentTime - startTime;
+        const progress = Math.min(elapsedTime / duration, 1);
+        const easeProgress = 1 - Math.pow(1 - progress, 3); // easeOutCubic
+        
+        counter.textContent = Math.floor(easeProgress * target);
+        
+        if (progress < 1) {
+          requestAnimationFrame(updateCounter);
+        } else {
+          counter.textContent = target;
+        }
+      }
+      requestAnimationFrame(updateCounter);
+    });
+
+    // AJAX Interception for Donor Forms
+    
+    // 1. Feedback Form
+    const feedbackForm = document.querySelector('input[name="form_type"][value="feedback"]')?.closest('form');
+    if (feedbackForm) {
+      feedbackForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        submitAjaxForm(feedbackForm, {
+          successMessage: 'Thank you for your feedback!',
+          partialSelectors: ['#donor-feedback .col-md-7 .card-body']
+        });
+      });
+    }
+    
+    // 2. Edit Profile Form
+    const editProfileForm = document.querySelector('input[name="form_type"][value="edit_profile"]')?.closest('form');
+    if (editProfileForm) {
+      editProfileForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        submitAjaxForm(editProfileForm, {
+          successMessage: 'Profile updated successfully!',
+          partialSelectors: ['#donor-profile .col-md-5', '.role-sidebar-user']
+        });
+      });
+    }
+    
+    // 3. Profile Picture Upload Form
+    const profilePicForm = document.querySelector('form[action*="update_profile_picture"]');
+    if (profilePicForm) {
+      profilePicForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        submitAjaxForm(profilePicForm, {
+          successMessage: 'Profile picture updated successfully!',
+          partialSelectors: ['#donor-profile .col-md-5', '.role-sidebar-user', '.navbar-brand img']
+        });
+      });
+    }
+
+    // 4. Pledge Form
+    const pledgeForm = document.querySelector('input[name="form_type"][value="pledge"]')?.closest('form');
+    if (pledgeForm) {
+      pledgeForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        submitAjaxForm(pledgeForm, {
+          successMessage: 'Organ pledged successfully!',
+          partialSelectors: ['#donor-donate table', '.donor-stat-card', '#donor-status table', '.stat-count']
+        });
+      });
+    }
   });
 </script>
 {% endblock %}

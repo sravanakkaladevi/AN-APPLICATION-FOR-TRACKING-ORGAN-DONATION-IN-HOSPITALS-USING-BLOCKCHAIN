@@ -9,7 +9,7 @@
         min-height: calc(100vh - 190px);
         display: grid;
         place-items: center;
-        padding: clamp(1rem, 4vw, 3rem) 0;
+        padding: clamp(0.5rem, 2vw, 1.5rem) 0;
         overflow: hidden;
     }
 
@@ -41,36 +41,30 @@
     .auth-shell {
         position: relative;
         z-index: 1;
-        width: min(100%, 980px);
+        width: min(100%, 920px);
         display: grid;
         grid-template-columns: minmax(0, 1fr) minmax(360px, 0.85fr);
-        border: 1px solid rgba(34, 211, 238, 0.2);
+        border: 1px solid #e2e8f0;
         border-radius: 14px;
         overflow: hidden;
-        background:
-            linear-gradient(135deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02)),
-            rgba(5, 10, 18, 0.88);
-        box-shadow: 0 28px 80px rgba(0, 0, 0, 0.44), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-        backdrop-filter: blur(18px);
+        background: #ffffff;
+        box-shadow: 0 20px 50px rgba(15, 23, 42, 0.06);
     }
 
     .auth-brand-panel {
         position: relative;
-        min-height: 560px;
+        min-height: 480px;
         display: flex;
         flex-direction: column;
         justify-content: flex-end;
         overflow: hidden;
-        background-image: url("{% static 'core/images/hospital_blockchain_corridor.png' %}");
-        background-size: cover;
-        background-position: center;
+        background: linear-gradient(135deg, #0d9488 0%, #2563eb 100%);
     }
 
     .hero-overlay {
         position: absolute;
         inset: 0;
-        background: linear-gradient(180deg, rgba(5, 10, 18, 0.1) 0%, rgba(5, 10, 18, 0.8) 70%, rgba(5, 10, 18, 0.95) 100%),
-                    linear-gradient(90deg, rgba(5, 10, 18, 0.6) 0%, transparent 100%);
+        background: linear-gradient(180deg, transparent 40%, rgba(15, 23, 42, 0.45) 100%);
         z-index: 1;
     }
 
@@ -113,16 +107,16 @@
         display: inline-flex;
         align-items: center;
         padding: 0.45rem 1rem;
-        background: rgba(3, 3, 3, 0.6);
-        border: 1px solid rgba(103, 232, 249, 0.3);
+        background: rgba(15, 23, 42, 0.6);
+        border: 1px solid rgba(13, 148, 136, 0.4);
         border-radius: 30px;
         font-size: 0.75rem;
         font-weight: 800;
         letter-spacing: 1px;
-        color: #67e8f9;
+        color: #5eead4;
         margin-bottom: 1.5rem;
         backdrop-filter: blur(10px);
-        box-shadow: 0 0 20px rgba(103, 232, 249, 0.15);
+        box-shadow: 0 0 20px rgba(13, 148, 136, 0.15);
     }
 
     .hero-title {
@@ -136,7 +130,7 @@
 
     .hero-subtitle {
         font-size: 1.05rem;
-        color: rgba(255, 255, 255, 0.75);
+        color: rgba(255, 255, 255, 0.8);
         line-height: 1.6;
         max-width: 400px;
         margin-bottom: 0;
@@ -154,9 +148,9 @@
         gap: 0.55rem;
         padding: 0.45rem 0.8rem;
         border-radius: 999px;
-        border: 1px solid rgba(34, 211, 238, 0.22);
-        color: rgba(255, 255, 255, 0.72);
-        background: rgba(3, 3, 3, 0.36);
+        border: 1px solid rgba(13, 148, 136, 0.3);
+        color: rgba(15, 23, 42, 0.7);
+        background: #f0fdfa;
         font-size: 0.84rem;
         font-weight: 700;
         letter-spacing: 0.06em;
@@ -167,14 +161,14 @@
         width: 0.5rem;
         height: 0.5rem;
         border-radius: 50%;
-        background: #67e8f9;
-        box-shadow: 0 0 18px rgba(103, 232, 249, 0.8);
+        background: #0d9488;
+        box-shadow: 0 0 18px rgba(13, 148, 136, 0.8);
     }
 
     .auth-copy h1 {
         margin: 2rem 0 1rem;
         max-width: 560px;
-        color: #ffffff;
+        color: #0f172a;
         font-size: clamp(2.5rem, 6vw, 4.9rem);
         line-height: 0.98;
         font-weight: 900;
@@ -183,7 +177,7 @@
 
     .auth-copy h1 strong {
         display: block;
-        background: linear-gradient(90deg, #67e8f9, #ffffff 48%, #fda4af);
+        background: linear-gradient(90deg, #0d9488, #0f172a 48%, #e11d48);
         background-clip: text;
         -webkit-background-clip: text;
         color: transparent;
@@ -191,7 +185,7 @@
 
     .auth-copy p {
         max-width: 560px;
-        color: rgba(255, 255, 255, 0.58);
+        color: #475569;
         font-size: 1.02rem;
         line-height: 1.7;
     }
@@ -204,26 +198,27 @@
     }
 
     .role-chip {
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        border: 1px solid #e2e8f0;
         border-radius: 10px;
         padding: 0.85rem;
-        background: rgba(3, 3, 3, 0.42);
+        background: #f8fafc;
     }
 
     .role-chip i {
-        color: #67e8f9;
+        color: #0d9488;
         margin-bottom: 0.65rem;
     }
 
     .role-chip strong {
         display: block;
         font-size: 0.92rem;
+        color: #0f172a;
     }
 
     .role-chip span {
         display: block;
         margin-top: 0.2rem;
-        color: rgba(255, 255, 255, 0.46);
+        color: #64748b;
         font-size: 0.78rem;
     }
 
@@ -232,8 +227,8 @@
         display: flex;
         flex-direction: column;
         justify-content: center;
-        background: rgba(3, 3, 3, 0.42);
-        border-left: 1px solid rgba(255, 255, 255, 0.08);
+        background: #ffffff;
+        border-left: 1px solid #e2e8f0;
     }
 
     .auth-card-title {
@@ -244,11 +239,12 @@
         margin: 0;
         font-size: 2rem;
         font-weight: 900;
+        color: #0f172a;
     }
 
     .auth-card-title p {
         margin: 0.45rem 0 0;
-        color: rgba(255, 255, 255, 0.54);
+        color: #64748b;
     }
 
     .auth-field {
@@ -259,7 +255,7 @@
     .auth-field label {
         display: block;
         margin-bottom: 0.45rem;
-        color: rgba(255, 255, 255, 0.72);
+        color: #334155;
         font-size: 0.9rem;
         font-weight: 700;
     }
@@ -268,7 +264,7 @@
         position: absolute;
         left: 1rem;
         bottom: 0.93rem;
-        color: rgba(103, 232, 249, 0.8);
+        color: #0d9488;
         pointer-events: none;
     }
 
@@ -278,7 +274,7 @@
         bottom: 0.85rem;
         background: none;
         border: none;
-        color: rgba(255, 255, 255, 0.5);
+        color: #94a3b8;
         cursor: pointer;
         padding: 0;
         display: flex;
@@ -288,7 +284,7 @@
     }
 
     .password-toggle:hover {
-        color: #67e8f9;
+        color: #0d9488;
     }
 
     .auth-field input {
@@ -296,17 +292,17 @@
         height: 50px;
         padding: 0 1rem 0 2.75rem;
         border-radius: 10px;
-        border: 1px solid rgba(255, 255, 255, 0.12);
-        background: rgba(255, 255, 255, 0.045);
-        color: #ffffff;
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        color: #0f172a;
         outline: none;
         transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
     }
 
     .auth-field input:focus {
-        border-color: rgba(34, 211, 238, 0.72);
-        background: rgba(255, 255, 255, 0.065);
-        box-shadow: 0 0 0 0.2rem rgba(34, 211, 238, 0.1);
+        border-color: #0d9488;
+        background: #ffffff;
+        box-shadow: 0 0 0 0.2rem rgba(13, 148, 136, 0.1);
     }
 
     .auth-submit {
@@ -315,12 +311,12 @@
         min-height: 50px;
         margin-top: 0.45rem;
         border-radius: 999px;
-        border: 1px solid rgba(59, 130, 246, 0.28);
-        background: rgba(59, 130, 246, 0.08);
+        border: 1px solid #0d9488;
+        background: #0d9488;
         color: #ffffff;
         font-weight: 850;
         overflow: hidden;
-        transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+        transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
     }
 
     .auth-submit::before,
@@ -332,7 +328,7 @@
         height: 1px;
         opacity: 0;
         transform: translateX(-50%);
-        background: linear-gradient(90deg, transparent, #3b82f6, transparent);
+        background: linear-gradient(90deg, transparent, #ffffff, transparent);
         transition: opacity 0.45s ease;
     }
 
@@ -346,8 +342,9 @@
 
     .auth-submit:hover {
         transform: translateY(-2px);
-        background: transparent;
-        border-color: rgba(59, 130, 246, 0.52);
+        background: #0b7a70;
+        border-color: #0b7a70;
+        box-shadow: 0 4px 12px rgba(13, 148, 136, 0.2);
     }
 
     .auth-submit:hover::before {
@@ -359,14 +356,50 @@
     }
 
     .auth-error {
+        position: relative;
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        padding: 0.75rem 3.5rem 0.75rem 1rem;
+        border-radius: 0.5rem;
+        font-size: 0.95rem;
+        font-weight: 500;
+        transition: all 0.5s ease;
+        border: 1px solid #f85149;
+        color: #b22b2b;
+        background: rgba(248, 81, 73, 0.1);
         margin-bottom: 1rem;
-        padding: 0.8rem 1rem;
-        border-radius: 10px;
-        border: 1px solid rgba(251, 113, 133, 0.32);
-        background: rgba(251, 113, 133, 0.11);
-        color: #fecdd3;
-        font-weight: 700;
-        font-size: 0.9rem;
+    }
+    .auth-error svg {
+        color: #b22b2b;
+    }
+    .auth-error-close {
+        position: absolute;
+        right: 1rem;
+        padding: 0.25rem;
+        border-radius: 0.375rem;
+        transition: opacity 0.3s;
+        color: #f85149;
+        border: 1px solid #f85149;
+        opacity: 0.4;
+        background: transparent;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .auth-error-close:hover {
+        opacity: 1;
+    }
+    .auth-error-text {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        margin-right: auto;
+        gap: 0.5rem;
+        margin: 0;
     }
 
     .auth-links {
@@ -383,23 +416,23 @@
         gap: 1rem;
         padding: 0.8rem 0.95rem;
         border-radius: 10px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        background: rgba(255, 255, 255, 0.035);
-        color: rgba(255, 255, 255, 0.82);
+        border: 1px solid #e2e8f0;
+        background: #f8fafc;
+        color: #334155;
         text-decoration: none;
         transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
     }
 
     .auth-link-button:hover {
-        color: #ffffff;
+        color: #0d9488;
         transform: translateY(-2px);
-        border-color: rgba(34, 211, 238, 0.34);
-        background: rgba(34, 211, 238, 0.07);
+        border-color: #cbd5e1;
+        background: #f1f5f9;
     }
 
     .auth-note {
         margin-top: 1rem;
-        color: rgba(255, 255, 255, 0.44);
+        color: #64748b;
         font-size: 0.86rem;
         line-height: 1.6;
     }
@@ -416,7 +449,7 @@
 
         .auth-form-panel {
             border-left: 0;
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            border-top: 1px solid #e2e8f0;
         }
     }
 
@@ -597,6 +630,7 @@
 <section class="auth-gateway">
     <div class="auth-shell">
         <div class="auth-brand-panel">
+            <img src="{% static 'images/hospital_bg.png' %}" alt="Hospital Background" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; mix-blend-mode: overlay; opacity: 0.8;">
             <div class="hero-overlay"></div>
             <div class="hero-particles"></div>
             
@@ -616,8 +650,14 @@
             </div>
 
             {% if form.errors %}
-                <div class="auth-error">
+                <div class="auth-error" id="login-error-alert">
+                  <button type="button" aria-label="close-error" class="auth-error-close" onclick="document.getElementById('login-error-alert').style.display='none'">
+                    <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" height="16" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+                  </button>
+                  <p class="auth-error-text">
+                    <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" height="24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg>
                     Invalid username or password. Please try again.
+                  </p>
                 </div>
             {% endif %}
 

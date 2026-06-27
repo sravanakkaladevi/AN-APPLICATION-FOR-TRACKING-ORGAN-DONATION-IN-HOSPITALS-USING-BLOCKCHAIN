@@ -3,35 +3,14 @@ pragma solidity >=0.8.19 <0.9.0;
 
 /**
  * @title OrganDonation
- * @dev Unified Smart Contract for Organ Donation Tracking System.
- * Supports both legacy/REST API methods (Donor mapping) and Django Core methods (Organ mapping).
+ * @dev Smart Contract for Organ Donation Tracking System.
+ * Records organ registration, matching, and transplant events on the blockchain
+ * for an immutable audit trail.
  */
 contract OrganDonation {
     enum OrganStatus { Available, Matched, Transplanted }
+    enum RecipientStatus { Requested, OnBlockchain, Matched, Transplanted }
 
-    // --- VERSION A (Legacy API / Tests compatibility) ---
-    struct Donor {
-        uint256 id;
-        string name;
-        string organType;
-        string hospitalId;
-        bool isApproved;
-        uint256 timestamp;
-        OrganStatus status;
-    }
-
-    uint256 public donorCount = 0;
-    mapping(uint256 => Donor) public donors;
-
-    event DonorRegistered(
-        uint256 indexed id,
-        string name,
-        string organType,
-        string hospitalId,
-        uint256 timestamp
-    );
-
-    // --- VERSION B (Django Core application integration) ---
     struct Organ {
         uint256 id;
         string donorId;
@@ -45,8 +24,23 @@ contract OrganDonation {
         string recipientHospitalName;
     }
 
+    struct RecipientRecord {
+        uint256 id;
+        string recipientId;
+        string fullName;
+        string bloodGroup;
+        string organNeeded;
+        string hospitalName;
+        uint256 timestamp;
+        RecipientStatus status;
+        address recordedBy;
+    }
+
     uint256 public organCount = 0;
     mapping(uint256 => Organ) public organs;
+
+    uint256 public recipientCount = 0;
+    mapping(uint256 => RecipientRecord) public recipients;
 
     event DonationRegistered(
         uint256 indexed id,
@@ -62,51 +56,19 @@ contract OrganDonation {
     event OrganMatched(uint256 indexed id, string recipientHospitalName, uint256 timestamp);
     event OrganTransplanted(uint256 indexed id, uint256 timestamp);
 
-    // --- VERSION A FUNCTIONS ---
-    function registerDonor(
-        string memory _name,
-        string memory _organType,
-        string memory _hospitalId
-    ) public returns (uint256) {
-        require(bytes(_name).length > 0, "Name is required");
-        require(bytes(_organType).length > 0, "Organ type is required");
-        
-        donorCount++;
-        donors[donorCount] = Donor({
-            id: donorCount,
-            name: _name,
-            organType: _organType,
-            hospitalId: _hospitalId,
-            isApproved: true,
-            timestamp: block.timestamp,
-            status: OrganStatus.Available
-        });
+    event RecipientRegistered(
+        uint256 indexed id,
+        string recipientId,
+        string fullName,
+        string bloodGroup,
+        string organNeeded,
+        string hospitalName,
+        uint256 timestamp,
+        address indexed recordedBy
+    );
 
-        emit DonorRegistered(donorCount, _name, _organType, _hospitalId, block.timestamp);
-        return donorCount;
-    }
+    event RecipientStatusUpdated(uint256 indexed id, RecipientStatus status, uint256 timestamp);
 
-    function getDonor(uint256 _id) public view returns (
-        uint256 id,
-        string memory name,
-        string memory organType,
-        string memory hospitalId,
-        bool isApproved,
-        uint256 timestamp
-    ) {
-        require(_id > 0 && _id <= donorCount, "Invalid donor ID");
-        Donor storage donor = donors[_id];
-        return (
-            donor.id,
-            donor.name,
-            donor.organType,
-            donor.hospitalId,
-            donor.isApproved,
-            donor.timestamp
-        );
-    }
-
-    // --- VERSION B FUNCTIONS ---
     function registerDonation(
         string memory _donorId,
         string memory _donorName,
@@ -147,13 +109,81 @@ contract OrganDonation {
         return organCount;
     }
 
+    function registerRecipient(
+        string memory _recipientId,
+        string memory _fullName,
+        string memory _bloodGroup,
+        string memory _organNeeded,
+        string memory _hospitalName
+    ) public returns (uint256) {
+        require(bytes(_recipientId).length > 0, "Recipient ID is required");
+        require(bytes(_fullName).length > 0, "Full name is required");
+        require(bytes(_bloodGroup).length > 0, "Blood group is required");
+        require(bytes(_organNeeded).length > 0, "Organ needed is required");
+        require(bytes(_hospitalName).length > 0, "Hospital name is required");
+
+        recipientCount++;
+        recipients[recipientCount] = RecipientRecord({
+            id: recipientCount,
+            recipientId: _recipientId,
+            fullName: _fullName,
+            bloodGroup: _bloodGroup,
+            organNeeded: _organNeeded,
+            hospitalName: _hospitalName,
+            timestamp: block.timestamp,
+            status: RecipientStatus.OnBlockchain,
+            recordedBy: msg.sender
+        });
+
+        emit RecipientRegistered(
+            recipientCount,
+            _recipientId,
+            _fullName,
+            _bloodGroup,
+            _organNeeded,
+            _hospitalName,
+            block.timestamp,
+            msg.sender
+        );
+
+        return recipientCount;
+    }
+
+    function updateRecipientStatus(uint256 _id, RecipientStatus _status) public {
+        require(_id > 0 && _id <= recipientCount, "Invalid recipient ID");
+        recipients[_id].status = _status;
+        emit RecipientStatusUpdated(_id, _status, block.timestamp);
+    }
+
+    function matchOrgan(uint256 _id, string memory _recipientHospitalName) public {
+        require(_id > 0 && _id <= organCount, "Invalid organ ID");
+        Organ storage organ = organs[_id];
+        require(organ.status == OrganStatus.Available, "Organ is not available");
+        require(bytes(_recipientHospitalName).length > 0, "Recipient hospital is required");
+
+        organ.status = OrganStatus.Matched;
+        organ.recipientHospitalName = _recipientHospitalName;
+        emit OrganMatched(_id, _recipientHospitalName, block.timestamp);
+    }
+
+    // Overloaded matchOrgan that also updates recipient status if mapped
+    function matchOrganWithRecipient(uint256 _id, string memory _recipientHospitalName, uint256 _recipientBlockchainId) public {
+        matchOrgan(_id, _recipientHospitalName);
+        updateRecipientStatus(_recipientBlockchainId, RecipientStatus.Matched);
+    }
+
     function completeTransplant(uint256 _id) public {
         require(_id > 0 && _id <= organCount, "Invalid organ ID");
         Organ storage organ = organs[_id];
         require(organ.status == OrganStatus.Matched, "Organ is not matched yet");
-        
+
         organ.status = OrganStatus.Transplanted;
         emit OrganTransplanted(_id, block.timestamp);
+    }
+
+    function completeTransplantWithRecipient(uint256 _id, uint256 _recipientBlockchainId) public {
+        completeTransplant(_id);
+        updateRecipientStatus(_recipientBlockchainId, RecipientStatus.Transplanted);
     }
 
     function getOrgan(uint256 _id) public view returns (
@@ -182,30 +212,5 @@ contract OrganDonation {
             organ.recordedBy,
             organ.recipientHospitalName
         );
-    }
-
-    // --- SHARED / UNIFIED FUNCTIONS ---
-    function matchOrgan(uint256 _id, string memory _recipientHospitalName) public {
-        bool matchedAny = false;
-
-        if (_id > 0 && _id <= organCount) {
-            Organ storage organ = organs[_id];
-            require(organ.status == OrganStatus.Available, "Organ is not available");
-            require(bytes(_recipientHospitalName).length > 0, "Recipient hospital is required");
-            
-            organ.status = OrganStatus.Matched;
-            organ.recipientHospitalName = _recipientHospitalName;
-            emit OrganMatched(_id, _recipientHospitalName, block.timestamp);
-            matchedAny = true;
-        }
-
-        if (_id > 0 && _id <= donorCount) {
-            require(donors[_id].status == OrganStatus.Available, "Already matched or transplanted");
-            donors[_id].status = OrganStatus.Matched;
-            emit OrganMatched(_id, _recipientHospitalName, block.timestamp);
-            matchedAny = true;
-        }
-
-        require(matchedAny, "Invalid ID");
     }
 }

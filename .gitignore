@@ -1,16 +1,44 @@
 __pycache__/
 *.py[cod]
-*.sqlite3
-db.sqlite3
+*.pyo
+*.pyd
+.Python
+
+# Virtual environments and local config
 venv/
 .venv/
-node_modules/
-media/
-*.log
-.DS_Store
-Thumbs.db
-CREDENTIALS.md
 .env
 *.env
 .mcp.json
+
+# Django/local database and uploads
+*.sqlite3
+db.sqlite3
+backend/db.sqlite3
+media/
+backend/media/
+frontend/media/
+staticfiles/
+
+# Node / blockchain generated artifacts
+node_modules/
+blockchain/build/
+blockchain/compiled/
+blockchain/tests/test_results.txt
+
+# Local credentials and generated helper docs
+CREDENTIALS.md
+documentation/SYSTEM_CREDENTIALS.md
+backend/hospital_credentials.txt
+
+# Temporary helper scripts and scratch workspace
+scratch/
+find_marker.py
+inject_alert.py
+backend/verify_demo.py
+
+# Logs and OS/editor files
+*.log
+.DS_Store
+Thumbs.db
 graphify-out/

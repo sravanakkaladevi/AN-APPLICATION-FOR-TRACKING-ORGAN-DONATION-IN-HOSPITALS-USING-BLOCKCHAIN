@@ -8,122 +8,39 @@
         min-height: calc(100vh - 190px);
         display: grid;
         place-items: center;
-        padding: clamp(1rem, 4vw, 3rem) 0;
+        padding: clamp(0.5rem, 2vw, 1.5rem) 0;
     }
 
     .portal-shell {
-        width: min(100%, 1050px);
-        display: grid;
-        grid-template-columns: minmax(300px, 0.8fr) minmax(0, 1.2fr);
+        width: min(100%, 1100px);
+        margin: 0 auto;
         overflow: hidden;
-        border: 1px solid rgba(45, 212, 191, 0.22);
+        border: 1px solid #e2e8f0;
         border-radius: 14px;
-        background:
-            linear-gradient(135deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02)),
-            rgba(5, 10, 18, 0.9);
-        box-shadow: 0 28px 80px rgba(0, 0, 0, 0.44);
-        backdrop-filter: blur(18px);
-    }
-
-    .portal-side {
-        position: relative;
-        min-height: 640px;
-        padding: clamp(2rem, 5vw, 3.5rem);
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        background:
-            linear-gradient(rgba(45, 212, 191, 0.1) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(45, 212, 191, 0.07) 1px, transparent 1px),
-            radial-gradient(circle at 24% 16%, rgba(45, 212, 191, 0.22), transparent 32%),
-            radial-gradient(circle at 90% 76%, rgba(34, 211, 238, 0.12), transparent 30%),
-            #05070b;
-        background-size: 48px 48px, 48px 48px, auto, auto, auto;
-    }
-
-    .portal-kicker {
-        display: inline-flex;
-        width: fit-content;
-        align-items: center;
-        gap: 0.55rem;
-        padding: 0.45rem 0.8rem;
-        border: 1px solid rgba(45, 212, 191, 0.25);
-        border-radius: 999px;
-        color: rgba(255, 255, 255, 0.72);
-        background: rgba(3, 3, 3, 0.36);
-        font-size: 0.8rem;
-        font-weight: 800;
-        letter-spacing: 0.07em;
-        text-transform: uppercase;
-    }
-
-    .portal-kicker span {
-        width: 0.5rem;
-        height: 0.5rem;
-        border-radius: 50%;
-        background: #5eead4;
-        box-shadow: 0 0 18px rgba(94, 234, 212, 0.8);
-    }
-
-    .portal-side h1 {
-        margin: 2rem 0 1rem;
-        color: #ffffff;
-        font-size: clamp(2.4rem, 5vw, 4.4rem);
-        line-height: 1;
-        font-weight: 900;
-    }
-
-    .portal-side h1 strong {
-        display: block;
-        background: linear-gradient(90deg, #5eead4, #ffffff 52%, #67e8f9);
-        background-clip: text;
-        -webkit-background-clip: text;
-        color: transparent;
-    }
-
-    .portal-side p {
-        max-width: 440px;
-        color: rgba(255, 255, 255, 0.58);
-        line-height: 1.7;
-    }
-
-    .portal-mini-grid {
-        display: grid;
-        gap: 0.75rem;
-    }
-
-    .portal-mini-card {
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 10px;
-        padding: 0.9rem;
-        background: rgba(3, 3, 3, 0.42);
-    }
-
-    .portal-mini-card i {
-        color: #5eead4;
-        margin-right: 0.45rem;
+        background: #ffffff;
+        box-shadow: 0 20px 50px rgba(15, 23, 42, 0.06);
     }
 
     .portal-form {
-        padding: clamp(1.5rem, 4vw, 3rem);
-        background: rgba(3, 3, 3, 0.38);
-        border-left: 1px solid rgba(255, 255, 255, 0.08);
+        padding: clamp(1.5rem, 4vw, 2.5rem);
+        background: #ffffff;
     }
 
     .portal-form h2 {
         margin-bottom: 0.45rem;
         font-size: 2rem;
         font-weight: 900;
+        color: #0f172a;
     }
 
     .portal-form > p {
         margin-bottom: 1.4rem;
-        color: rgba(255, 255, 255, 0.54);
+        color: #64748b;
     }
 
     .field-grid {
         display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(4, minmax(0, 1fr));
         gap: 1rem;
     }
 
@@ -131,10 +48,18 @@
         grid-column: 1 / -1;
     }
 
+    .field-grid .span-2 {
+        grid-column: span 2;
+    }
+
+    .field-grid .span-3 {
+        grid-column: span 3;
+    }
+
     .portal-field label {
         display: block;
         margin-bottom: 0.42rem;
-        color: rgba(255, 255, 255, 0.74);
+        color: #334155;
         font-size: 0.9rem;
         font-weight: 750;
     }
@@ -146,31 +71,32 @@
         min-height: 48px;
         padding: 0.72rem 0.9rem;
         border-radius: 10px;
-        border: 1px solid rgba(255, 255, 255, 0.12);
-        background: rgba(255, 255, 255, 0.045);
-        color: #ffffff;
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        color: #0f172a;
         outline: none;
     }
 
     .portal-field textarea {
-        min-height: 92px;
-        resize: vertical;
+        min-height: 48px;
+        height: 48px;
+        resize: none;
     }
 
     .portal-field input:focus,
     .portal-field select:focus,
     .portal-field textarea:focus {
-        border-color: rgba(45, 212, 191, 0.72);
-        box-shadow: 0 0 0 0.2rem rgba(45, 212, 191, 0.1);
+        border-color: #0d9488;
+        box-shadow: 0 0 0 0.2rem rgba(13, 148, 136, 0.1);
     }
 
     .form-errors {
         margin-bottom: 1rem;
         padding: 0.85rem 1rem;
         border-radius: 10px;
-        border: 1px solid rgba(251, 113, 133, 0.32);
-        background: rgba(251, 113, 133, 0.11);
-        color: #fecdd3;
+        border: 1px solid #fecdd3;
+        background: #fee2e2;
+        color: #991b1b;
     }
 
     .portal-actions {
@@ -190,28 +116,35 @@
     }
 
     .portal-submit {
-        border: 1px solid rgba(45, 212, 191, 0.35);
-        background: rgba(45, 212, 191, 0.09);
+        border: 1px solid #0d9488;
+        background: #0d9488;
         color: #ffffff;
+        transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
     }
 
     .portal-submit:hover {
-        border-color: rgba(45, 212, 191, 0.68);
-        background: rgba(45, 212, 191, 0.16);
+        transform: translateY(-2px);
+        background: #0b7a70;
+        border-color: #0b7a70;
+        box-shadow: 0 4px 12px rgba(13, 148, 136, 0.2);
+        color: #ffffff;
     }
 
     .portal-link {
         display: inline-flex;
         align-items: center;
         text-decoration: none;
-        border: 1px solid rgba(255, 255, 255, 0.12);
-        color: rgba(255, 255, 255, 0.82);
-        background: rgba(255, 255, 255, 0.035);
+        border: 1px solid #e2e8f0;
+        color: #334155;
+        background: #f8fafc;
+        transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
     }
 
     .portal-link:hover {
-        color: #ffffff;
-        border-color: rgba(45, 212, 191, 0.42);
+        color: #0d9488;
+        border-color: #cbd5e1;
+        background: #f1f5f9;
+        transform: translateY(-2px);
     }
 
     .gl-checkbox {
@@ -237,10 +170,8 @@
         height: 22px;
         min-width: 22px;
         border-radius: 7px;
-        background: rgba(255, 255, 255, 0.05);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: #ffffff;
+        border: 1px solid #cbd5e1;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -253,21 +184,21 @@
         content: "";
         position: absolute;
         inset: 0;
-        background: radial-gradient(circle at center, rgba(200, 240, 96, 0.35) 0%, transparent 70%);
+        background: radial-gradient(circle at center, rgba(13, 148, 136, 0.15) 0%, transparent 70%);
         opacity: 0;
         transform: scale(0);
         transition: opacity 0.3s ease, transform 0.4s ease;
     }
 
     .gl-checkbox:hover .gl-checkbox__box {
-        border-color: rgba(200, 240, 96, 0.35);
+        border-color: #0d9488;
         transform: scale(1.06);
     }
 
     .gl-checkbox__input:checked ~ .gl-checkbox__box {
-        background: linear-gradient(135deg, #c8f060, #60f0b8);
+        background: #0d9488;
         border-color: transparent;
-        box-shadow: 0 0 0 3px rgba(200, 240, 96, 0.15), 0 4px 14px rgba(200, 240, 96, 0.3);
+        box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15), 0 4px 14px rgba(13, 148, 136, 0.3);
         transform: scale(1.05);
     }
 
@@ -279,7 +210,7 @@
     .gl-checkbox__check {
         width: 13px;
         height: 13px;
-        color: #080a0f;
+        color: #ffffff;
         stroke-dasharray: 24;
         stroke-dashoffset: 24;
         transition: stroke-dashoffset 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) 0.05s;
@@ -293,21 +224,21 @@
     .gl-checkbox__label {
         font-size: 0.9rem;
         font-weight: 400;
-        color: rgba(255, 255, 255, 0.5);
+        color: #64748b;
         transition: color 0.25s ease;
     }
 
     .gl-checkbox:hover .gl-checkbox__label {
-        color: rgba(255, 255, 255, 0.8);
+        color: #334155;
     }
 
     .gl-checkbox__input:checked ~ .gl-checkbox__label {
-        color: rgba(255, 255, 255, 0.9);
+        color: #0f172a;
     }
 
     .policy-error {
         margin-top: 0.45rem;
-        color: #fecdd3;
+        color: #ef4444;
         font-size: 0.85rem;
     }
 
@@ -322,7 +253,7 @@
 
         .portal-form {
             border-left: 0;
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            border-top: 1px solid #e2e8f0;
         }
     }
 
@@ -344,14 +275,13 @@
     .security-card {
         width: 100%;
         max-width: 340px;
-        background: rgba(5, 10, 18, 0.6);
-        border: 1px solid rgba(103, 232, 249, 0.3);
+        background: #ffffff;
+        border: 1px solid #cbd5e1;
         border-radius: 16px;
         padding: 2.5rem 1.5rem;
         position: relative;
         overflow: hidden;
-        backdrop-filter: blur(20px);
-        box-shadow: 0 0 40px rgba(34, 211, 238, 0.05), inset 0 0 20px rgba(255,255,255,0.02);
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
         z-index: 10;
         margin: 0 auto;
     }
@@ -362,8 +292,8 @@
         left: 0;
         width: 100%;
         height: 2px;
-        background: #67e8f9;
-        box-shadow: 0 0 15px #67e8f9, 0 0 30px #67e8f9;
+        background: #0d9488;
+        box-shadow: 0 0 15px #0d9488, 0 0 30px #0d9488;
         animation: scan 3s ease-in-out infinite alternate;
         opacity: 0.8;
         z-index: 20;
@@ -392,12 +322,12 @@
         width: 100%;
         height: 100%;
         transform: rotate(-90deg);
-        filter: drop-shadow(0 0 8px rgba(103, 232, 249, 0.4));
+        filter: drop-shadow(0 0 8px rgba(13, 148, 136, 0.2));
     }
 
     .avatar-icon {
         font-size: 2.5rem;
-        color: rgba(255, 255, 255, 0.9);
+        color: #0f172a;
         z-index: 2;
         animation: pulse-icon 2s infinite alternate;
     }
@@ -428,53 +358,51 @@
         font-size: 0.75rem;
         text-transform: uppercase;
         letter-spacing: 3px;
-        color: #67e8f9;
+        color: #0d9488;
         margin-bottom: 0.5rem;
         font-weight: 800;
     }
 
     .identity-name {
         font-size: 1.1rem;
-        color: white;
+        color: #0f172a;
         font-weight: 600;
         margin: 0;
     }
 
     .data-stream-container {
-        background: rgba(0, 0, 0, 0.5);
-        border: 1px solid rgba(255, 255, 255, 0.05);
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
         border-radius: 8px;
         padding: 1rem;
         height: 110px;
         overflow: hidden;
         position: relative;
-        box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
     }
     
     .data-stream-container::after {
         content: '';
         position: absolute;
         inset: 0;
-        background: linear-gradient(transparent 50%, rgba(0,0,0,0.8));
+        background: linear-gradient(transparent 50%, rgba(248, 250, 252, 0.8));
         pointer-events: none;
     }
 
     .scramble-text {
         font-family: 'Courier New', Courier, monospace;
         font-size: 0.65rem;
-        color: rgba(103, 232, 249, 0.4);
+        color: #64748b;
         line-height: 1.4;
         word-break: break-all;
     }
 
     .scramble-highlight {
-        color: #ffffff;
+        color: #0d9488;
         font-weight: bold;
-        text-shadow: 0 0 5px rgba(255,255,255,0.8);
     }
     
     .scramble-alert {
-        color: #fda4af;
+        color: #e11d48;
         font-weight: bold;
     }
 
@@ -482,15 +410,15 @@
         position: absolute;
         bottom: -10px;
         right: -10px;
-        background: rgba(10, 15, 25, 0.9);
-        color: #34d399;
+        background: #f0fdfa;
+        color: #0d9488;
         font-size: 0.65rem;
         font-weight: 800;
         padding: 4px 8px;
         border-radius: 20px;
         letter-spacing: 1px;
-        border: 1px solid #059669;
-        box-shadow: 0 0 10px rgba(5, 150, 105, 0.3);
+        border: 1px solid #ccfbf1;
+        box-shadow: 0 4px 10px rgba(13, 148, 136, 0.08);
         z-index: 5;
     }
 </style>
@@ -499,28 +427,7 @@
 {% block content %}
 <section class="portal-auth">
     <div class="portal-shell">
-        <div class="security-card-container">
-            <div class="security-card">
-                <div class="scanner-line"></div>
-                <div class="avatar-container">
-                    <svg class="avatar-svg" viewBox="0 0 100 100">
-                        <circle cx="50" cy="50" r="46" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="2"></circle>
-                        <circle cx="50" cy="50" r="46" fill="none" stroke="#67e8f9" stroke-width="2" stroke-linecap="round" class="animate-draw-outline"></circle>
-                    </svg>
-                    <img src="{% static 'core/images/avatars/avatar_donor_neon.png' %}" class="avatar-icon" alt="Donor Avatar" style="width: 76px; height: 76px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(103, 232, 249, 0.4);">
-                    <div class="verification-badge"><i class="fa-solid fa-shield-halved me-1"></i>SECURE</div>
-                </div>
-                
-                <div class="identity-details">
-                    <div class="identity-role">DONOR GATEWAY</div>
-                    <h3 class="identity-name">Secure User Access</h3>
-                </div>
 
-                <div class="data-stream-container">
-                    <div class="scramble-text" id="scramble-stream"></div>
-                </div>
-            </div>
-        </div>
 
         <div class="portal-form">
             <h2>Register Donor</h2>
@@ -537,46 +444,121 @@
                 {% csrf_token %}
                 <div class="field-grid">
                     <div class="portal-field">
+                        <label for="donor-first-name">First Name</label>
+                        <input id="donor-first-name" type="text" name="first_name" value="{{ form.first_name.value|default:'' }}" required>
+                        {% if form.first_name.errors %}
+                            <div class="field-error" style="color: #e11d48; font-size: 0.8rem; margin-top: 0.25rem;">{{ form.first_name.errors|striptags }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="portal-field">
+                        <label for="donor-last-name">Last Name</label>
+                        <input id="donor-last-name" type="text" name="last_name" value="{{ form.last_name.value|default:'' }}" required>
+                        {% if form.last_name.errors %}
+                            <div class="field-error" style="color: #e11d48; font-size: 0.8rem; margin-top: 0.25rem;">{{ form.last_name.errors|striptags }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="portal-field">
                         <label for="donor-username">Username</label>
-                        <input id="donor-username" type="text" name="username" autocomplete="username" required>
+                        <input id="donor-username" type="text" name="username" value="{{ form.username.value|default:'' }}" autocomplete="username" required>
+                        {% if form.username.errors %}
+                            <div class="field-error" style="color: #e11d48; font-size: 0.8rem; margin-top: 0.25rem;">{{ form.username.errors|striptags }}</div>
+                        {% endif %}
                     </div>
                     <div class="portal-field">
                         <label for="donor-email">Email</label>
-                        <input id="donor-email" type="email" name="email" autocomplete="email" required>
+                        <input id="donor-email" type="email" name="email" value="{{ form.email.value|default:'' }}" autocomplete="email" required>
+                        {% if form.email.errors %}
+                            <div class="field-error" style="color: #e11d48; font-size: 0.8rem; margin-top: 0.25rem;">{{ form.email.errors|striptags }}</div>
+                        {% endif %}
                     </div>
                     <div class="portal-field">
                         <label for="donor-password1">Password</label>
                         <input id="donor-password1" type="password" name="password1" autocomplete="new-password" required>
+                        {% if form.password1.errors %}
+                            <div class="field-error" style="color: #e11d48; font-size: 0.8rem; margin-top: 0.25rem;">{{ form.password1.errors|striptags }}</div>
+                        {% endif %}
                     </div>
                     <div class="portal-field">
                         <label for="donor-password2">Confirm Password</label>
                         <input id="donor-password2" type="password" name="password2" autocomplete="new-password" required>
+                        {% if form.password2.errors %}
+                            <div class="field-error" style="color: #e11d48; font-size: 0.8rem; margin-top: 0.25rem;">{{ form.password2.errors|striptags }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="portal-field">
+                        <label for="donor-age">Age</label>
+                        <input id="donor-age" type="number" name="age" value="{{ form.age.value|default:'' }}" required>
+                        {% if form.age.errors %}
+                            <div class="field-error" style="color: #e11d48; font-size: 0.8rem; margin-top: 0.25rem;">{{ form.age.errors|striptags }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="portal-field">
+                        <label for="donor-gender">Gender</label>
+                        <select id="donor-gender" name="gender" required>
+                            <option value="" {% if not form.gender.value %}selected{% endif %} disabled>Select gender</option>
+                            <option value="male" {% if form.gender.value == 'male' %}selected{% endif %}>Male</option>
+                            <option value="female" {% if form.gender.value == 'female' %}selected{% endif %}>Female</option>
+                            <option value="other" {% if form.gender.value == 'other' %}selected{% endif %}>Other</option>
+                        </select>
+                        {% if form.gender.errors %}
+                            <div class="field-error" style="color: #e11d48; font-size: 0.8rem; margin-top: 0.25rem;">{{ form.gender.errors|striptags }}</div>
+                        {% endif %}
                     </div>
                     <div class="portal-field">
                         <label for="donor-blood">Blood Group</label>
                         <select id="donor-blood" name="blood_group" required>
-                            <option value="" selected disabled>Select blood group</option>
-                            <option value="A+">A+ (Positive)</option>
-                            <option value="A-">A- (Negative)</option>
-                            <option value="B+">B+ (Positive)</option>
-                            <option value="B-">B- (Negative)</option>
-                            <option value="O+">O+ (Positive)</option>
-                            <option value="O-">O- (Negative)</option>
-                            <option value="AB+">AB+ (Positive)</option>
-                            <option value="AB-">AB- (Negative)</option>
+                            <option value="" {% if not form.blood_group.value %}selected{% endif %} disabled>Select blood group</option>
+                            <option value="A+" {% if form.blood_group.value == 'A+' %}selected{% endif %}>A+ (Positive)</option>
+                            <option value="A-" {% if form.blood_group.value == 'A-' %}selected{% endif %}>A- (Negative)</option>
+                            <option value="B+" {% if form.blood_group.value == 'B+' %}selected{% endif %}>B+ (Positive)</option>
+                            <option value="B-" {% if form.blood_group.value == 'B-' %}selected{% endif %}>B- (Negative)</option>
+                            <option value="O+" {% if form.blood_group.value == 'O+' %}selected{% endif %}>O+ (Positive)</option>
+                            <option value="O-" {% if form.blood_group.value == 'O-' %}selected{% endif %}>O- (Negative)</option>
+                            <option value="AB+" {% if form.blood_group.value == 'AB+' %}selected{% endif %}>AB+ (Positive)</option>
+                            <option value="AB-" {% if form.blood_group.value == 'AB-' %}selected{% endif %}>AB- (Negative)</option>
                         </select>
+                        {% if form.blood_group.errors %}
+                            <div class="field-error" style="color: #e11d48; font-size: 0.8rem; margin-top: 0.25rem;">{{ form.blood_group.errors|striptags }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="portal-field">
+                        <label for="donor-organ">Pledged Organ</label>
+                        <select id="donor-organ" name="pledged_organ" required>
+                            <option value="" {% if not form.pledged_organ.value %}selected{% endif %} disabled>Select Organ</option>
+                            <option value="Kidney" {% if form.pledged_organ.value == 'Kidney' %}selected{% endif %}>Kidney</option>
+                            <option value="Liver" {% if form.pledged_organ.value == 'Liver' %}selected{% endif %}>Liver</option>
+                            <option value="Heart" {% if form.pledged_organ.value == 'Heart' %}selected{% endif %}>Heart</option>
+                            <option value="Lung" {% if form.pledged_organ.value == 'Lung' %}selected{% endif %}>Lung</option>
+                            <option value="Pancreas" {% if form.pledged_organ.value == 'Pancreas' %}selected{% endif %}>Pancreas</option>
+                            <option value="Intestine" {% if form.pledged_organ.value == 'Intestine' %}selected{% endif %}>Intestine</option>
+                            <option value="Cornea" {% if form.pledged_organ.value == 'Cornea' %}selected{% endif %}>Cornea</option>
+                            <option value="Bone Marrow" {% if form.pledged_organ.value == 'Bone Marrow' %}selected{% endif %}>Bone Marrow</option>
+                            <option value="Skin Tissue" {% if form.pledged_organ.value == 'Skin Tissue' %}selected{% endif %}>Skin Tissue</option>
+                        </select>
+                        {% if form.pledged_organ.errors %}
+                            <div class="field-error" style="color: #e11d48; font-size: 0.8rem; margin-top: 0.25rem;">{{ form.pledged_organ.errors|striptags }}</div>
+                        {% endif %}
                     </div>
                     <div class="portal-field">
                         <label for="donor-contact">Contact Number</label>
-                        <input id="donor-contact" type="text" name="contact_number" autocomplete="tel" required>
+                        <input id="donor-contact" type="text" name="contact_number" value="{{ form.contact_number.value|default:'' }}" autocomplete="tel" required>
+                        {% if form.contact_number.errors %}
+                            <div class="field-error" style="color: #e11d48; font-size: 0.8rem; margin-top: 0.25rem;">{{ form.contact_number.errors|striptags }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="portal-field span-2">
+                        <label for="donor-profile-picture">Profile Picture</label>
+                        <input id="donor-profile-picture" type="file" name="profile_picture" accept="image/*">
+                        {% if form.profile_picture.errors %}
+                            <div class="field-error" style="color: #e11d48; font-size: 0.8rem; margin-top: 0.25rem;">{{ form.profile_picture.errors|striptags }}</div>
+                        {% endif %}
                     </div>
                     <div class="portal-field full">
                         <label for="donor-address">Address</label>
-                        <textarea id="donor-address" name="address" required></textarea>
-                    </div>
-                    <div class="portal-field full">
-                        <label for="donor-profile-picture">Profile Picture</label>
-                        <input id="donor-profile-picture" type="file" name="profile_picture" accept="image/*">
+                        <textarea id="donor-address" name="address" required>{{ form.address.value|default:'' }}</textarea>
+                        {% if form.address.errors %}
+                            <div class="field-error" style="color: #e11d48; font-size: 0.8rem; margin-top: 0.25rem;">{{ form.address.errors|striptags }}</div>
+                        {% endif %}
                     </div>
                 </div>
 
@@ -605,34 +587,21 @@
         </div>
     </div>
 </section>
+
+{% block extra_js %}
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        // Security Card Scramble Effect
-        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*<>_[]{}';
-        const streamEl = document.getElementById('scramble-stream');
-        
-        const keywords = [
-            '<span class="scramble-highlight">USER_AUTH</span>', 
-            '<span class="scramble-highlight">DONOR_PROFILE</span>', 
-            '<span class="scramble-highlight">BLOCKCHAIN_TX</span>', 
-            '<span class="scramble-alert">ENCRYPTING...</span>', 
-            '<span class="scramble-highlight">VERIFIED</span>'
-        ];
-        
-        function generateStream() {
-            if (!streamEl) return;
-            let streamContent = '';
-            for(let i=0; i<150; i++) {
-                if (Math.random() > 0.98) {
-                    streamContent += keywords[Math.floor(Math.random() * keywords.length)] + ' ';
-                } else {
-                    streamContent += characters.charAt(Math.floor(Math.random() * characters.length));
-                }
-            }
-            streamEl.innerHTML = streamContent;
+        const form = document.querySelector('form');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                submitAjaxForm(form, {
+                    successMessage: 'Registration successful! Logging you in...',
+                    preventReset: true
+                });
+            });
         }
-        
-        setInterval(generateStream, 80);
     });
 </script>
+{% endblock %}
 {% endblock %}

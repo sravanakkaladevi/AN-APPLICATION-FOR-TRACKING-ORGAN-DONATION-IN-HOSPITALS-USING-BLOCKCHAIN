@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
+from django.db import models
 from .models import User, DonorProfile, HospitalProfile, OrganRecord, Feedback, DeathCertificate, Recipient
 
 BLOOD_GROUP_CHOICES = [
@@ -42,6 +43,7 @@ class DonorRegistrationForm(UserCreationForm):
     address = forms.CharField(widget=forms.Textarea)
     city = forms.CharField(max_length=100, required=False)
     state = forms.CharField(max_length=100, required=False)
+    pledged_organ = forms.ChoiceField(choices=ORGAN_TYPE_CHOICES, required=True, label="Pledged Organ")
     profile_picture = forms.ImageField(required=False)
     background_image = forms.ImageField(required=False)
     policy_accepted = forms.BooleanField(
@@ -53,16 +55,30 @@ class DonorRegistrationForm(UserCreationForm):
         model = User
         fields = UserCreationForm.Meta.fields + ('email',)
 
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if email and User.objects.filter(email=email).exists():
+            raise forms.ValidationError("This email address is already in use.")
+        return email
+
     def save(self, commit=True):
         user = super().save(commit=False)
         user.is_donor = True
+        user.is_approved = True
         user.first_name = self.cleaned_data.get('first_name')
         user.last_name = self.cleaned_data.get('last_name')
         user.profile_picture = self.cleaned_data.get('profile_picture')
         if commit:
             user.save()
-            DonorProfile.objects.create(
+            assigned_hospital = (
+                HospitalProfile.objects
+                .annotate(assigned_total=models.Count('claimed_donors'))
+                .order_by('assigned_total', 'hospital_name')
+                .first()
+            )
+            donor = DonorProfile.objects.create(
                 user=user,
+                assigned_hospital=assigned_hospital,
                 age=self.cleaned_data.get('age'),
                 medical_history=self.cleaned_data.get('medical_history'),
                 blood_group=self.cleaned_data.get('blood_group'),
@@ -71,6 +87,14 @@ class DonorRegistrationForm(UserCreationForm):
                 address=self.cleaned_data.get('address'),
                 city=self.cleaned_data.get('city', ''),
                 state=self.cleaned_data.get('state', ''),
+                pledged_organ=self.cleaned_data.get('pledged_organ'),
+            )
+            OrganRecord.objects.create(
+                donor=donor,
+                organ_type=donor.pledged_organ or 'Kidney',
+                blood_group=donor.blood_group,
+                status='Pending',
+                registered_by=assigned_hospital,
             )
         return user
 
@@ -107,24 +131,6 @@ class HospitalRegistrationForm(UserCreationForm):
                 state=self.cleaned_data.get('state', ''),
             )
         return user
-
-class OrganRegistrationForm(forms.ModelForm):
-    organ_type = forms.ChoiceField(
-        choices=ORGAN_TYPE_CHOICES,
-        label="Organ Type",
-        help_text="Select the organ or tissue being donated.",
-    )
-
-    class Meta:
-        model = OrganRecord
-        fields = ['donor', 'organ_type']
-        widgets = {
-            'donor': forms.Select(),
-            'organ_type': forms.Select(),
-        }
-        labels = {
-            'donor': 'Donor',
-        }
 
 
 class ProfilePictureForm(forms.ModelForm):
@@ -257,9 +263,10 @@ class DonorProfileEditForm(forms.ModelForm):
 
     class Meta:
         model = DonorProfile
-        fields = ['blood_group', 'contact_number', 'address', 'city', 'state', 'age', 'medical_history']
+        fields = ['blood_group', 'contact_number', 'address', 'city', 'state', 'age', 'medical_history', 'pledged_organ']
         widgets = {
             'blood_group': forms.Select(choices=BLOOD_GROUP_CHOICES),
+            'pledged_organ': forms.Select(choices=ORGAN_TYPE_CHOICES),
             'address': forms.Textarea(attrs={'rows': 3}),
         }
 
@@ -354,21 +361,21 @@ class HospitalProfileEditForm(forms.ModelForm):
             profile.save()
         return profile
 
-class DonorPledgeForm(forms.ModelForm):
-    class Meta:
-        model = OrganRecord
-        fields = ['organ_type']
-        widgets = {
-            'organ_type': forms.Select(choices=ORGAN_TYPE_CHOICES),
-        }
 
 class RecipientForm(forms.ModelForm):
     class Meta:
         model = Recipient
-        fields = ['full_name', 'age', 'gender', 'blood_group', 'organ_needed', 'doctor_assigned', 'emergency_priority', 'medical_notes']
+        fields = [
+            'full_name', 'age', 'gender', 'blood_group', 'organ_needed',
+            'doctor_assigned', 'emergency_priority', 'medical_notes',
+        ]
         widgets = {
-            'gender': forms.Select(choices=GENDER_CHOICES),
-            'blood_group': forms.Select(choices=BLOOD_GROUP_CHOICES),
-            'organ_needed': forms.Select(choices=ORGAN_TYPE_CHOICES),
-            'medical_notes': forms.Textarea(attrs={'rows': 3}),
+            'full_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Patient Full Name'}),
+            'age': forms.NumberInput(attrs={'class': 'form-control', 'min': 0, 'max': 120}),
+            'gender': forms.Select(attrs={'class': 'form-select'}),
+            'blood_group': forms.Select(choices=BLOOD_GROUP_CHOICES, attrs={'class': 'form-select'}),
+            'organ_needed': forms.Select(choices=ORGAN_TYPE_CHOICES, attrs={'class': 'form-select'}),
+            'doctor_assigned': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Assigned Doctor'}),
+            'emergency_priority': forms.Select(attrs={'class': 'form-select'}),
+            'medical_notes': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Medical notes...'}),
         }

@@ -148,6 +148,44 @@ ORGAN_DONATION_CONTRACT_ADDRESS = os.environ.get('ORGAN_DONATION_CONTRACT_ADDRES
 ORGAN_DONATION_FROM_ADDRESS = os.environ.get('ORGAN_DONATION_FROM_ADDRESS', '')
 ORGAN_DONATION_ARTIFACT_PATH = os.environ.get(
     'ORGAN_DONATION_ARTIFACT_PATH',
-    str(BASE_DIR.parent / 'blockchain' / 'compiled' / 'abi.json'),
+    str(BASE_DIR.parent / 'blockchain' / 'build' / 'contracts' / 'OrganDonation.json'),
 )
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'core': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+}
+
 

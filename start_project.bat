@@ -1,5 +1,4 @@
 @echo off
-
 title Organ Donation Blockchain System
 
 echo ======================================
@@ -11,11 +10,6 @@ call venv\Scripts\activate
 echo.
 echo Please ensure Ganache is already running...
 timeout /t 2 >nul
-
-echo.
-echo Deploying Smart Contract...
-
-python blockchain\scripts\deploy_contract.py || echo Blockchain not connected. Continuing without blockchain...
 
 echo.
 echo Starting Django Server...

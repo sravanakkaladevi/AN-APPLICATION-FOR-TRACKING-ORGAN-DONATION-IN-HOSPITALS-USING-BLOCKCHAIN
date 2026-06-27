@@ -1,10 +1,12 @@
 import json
 import os
+import logging
 from datetime import datetime, timezone
 
 from django.conf import settings
 from web3 import Web3
 
+logger = logging.getLogger(__name__)
 
 w3 = Web3(Web3.HTTPProvider(settings.GANACHE_RPC_URL))
 
@@ -57,22 +59,55 @@ def _get_contract_address(artifact):
 
 
 def _get_sender_account(preferred_address=None):
-    if preferred_address:
-        return Web3.to_checksum_address(preferred_address)
-
-    configured_sender = settings.ORGAN_DONATION_FROM_ADDRESS.strip()
-    if configured_sender:
-        return Web3.to_checksum_address(configured_sender)
-
     accounts = w3.eth.accounts
     if not accounts:
         raise ValueError("No Ganache accounts available. Start Ganache first.")
+
+    if preferred_address:
+        checksummed = Web3.to_checksum_address(preferred_address)
+        if checksummed in accounts:
+            logger.info("Using preferred sender account: %s", checksummed)
+            return checksummed
+        else:
+            logger.warning(
+                "Preferred address %s is not in Ganache accounts. Falling back to default/first account.",
+                checksummed,
+            )
+
+    configured_sender = settings.ORGAN_DONATION_FROM_ADDRESS.strip() if hasattr(settings, 'ORGAN_DONATION_FROM_ADDRESS') else ''
+    if configured_sender:
+        checksummed_sender = Web3.to_checksum_address(configured_sender)
+        if checksummed_sender in accounts:
+            logger.info("Using configured sender account: %s", checksummed_sender)
+            return checksummed_sender
+        else:
+            logger.warning(
+                "Configured address %s is not in Ganache accounts. Falling back to first account.",
+                checksummed_sender,
+            )
+
+    logger.info("Using fallback first Ganache account: %s", accounts[0])
     return accounts[0]
 
 
 def get_contract():
     artifact = _load_contract_artifact()
     return w3.eth.contract(address=_get_contract_address(artifact), abi=artifact['abi'])
+
+
+# Verify connection on module load
+logger.info("Initializing Web3 provider at %s", settings.GANACHE_RPC_URL)
+try:
+    if w3.is_connected():
+        logger.info("Connected to Ganache: True")
+        logger.info("Ganache Block Number: %s", w3.eth.block_number)
+        artifact_init = _load_contract_artifact()
+        logger.info("Contract ABI Loaded: True")
+        logger.info("Contract Deployed Address: %s", _get_contract_address(artifact_init))
+    else:
+        logger.warning("Connected to Ganache: False (RPC at %s)", settings.GANACHE_RPC_URL)
+except Exception as e:
+    logger.error("Error during Web3 initialization check: %s", e)
 
 
 def get_blockchain_status():
@@ -110,20 +145,35 @@ def register_organ_on_chain(
     doctor_name,
     sender_address=None,
 ):
-    if not w3.is_connected():
+    logger.info("blockchain_service.register_organ_on_chain called.")
+    connected = w3.is_connected()
+    logger.info("Connected to Ganache: %s", connected)
+    if not connected:
         raise ConnectionError(f"Blockchain not connected at {settings.GANACHE_RPC_URL}.")
 
-    contract = get_contract()
+    try:
+        contract = get_contract()
+        logger.info("Contract Loaded: True")
+    except Exception as e:
+        logger.error("Contract Loaded: False. Error: %s", e)
+        raise
+
     sender_account = _get_sender_account(sender_address)
-    tx_hash = contract.functions.registerDonation(
+    tx_func = contract.functions.registerDonation(
         str(donor_id),
         donor_name,
         organ_type,
         hospital_name,
         doctor_name,
-    ).transact({'from': sender_account})
+    )
+    logger.info("Transaction Submitted")
+    tx_hash = tx_func.transact({'from': sender_account})
+    logger.info("Transaction Hash: %s", tx_hash.hex() if isinstance(tx_hash, bytes) else tx_hash)
 
     receipt = w3.eth.wait_for_transaction_receipt(tx_hash)
+    logger.info("Block Number: %s", receipt.blockNumber)
+    logger.info("Receipt Status: %s", receipt.status)
+
     if receipt.status != 1:
         raise RuntimeError("Ganache transaction failed while registering donation.")
 
@@ -144,37 +194,123 @@ def register_organ_on_chain(
     }
 
 
-def match_organ_on_chain(organ_id, recipient_hospital_name, matching_admin_address=None):
-    if not w3.is_connected():
+def match_organ_on_chain(organ_id, recipient_hospital_name, recipient_blockchain_id=None, matching_admin_address=None):
+    logger.info("=== ENTERED match_organ_on_chain ===")
+
+    logger.info("blockchain_service.match_organ_on_chain called.")
+    connected = w3.is_connected()
+    logger.info("Connected to Ganache: %s", connected)
+    if not connected:
         raise ConnectionError(f"Blockchain not connected at {settings.GANACHE_RPC_URL}.")
 
-    contract = get_contract()
+    try:
+        contract = get_contract()
+        logger.info("Contract Loaded: True")
+    except Exception as e:
+        logger.error("Contract Loaded: False. Error: %s", e)
+        raise
+
     sender_account = _get_sender_account(matching_admin_address)
-    tx_hash = contract.functions.matchOrgan(
-        int(organ_id),
-        str(recipient_hospital_name),
-    ).transact({'from': sender_account})
+    logger.info("Sender Account: %s", sender_account)
+
+    if recipient_blockchain_id:
+        try:
+            blockchain_id_str = str(recipient_blockchain_id).strip()
+            if '-' in blockchain_id_str:
+                rec_id_int = int(blockchain_id_str.split('-')[-1]) - 1000
+            else:
+                rec_id_int = int(blockchain_id_str)
+            if rec_id_int < 0:
+                rec_id_int = 0
+        except Exception:
+            rec_id_int = 0
+
+        import re
+        cleaned_organ_id = re.sub(r'\D', '', str(organ_id))
+        organ_id_int = int(cleaned_organ_id) if cleaned_organ_id else 0
+        tx_func = contract.functions.matchOrganWithRecipient(
+            organ_id_int,
+            recipient_hospital_name,
+            rec_id_int,
+        )
+    else:
+        import re
+        cleaned_organ_id = re.sub(r'\D', '', str(organ_id))
+        organ_id_int = int(cleaned_organ_id) if cleaned_organ_id else 0
+        tx_func = contract.functions.matchOrgan(
+            organ_id_int,
+            recipient_hospital_name,
+        )
+
+    logger.info("=== BEFORE TRANSACT ===")
+    tx_hash = tx_func.transact({'from': sender_account})
+    logger.info("=== AFTER TRANSACT ===")
+
+    logger.info("Transaction Hash: %s", tx_hash.hex() if isinstance(tx_hash, bytes) else tx_hash)
 
     receipt = w3.eth.wait_for_transaction_receipt(tx_hash)
+    logger.info("=== RECEIPT RECEIVED ===")
+
+    logger.info("Block Number: %s", receipt.blockNumber)
+    logger.info("Receipt Status: %s", receipt.status)
+
     if receipt.status != 1:
         raise RuntimeError("Ganache transaction failed while matching organ.")
 
     return {
         'transaction_hash': tx_hash.hex() if isinstance(tx_hash, bytes) else tx_hash,
         'block_number': receipt.blockNumber,
-        'status': receipt.status
+        'status': receipt.status,
     }
 
-
-def transplant_organ_on_chain(organ_id, hospital_address=None):
-    if not w3.is_connected():
+def transplant_organ_on_chain(organ_id, recipient_blockchain_id=None, hospital_address=None):
+    logger.info("blockchain_service.transplant_organ_on_chain called.")
+    connected = w3.is_connected()
+    logger.info("Connected to Ganache: %s", connected)
+    if not connected:
         raise ConnectionError(f"Blockchain not connected at {settings.GANACHE_RPC_URL}.")
 
-    contract = get_contract()
+    try:
+        contract = get_contract()
+        logger.info("Contract Loaded: True")
+    except Exception as e:
+        logger.error("Contract Loaded: False. Error: %s", e)
+        raise
+
     sender_account = _get_sender_account(hospital_address)
-    tx_hash = contract.functions.completeTransplant(int(organ_id)).transact({'from': sender_account})
     
+    if recipient_blockchain_id:
+        try:
+            blockchain_id_str = str(recipient_blockchain_id).strip()
+            if '-' in blockchain_id_str:
+                rec_id_int = int(blockchain_id_str.split('-')[-1]) - 1000
+            else:
+                rec_id_int = int(blockchain_id_str)
+            if rec_id_int < 0:
+                rec_id_int = 0
+        except Exception:
+            rec_id_int = 0
+        import re
+        cleaned_organ_id = re.sub(r'\D', '', str(organ_id))
+        organ_id_int = int(cleaned_organ_id) if cleaned_organ_id else 0
+        tx_func = contract.functions.completeTransplantWithRecipient(
+            organ_id_int,
+            rec_id_int
+        )
+    else:
+        import re
+        cleaned_organ_id = re.sub(r'\D', '', str(organ_id))
+        organ_id_int = int(cleaned_organ_id) if cleaned_organ_id else 0
+        tx_func = contract.functions.completeTransplant(organ_id_int)
+    
+    logger.info("Transaction Submitted")
+    tx_hash = tx_func.transact({'from': sender_account})
+    logger.info("Transaction Hash: %s", tx_hash.hex() if isinstance(tx_hash, bytes) else tx_hash)
+
     receipt = w3.eth.wait_for_transaction_receipt(tx_hash)
+    logger.info("Block Number: %s", receipt.blockNumber)
+    logger.info("Receipt Status: %s", receipt.status)
+
     if receipt.status != 1:
         raise RuntimeError("Ganache transaction failed while completing transplant.")
 
@@ -185,77 +321,61 @@ def transplant_organ_on_chain(organ_id, hospital_address=None):
     }
 
 
-# --- VERSION A COMPATIBILITY WRAPPERS (formerly in blockchain_service.py) ---
-
-def connect_blockchain():
-    """Connects to the local Ganache blockchain, caching the connection for performance."""
-    if w3.is_connected():
-        return w3
-    return None
-
-
-def get_contract_instance(w3_conn):
-    """Loads the contract ABI and address and returns a contract instance."""
-    try:
-        return get_contract()
-    except Exception:
-        return None
-
-
-def register_donor(name, organ_type, hospital_id):
-    """Registers a donor on the blockchain (for REST API and legacy tests)."""
-    if not w3.is_connected():
-        return {"error": "Ganache not running"}
+def register_recipient_on_chain(
+    recipient_id,
+    full_name,
+    blood_group,
+    organ_needed,
+    hospital_name,
+    sender_address=None,
+):
+    logger.info("blockchain_service.register_recipient_on_chain called.")
+    connected = w3.is_connected()
+    logger.info("Connected to Ganache: %s", connected)
+    if not connected:
+        raise ConnectionError(f"Blockchain not connected at {settings.GANACHE_RPC_URL}.")
 
     try:
         contract = get_contract()
-        account = w3.eth.accounts[0]
-        tx_hash = contract.functions.registerDonor(name, organ_type, hospital_id).transact({'from': account})
-        receipt = w3.eth.wait_for_transaction_receipt(tx_hash)
-        
-        return {
-            "success": True,
-            "transaction_hash": tx_hash.hex() if isinstance(tx_hash, bytes) else tx_hash,
-            "block_number": receipt.blockNumber,
-            "gas_used": receipt.gasUsed
-        }
+        logger.info("Contract Loaded: True")
     except Exception as e:
-        return {"error": str(e)}
+        logger.error("Contract Loaded: False. Error: %s", e)
+        raise
+
+    sender_account = _get_sender_account(sender_address)
+    tx_func = contract.functions.registerRecipient(
+        str(recipient_id),
+        full_name,
+        blood_group,
+        organ_needed,
+        hospital_name,
+    )
+    logger.info("Transaction Submitted")
+    tx_hash = tx_func.transact({'from': sender_account})
+    logger.info("Transaction Hash: %s", tx_hash.hex() if isinstance(tx_hash, bytes) else tx_hash)
+
+    receipt = w3.eth.wait_for_transaction_receipt(tx_hash)
+    logger.info("Block Number: %s", receipt.blockNumber)
+    logger.info("Receipt Status: %s", receipt.status)
+
+    if receipt.status != 1:
+        raise RuntimeError("Ganache transaction failed while registering recipient.")
+
+    events = contract.events.RecipientRegistered().process_receipt(receipt)
+    if not events:
+        raise RuntimeError("RecipientRegistered event was not emitted by the contract.")
+
+    event_args = events[0]['args']
+    transaction_hash = receipt.transactionHash.hex()
+    if not transaction_hash.startswith('0x'):
+        transaction_hash = f"0x{transaction_hash}"
+
+    return {
+        'blockchain_id': f"BC-{1000 + event_args['id']}",
+        'transaction_hash': transaction_hash,
+        'block_number': receipt.blockNumber,
+        'timestamp': datetime.fromtimestamp(event_args['timestamp'], tz=timezone.utc),
+    }
 
 
-def get_donor(donor_id):
-    """Retrieves donor details from the blockchain (for REST API and legacy tests)."""
-    if not w3.is_connected():
-        return {"error": "Ganache not running"}
 
-    try:
-        contract = get_contract()
-        donor_data = contract.functions.getDonor(int(donor_id)).call()
-        
-        return {
-            "id": donor_data[0],
-            "name": donor_data[1],
-            "organ_type": donor_data[2],
-            "hospital_id": donor_data[3],
-            "is_approved": donor_data[4],
-            "timestamp": donor_data[5]
-        }
-    except Exception as e:
-        return {"error": f"Failed to retrieve donor: {str(e)}"}
-
-
-def verify_transaction(tx_hash):
-    """Verifies a transaction by its hash (for REST API and legacy tests)."""
-    if not w3.is_connected():
-        return {"error": "Ganache not running"}
-
-    try:
-        receipt = w3.eth.get_transaction_receipt(tx_hash)
-        return {
-            "status": "Success" if receipt.status == 1 else "Failed",
-            "block_number": receipt.blockNumber,
-            "from": receipt['from'],
-            "to": receipt['to']
-        }
-    except Exception as e:
-        return {"error": f"Transaction not found or invalid: {str(e)}"}

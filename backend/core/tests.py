@@ -6,8 +6,8 @@ from django.urls import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test.utils import override_settings
 
-from .forms import BLOOD_GROUP_CHOICES, ORGAN_TYPE_CHOICES, OrganRegistrationForm
-from .models import DonorProfile, HospitalProfile, OrganRecord, User
+from .forms import BLOOD_GROUP_CHOICES, ORGAN_TYPE_CHOICES, DonorRegistrationForm
+from .models import DonorProfile, HospitalProfile, OrganRecord, User, Recipient
 
 
 class FormChoicesTests(TestCase):
@@ -16,8 +16,8 @@ class FormChoicesTests(TestCase):
         self.assertEqual(labels['A+'], 'A+ (Positive)')
         self.assertEqual(labels['O-'], 'O- (Negative)')
 
-    def test_organ_registration_form_includes_common_donatable_organs(self):
-        organ_choices = dict(OrganRegistrationForm().fields['organ_type'].choices)
+    def test_donor_registration_form_includes_common_pledge_organs(self):
+        organ_choices = dict(DonorRegistrationForm().fields['pledged_organ'].choices)
         self.assertIn('Kidney', organ_choices)
         self.assertIn('Liver', organ_choices)
         self.assertIn('Heart', organ_choices)
@@ -67,50 +67,54 @@ class MatchOrganViewTests(TestCase):
             donor=self.donor,
             organ_type='Kidney',
             blood_group='A+',
+            status='Available',
             registered_by=self.source_hospital,
         )
 
-    @patch('core.views.match_organ_on_chain', return_value=True)
-    def test_hospital_can_match_available_organ_for_itself(self, _mock_match):
-        self.client.force_login(self.ace_user)
+    def test_admin_can_complete_transplant_of_matched_organ(self):
+        with patch('core.views.transplant_organ_on_chain', return_value=True):
+            admin = User.objects.create_superuser(username='admin', password=self.password, email='admin@example.com')
+            self.client.force_login(admin)
 
-        response = self.client.post(reverse('match_organ', args=[self.organ.id]))
+            # Set up a matched organ and transplant record
+            self.organ.status = 'Matched'
+            self.organ.recipient_hospital = self.ace_hospital
+            self.organ.save(update_fields=['status', 'recipient_hospital'])
 
-        self.assertRedirects(response, reverse('hospital_dashboard'))
-        self.organ.refresh_from_db()
-        self.assertEqual(self.organ.status, 'Matched')
-        self.assertEqual(self.organ.recipient_hospital, self.ace_hospital)
+            # Create recipient in the target hospital
+            from .models import Recipient
+            recipient = Recipient.objects.create(
+                full_name="Alice Smith",
+                age=30,
+                gender="female",
+                blood_group="A+",
+                organ_needed="Kidney",
+                hospital=self.ace_hospital,
+                doctor_assigned="Dr. House",
+                blockchain_id="123"  # Set to bypass blockchain registration in view
+            )
 
-    @patch('core.views.match_organ_on_chain', return_value=True)
-    def test_admin_match_uses_selected_hospital_id(self, _mock_match):
-        admin = User.objects.create_superuser(username='admin', password=self.password, email='admin@example.com')
-        self.client.force_login(admin)
+            from .models import Transplant
+            Transplant.objects.create(
+                donor=self.donor,
+                recipient=recipient,
+                organ=self.organ,
+                hospital=self.ace_hospital,
+                match_status='Approved'
+            )
 
-        response = self.client.post(
-            reverse('match_organ', args=[self.organ.id]),
-            {'hospital_id': self.third_hospital.pk},
-        )
+            response = self.client.post(
+                reverse('admin_complete_transplant', args=[self.organ.pk])
+            )
 
-        self.assertRedirects(response, reverse('admin_dashboard'))
-        self.organ.refresh_from_db()
-        self.assertEqual(self.organ.recipient_hospital, self.third_hospital)
-
-    def test_hospital_can_update_connected_organ_status(self):
-        self.organ.status = 'Matched'
-        self.organ.recipient_hospital = self.ace_hospital
-        self.organ.save(update_fields=['status', 'recipient_hospital'])
-        self.client.force_login(self.ace_user)
-
-        response = self.client.post(
-            reverse('hospital_update_organ_status', args=[self.organ.pk]),
-            {'status': 'Transplanted'},
-        )
-
-        self.assertRedirects(response, reverse('hospital_dashboard'))
-        self.organ.refresh_from_db()
-        self.assertEqual(self.organ.status, 'Transplanted')
+            self.assertRedirects(response, reverse('admin_dashboard'))
+            self.organ.refresh_from_db()
+            self.assertEqual(self.organ.status, 'Transplanted')
 
     def test_hospital_can_edit_owned_organ_details(self):
+        self.organ.status = 'Under Testing'
+        self.organ.blockchain_id = None
+        self.organ.save()
         self.client.force_login(self.source_user)
 
         response = self.client.post(
@@ -118,7 +122,7 @@ class MatchOrganViewTests(TestCase):
             {
                 'organ_type': 'Liver',
                 'blood_group': 'O-',
-                'status': 'Available',
+                'status': 'Eligible',
             },
         )
 
@@ -140,6 +144,7 @@ class ProfilePictureUploadTests(TestCase):
             blood_group='B+',
             contact_number='7777777777',
             address='Donor Street',
+            approval_status='Accepted',
         )
         self.client.force_login(user)
 
@@ -162,6 +167,7 @@ class ProfilePictureUploadTests(TestCase):
             blood_group='B+',
             contact_number='7777777777',
             address='Old Donor Street',
+            approval_status='Accepted',
         )
         self.client.force_login(user)
 
@@ -198,6 +204,7 @@ class ProfilePictureUploadTests(TestCase):
             blood_group='A+',
             contact_number='7777777777',
             address='Donor Street',
+            approval_status='Accepted',
         )
         self.client.force_login(user)
 
@@ -263,7 +270,7 @@ class ProfilePictureUploadTests(TestCase):
         response = self.client.get(reverse('hospital_dashboard') + '#hosp-profile')
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Save Profile, Logo & Password')
+        self.assertContains(response, 'Save Profile')
 
     def test_admin_can_upload_hospital_background(self):
         admin = User.objects.create_superuser(username='bg_admin', password='Admin123', email='admin@example.com')
@@ -348,7 +355,7 @@ class ProfilePictureUploadTests(TestCase):
         response = self.client.get(reverse('admin_dashboard') + '#admin-profile')
 
         self.assertContains(response, 'admin-bg-shell has-image')
-        self.assertContains(response, 'Dashboard Background')
+        self.assertContains(response, 'Dashboard background')
 
     def test_hospital_background_renders_on_home_and_dashboard(self):
         user = User.objects.create_user(username='bg_render_hospital', password='Admin123', is_hospital=True)
@@ -493,3 +500,522 @@ class AdminHospitalManagementTests(TestCase):
         self.assertRedirects(response, reverse('admin_dashboard'))
         organ.refresh_from_db()
         self.assertEqual(organ.status, 'Transplanted')
+
+
+class OrganWorkflowTests(TestCase):
+    def setUp(self):
+        self.password = 'Admin123'
+        self.admin = User.objects.create_superuser(username='admin_wf', password=self.password, email='admin@example.com')
+        
+        self.hospital_user = User.objects.create_user(username='hosp_wf', password=self.password, is_hospital=True)
+        self.hospital = HospitalProfile.objects.create(
+            user=self.hospital_user,
+            hospital_name='Workflow Hospital',
+            registration_number='WF-HOSP-001',
+            contact_number='1112223333',
+            address='Workflow Street',
+            blockchain_wallet_address='0x90F8bf6A479f320ead074411a4B0e7944EAE8626',
+        )
+        
+        self.donor_user = User.objects.create_user(username='donor_wf', password=self.password, is_donor=True)
+        self.donor = DonorProfile.objects.create(
+            user=self.donor_user,
+            blood_group='O+',
+            contact_number='4445556666',
+            address='Donor Street',
+            approval_status='Accepted',
+        )
+        
+        # Admin approves donor and automatically creates Registered OrganRecord
+        self.organ = OrganRecord.objects.create(
+            donor=self.donor,
+            organ_type='Kidney',
+            blood_group='O+',
+            status='Registered',
+            registered_by=self.hospital,
+        )
+
+    def test_hospital_local_transitions(self):
+        self.client.force_login(self.hospital_user)
+        self.organ.status = 'Pending'
+        self.organ.save()
+
+        # 1. Pending -> Under Testing
+        response = self.client.post(
+            reverse('hospital_transition_organ', args=[self.organ.pk]),
+            {'status': 'Under Testing'}
+        )
+        self.assertRedirects(response, reverse('hospital_dashboard'))
+        self.organ.refresh_from_db()
+        self.assertEqual(self.organ.status, 'Under Testing')
+
+        # 2. Under Testing -> Eligible (Waiting For Blockchain Approval)
+        response = self.client.post(
+            reverse('hospital_transition_organ', args=[self.organ.pk]),
+            {'status': 'Eligible'}
+        )
+        self.assertRedirects(response, reverse('hospital_dashboard'))
+        self.organ.refresh_from_db()
+        self.assertEqual(self.organ.status, 'Waiting For Blockchain Approval')
+
+    def test_hospital_rejection_transition(self):
+        self.client.force_login(self.hospital_user)
+        self.organ.status = 'Under Testing'
+        self.organ.save()
+
+        # Under Testing -> Rejected
+        response = self.client.post(
+            reverse('hospital_transition_organ', args=[self.organ.pk]),
+            {'status': 'Rejected', 'medical_remarks': 'Medical failure'}
+        )
+        self.assertRedirects(response, reverse('hospital_dashboard'))
+        self.organ.refresh_from_db()
+        self.assertEqual(self.organ.status, 'Rejected')
+
+    @patch('core.views.register_organ_on_chain')
+    def test_admin_approve_organ_write_to_blockchain(self, mock_register):
+        from django.utils import timezone
+        mock_register.return_value = {
+            'blockchain_id': 202,
+            'transaction_hash': '0xhash',
+            'block_number': 42,
+            'timestamp': timezone.now(),
+        }
+        self.organ.status = 'Waiting For Blockchain Approval'
+        self.organ.save()
+
+        self.client.force_login(self.admin)
+        response = self.client.post(reverse('admin_approve_organ', args=[self.organ.pk]))
+        self.assertRedirects(response, reverse('admin_dashboard'))
+        self.organ.refresh_from_db()
+        self.assertEqual(self.organ.status, 'Blockchain Verified')
+        self.assertEqual(self.organ.blockchain_id, 202)
+        mock_register.assert_called_once()
+
+    def test_admin_reject_and_return_organ(self):
+        self.client.force_login(self.admin)
+
+        # Case 1: Return for correction (action == 'return' -> Under Testing)
+        self.organ.status = 'Waiting For Blockchain Approval'
+        self.organ.save()
+        response = self.client.post(
+            reverse('admin_reject_organ', args=[self.organ.pk]),
+            {'action': 'return'}
+        )
+        self.assertRedirects(response, reverse('admin_dashboard'))
+        self.organ.refresh_from_db()
+        self.assertEqual(self.organ.status, 'Under Testing')
+
+        # Case 2: Permanent Rejection (action != 'return' -> Rejected)
+        self.organ.status = 'Waiting For Blockchain Approval'
+        self.organ.save()
+        response = self.client.post(
+            reverse('admin_reject_organ', args=[self.organ.pk]),
+            {'action': 'reject'}
+        )
+        self.assertRedirects(response, reverse('admin_dashboard'))
+        self.organ.refresh_from_db()
+        self.assertEqual(self.organ.status, 'Rejected')
+
+    def test_delete_organ_permissions(self):
+        # 1. Hospital CANNOT delete organ
+        self.client.force_login(self.hospital_user)
+        response = self.client.post(reverse('delete_organ', args=[self.organ.pk]))
+        self.assertEqual(response.status_code, 302)  # Should redirect with error
+        self.assertTrue(OrganRecord.objects.filter(pk=self.organ.pk).exists())
+
+        # 2. Admin CAN delete rejected organ
+        self.client.force_login(self.admin)
+        self.organ.status = 'Rejected'
+        self.organ.save()
+        response = self.client.post(reverse('delete_organ', args=[self.organ.pk]))
+        self.assertRedirects(response, reverse('admin_dashboard'))
+        self.assertFalse(OrganRecord.objects.filter(pk=self.organ.pk).exists())
+
+        # Re-create donor and organ for next tests
+        new_donor_user = User.objects.create_user(username='donor_wf_new', password=self.password, is_donor=True)
+        new_donor = DonorProfile.objects.create(
+            user=new_donor_user,
+            blood_group='O+',
+            contact_number='4445556666',
+            address='Donor Street',
+            approval_status='Accepted',
+        )
+        self.organ = OrganRecord.objects.create(
+            donor=new_donor,
+            organ_type='Kidney',
+            blood_group='O+',
+            status='Submitted to Admin',
+            registered_by=self.hospital,
+        )
+
+        # 2. Hospital CANNOT delete submitted organ
+        response = self.client.post(reverse('delete_organ', args=[self.organ.pk]))
+        self.assertEqual(response.status_code, 302)  # Should redirect with error
+        self.assertTrue(OrganRecord.objects.filter(pk=self.organ.pk).exists())
+
+        # 3. Admin CAN delete un-blockchain-registered organ
+        self.client.force_login(self.admin)
+        self.organ.status = 'Rejected'
+        self.organ.save()
+        response = self.client.post(reverse('delete_organ', args=[self.organ.pk]))
+        self.assertRedirects(response, reverse('admin_dashboard'))
+        self.assertFalse(OrganRecord.objects.filter(pk=self.organ.pk).exists())
+
+
+class DonorVerificationWorkflowTests(TestCase):
+    def setUp(self):
+        self.password = 'Admin123'
+        self.admin = User.objects.create_superuser(username='admin_dv', password=self.password, email='admin@example.com')
+        
+        self.hospital_user = User.objects.create_user(username='hosp_dv', password=self.password, is_hospital=True)
+        self.hospital = HospitalProfile.objects.create(
+            user=self.hospital_user,
+            hospital_name='Verification Hospital',
+            registration_number='VH-001',
+            contact_number='1112223333',
+            address='Verification St',
+            blockchain_wallet_address='0x90F8bf6A479f320ead074411a4B0e7944EAE8626',
+        )
+
+    def test_donor_registration_without_assigned_hospital(self):
+        from .forms import DonorRegistrationForm
+        form = DonorRegistrationForm(data={
+            'username': 'registered_donor_test',
+            'email': 'donor_test@example.com',
+            'first_name': 'Test',
+            'last_name': 'Donor',
+            'age': 35,
+            'medical_history': 'None',
+            'blood_group': 'B+',
+            'gender': 'male',
+            'contact_number': '1234567890',
+            'address': 'Test Road',
+            'pledged_organ': 'Heart',
+            'password1': 'Password123!',
+            'password2': 'Password123!',
+            'policy_accepted': True,
+        })
+        self.assertTrue(form.is_valid(), form.errors)
+        user = form.save()
+        donor = user.donorprofile
+        self.assertEqual(donor.approval_status, 'Pending')
+        self.assertTrue(user.is_approved)
+
+    @patch('core.views.register_organ_on_chain')
+    def test_donor_registration_and_blockchain_approval_flow(self, mock_register):
+        from django.utils import timezone
+        mock_register.return_value = {
+            'blockchain_id': 202,
+            'transaction_hash': '0xhash',
+            'block_number': 42,
+            'timestamp': timezone.now(),
+        }
+        
+        # 1. Register donor
+        from .forms import DonorRegistrationForm
+        form = DonorRegistrationForm(data={
+            'username': 'registered_donor_flow',
+            'email': 'donor_flow@example.com',
+            'first_name': 'Test',
+            'last_name': 'Donor',
+            'age': 35,
+            'medical_history': 'None',
+            'blood_group': 'B+',
+            'gender': 'male',
+            'contact_number': '1234567890',
+            'address': 'Test Road',
+            'pledged_organ': 'Heart',
+            'password1': 'Password123!',
+            'password2': 'Password123!',
+            'policy_accepted': True,
+        })
+        self.assertTrue(form.is_valid())
+        user = form.save()
+        donor = user.donorprofile
+        self.assertEqual(donor.approval_status, 'Pending')
+        self.assertTrue(user.is_approved)
+        
+        # An OrganRecord is automatically created with status Pending
+        organ = OrganRecord.objects.get(donor=donor)
+        self.assertEqual(organ.status, 'Pending')
+        
+        # 2. Hospital updates to Eligible
+        self.client.force_login(self.hospital_user)
+        response = self.client.post(
+            reverse('hospital_update_organ_status', args=[organ.pk]),
+            {
+                'organ_type': 'Heart',
+                'blood_group': 'B+',
+                'status': 'Eligible',
+                'medical_remarks': 'Perfect heart',
+            }
+        )
+        self.assertRedirects(response, reverse('hospital_dashboard'))
+        organ.refresh_from_db()
+        self.assertEqual(organ.status, 'Waiting For Blockchain Approval')
+        
+        # 3. Admin approves for Blockchain
+        self.client.force_login(self.admin)
+        response = self.client.post(reverse('admin_approve_organ', args=[organ.pk]))
+        self.assertRedirects(response, reverse('admin_dashboard'))
+        organ.refresh_from_db()
+        self.assertEqual(organ.status, 'Blockchain Verified')
+        self.assertEqual(organ.blockchain_id, 202)
+
+    def test_hospital_rejects_donor(self):
+        donor_user = User.objects.create_user(username='pending_donor', password=self.password, is_donor=True)
+        donor = DonorProfile.objects.create(
+            user=donor_user,
+            blood_group='O+',
+            contact_number='9990001111',
+            address='Donor Addr',
+            pledged_organ='Kidney',
+            approval_status='Pending',
+            assigned_hospital=self.hospital,
+        )
+        organ = OrganRecord.objects.create(
+            donor=donor,
+            organ_type='Kidney',
+            blood_group='O+',
+            status='Pending',
+            registered_by=self.hospital,
+        )
+        self.client.force_login(self.hospital_user)
+        response = self.client.post(
+            reverse('hospital_update_organ_status', args=[organ.pk]),
+            {
+                'organ_type': 'Kidney',
+                'blood_group': 'O+',
+                'status': 'Rejected',
+                'medical_remarks': 'Disqualified',
+            }
+        )
+        self.assertRedirects(response, reverse('hospital_dashboard'))
+        donor.refresh_from_db()
+        self.assertEqual(donor.approval_status, 'Rejected')
+
+    def test_admin_cannot_delete_blockchain_registered_donor(self):
+        donor_user = User.objects.create_user(username='bc_donor', password=self.password, is_donor=True)
+        donor = DonorProfile.objects.create(
+            user=donor_user,
+            blood_group='O+',
+            contact_number='9990001111',
+            address='Donor Addr',
+            pledged_organ='Kidney',
+            approval_status='Accepted',
+            is_deceased=True,
+        )
+        organ = OrganRecord.objects.create(
+            donor=donor,
+            organ_type='Kidney',
+            blood_group='O+',
+            status='Available',
+            blockchain_id=123,
+            blockchain_tx_hash='0x1234567890abcdef',
+            registered_by=self.hospital,
+        )
+        self.client.force_login(self.admin)
+        response = self.client.post(reverse('delete_user', args=[donor_user.id]))
+        self.assertRedirects(response, reverse('admin_dashboard'))
+        
+        # Verify user still exists
+        self.assertTrue(User.objects.filter(pk=donor_user.id).exists())
+
+    def test_admin_can_delete_deceased_donor_credentials(self):
+        # Create a deceased donor
+        donor_user = User.objects.create_user(username='deceased_donor', password=self.password, is_donor=True)
+        donor = DonorProfile.objects.create(
+            user=donor_user,
+            blood_group='O+',
+            contact_number='9990001111',
+            address='Donor Addr',
+            pledged_organ='Kidney',
+            approval_status='Accepted',
+            is_deceased=True,
+        )
+
+        self.client.force_login(self.admin)
+
+        response = self.client.post(reverse('delete_user', args=[donor_user.id]))
+        self.assertRedirects(response, reverse('admin_dashboard'))
+        self.assertFalse(User.objects.filter(pk=donor_user.id).exists())
+        self.assertFalse(DonorProfile.objects.filter(pk=donor_user.id).exists())
+
+
+class AdminOnlyFeatureTests(TestCase):
+    def setUp(self):
+        self.password = 'Admin123'
+        self.admin = User.objects.create_superuser(username='admin_feat', password=self.password, email='admin@example.com')
+        
+        self.hospital_user = User.objects.create_user(username='hosp_feat', password=self.password, is_hospital=True)
+        self.hospital = HospitalProfile.objects.create(
+            user=self.hospital_user,
+            hospital_name='Features Hospital',
+            registration_number='FH-001',
+            contact_number='1112223333',
+            address='Features St',
+            blockchain_wallet_address='0x90F8bf6A479f320ead074411a4B0e7944EAE8626',
+        )
+        
+        self.donor_user = User.objects.create_user(username='donor_feat', password=self.password, is_donor=True)
+        self.donor = DonorProfile.objects.create(
+            user=self.donor_user,
+            blood_group='A+',
+            contact_number='9999999999',
+            address='Donor Addr',
+            pledged_organ='Kidney',
+            approval_status='Approved',
+            assigned_hospital=self.hospital,
+        )
+        
+        self.organ = OrganRecord.objects.create(
+            donor=self.donor,
+            organ_type='Kidney',
+            blood_group='A+',
+            status='Approved',
+            registered_by=self.hospital,
+        )
+        
+        from .models import Recipient
+        self.recipient = Recipient.objects.create(
+            full_name="Bob Patient",
+            age=45,
+            gender="male",
+            blood_group="A+",
+            organ_needed="Kidney",
+            hospital=self.hospital,
+            doctor_assigned="Dr. House"
+        )
+
+    def test_hospital_cannot_match_organ(self):
+        self.client.force_login(self.hospital_user)
+        response = self.client.post(reverse('match_organ', args=[self.organ.pk]))
+        self.assertRedirects(response, f"/login/?next={reverse('match_organ', args=[self.organ.pk])}")
+        self.organ.refresh_from_db()
+        self.assertNotEqual(self.organ.status, 'Matched')
+
+    @patch('core.views.register_organ_on_chain')
+    @patch('core.views.register_recipient_on_chain')
+    @patch('core.views.match_organ_on_chain')
+    def test_admin_can_match_organ(self, mock_match, mock_register_recipient, mock_register_organ):
+        mock_register_recipient.return_value = {
+            'blockchain_id': 'BC-1001',
+            'transaction_hash': '0xrecipient',
+        }
+        mock_register_organ.return_value = {
+            'blockchain_id': 1,
+            'transaction_hash': '0xorgan',
+            'block_number': 1,
+            'timestamp': None,
+        }
+        mock_match.return_value = {
+            'transaction_hash': '0xmatch',
+            'block_number': 2,
+            'status': 1,
+        }
+        self.client.force_login(self.admin)
+        response = self.client.post(
+            reverse('admin_match_organ', args=[self.organ.pk]),
+            {'recipient_id': self.recipient.pk}
+        )
+        self.assertRedirects(response, reverse('admin_dashboard'))
+        self.organ.refresh_from_db()
+        self.assertEqual(self.organ.status, 'Matched')
+        self.assertEqual(self.organ.recipient_hospital, self.hospital)
+        
+        self.recipient.refresh_from_db()
+        self.assertEqual(self.recipient.status, 'Matched')
+        
+        from .models import Transplant
+        self.assertTrue(Transplant.objects.filter(organ=self.organ, recipient=self.recipient).exists())
+
+    def test_admin_matching_compatibility_validation(self):
+        from .models import Recipient
+        incompatible_recipient = Recipient.objects.create(
+            full_name="Bob Patient Incompatible",
+            age=45,
+            gender="male",
+            blood_group="B-",
+            organ_needed="Kidney",
+            hospital=self.hospital,
+            doctor_assigned="Dr. House"
+        )
+        self.client.force_login(self.admin)
+        response = self.client.post(
+            reverse('admin_match_organ', args=[self.organ.pk]),
+            {'recipient_id': incompatible_recipient.pk}
+        )
+        self.assertRedirects(response, reverse('admin_dashboard'))
+        self.organ.refresh_from_db()
+        self.assertNotEqual(self.organ.status, 'Matched')
+
+    def test_hospital_can_set_death_statuses_and_marks_donor_deceased(self):
+        self.client.force_login(self.hospital_user)
+        response = self.client.post(
+            reverse('hospital_update_organ_status', args=[self.organ.pk]),
+            {
+                'organ_type': 'Kidney',
+                'blood_group': 'A+',
+                'status': 'Death but Eligible Transplant',
+                'medical_remarks': 'Deceased eligible',
+            }
+        )
+        self.assertRedirects(response, reverse('hospital_dashboard'))
+        self.organ.refresh_from_db()
+        self.assertEqual(self.organ.status, 'Death but Eligible Transplant')
+        
+        self.donor.refresh_from_db()
+        self.assertEqual(self.donor.approval_status, 'Death but Eligible Transplant')
+        self.assertTrue(self.donor.is_deceased)
+
+    def test_recipient_edit_delete(self):
+        recipient = Recipient.objects.create(
+            full_name="Bob Patient",
+            age=45,
+            gender="male",
+            blood_group="A+",
+            organ_needed="Kidney",
+            hospital=self.hospital,
+            doctor_assigned="Dr. House"
+        )
+        self.client.force_login(self.hospital_user)
+        response = self.client.post(
+            reverse('hospital_edit_recipient', args=[recipient.pk]),
+            {
+                'full_name': "Bob Patient Edited",
+                'age': 46,
+                'gender': "male",
+                'blood_group': "A+",
+                'organ_needed': "Kidney",
+                'doctor_assigned': "Dr. House Updated",
+                'emergency_priority': "High",
+                'medical_notes': "Severe kidney disease"
+            }
+        )
+        self.assertRedirects(response, '/dashboard/hospital/#hosp-recipients')
+        recipient.refresh_from_db()
+        self.assertEqual(recipient.full_name, "Bob Patient Edited")
+        self.assertEqual(recipient.age, 46)
+        self.assertEqual(recipient.emergency_priority, "High")
+        
+        response = self.client.post(reverse('hospital_delete_recipient', args=[recipient.pk]))
+        self.assertRedirects(response, '/dashboard/hospital/#hosp-recipients')
+        self.assertFalse(Recipient.objects.filter(pk=recipient.pk).exists())
+        
+        recipient2 = Recipient.objects.create(
+            full_name="Alice Patient",
+            age=30,
+            gender="female",
+            blood_group="O+",
+            organ_needed="Liver",
+            hospital=self.hospital,
+            doctor_assigned="Dr. Wilson"
+        )
+        self.client.force_login(self.admin)
+        response = self.client.post(reverse('admin_delete_recipient', args=[recipient2.pk]))
+        self.assertRedirects(response, '/dashboard/admin/#admin-recipients')
+        self.assertFalse(Recipient.objects.filter(pk=recipient2.pk).exists())
+
+
+

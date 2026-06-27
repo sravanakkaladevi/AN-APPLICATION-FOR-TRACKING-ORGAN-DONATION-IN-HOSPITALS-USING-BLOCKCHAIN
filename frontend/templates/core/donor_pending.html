@@ -1,0 +1,36 @@
+{% extends 'core/base.html' %}
+{% block title %}Pending Approval{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6 text-center">
+        <div class="card page-card shadow-sm p-5 border-0 rounded-4">
+            {% if status == 'Rejected' %}
+                <i class="fa-solid fa-circle-xmark fa-4x text-danger mb-4"></i>
+                <h2 class="fw-bold mb-3">Application Rejected</h2>
+                <p class="text-muted mb-4">
+                    Thank you for registering as a donor. Unfortunately, your application was reviewed and rejected by 
+                    <strong>{{ user.donorprofile.assigned_hospital.hospital_name|default:"the assigned hospital" }}</strong>.
+                </p>
+            {% elif status == 'Testing' %}
+                <i class="fa-solid fa-flask-vial fa-4x text-info mb-4"></i>
+                <h2 class="fw-bold mb-3">Under Medical Testing</h2>
+                <p class="text-muted mb-4">
+                    You are currently undergoing medical testing at 
+                    <strong>{{ user.donorprofile.assigned_hospital.hospital_name }}</strong>. 
+                    Please check back once the hospital completes your verification.
+                </p>
+            {% else %}
+                <i class="fa-solid fa-hourglass-half fa-4x text-warning mb-4"></i>
+                <h2 class="fw-bold mb-3">Approval Pending</h2>
+                <p class="text-muted mb-4">
+                    Thank you for registering. You have been assigned to 
+                    <strong>{{ user.donorprofile.assigned_hospital.hospital_name }}</strong> for medical testing. 
+                    Please visit the hospital to complete your tests and undergo verification.
+                </p>
+            {% endif %}
+            <a href="{% url 'home' %}" class="btn btn-primary ui-action">Return to Home</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,6 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en" data-ui-theme="{{ user.theme|default:'dark' }}">
+<html lang="en" data-ui-theme="{{ user.theme|default:'white' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -125,8 +125,8 @@
         }
 
         .project-logo-card .project-logo-svg {
-            width: 44px;
-            height: 72px;
+            width: 32px;
+            height: 52px;
             position: absolute;
         }
 
@@ -596,8 +596,16 @@
             --dash-muted: #64748b;
             --dash-border: #e2e8f0;
             --dash-accent: #0d6efd;
+            --app-bg: #f5f7fb;
+            --app-panel: #ffffff;
+            --app-panel-strong: #ffffff;
+            --app-border: #e2e8f0;
+            --app-border-soft: #f1f5f9;
             --app-text: #0f172a;
             --app-muted: #64748b;
+            --app-cyan: #0d6efd;
+            --app-blue: #2563eb;
+            --app-rose: #e11d48;
         }
 
         html[data-ui-theme="dark"] {
@@ -609,8 +617,16 @@
             --dash-muted: rgba(255, 255, 255, 0.58);
             --dash-border: rgba(255, 255, 255, 0.12);
             --dash-accent: #67e8f9;
+            --app-bg: #030303;
+            --app-panel: rgba(8, 13, 20, 0.86);
+            --app-panel-strong: rgba(9, 15, 26, 0.96);
+            --app-border: rgba(255, 255, 255, 0.12);
+            --app-border-soft: rgba(255, 255, 255, 0.09);
             --app-text: #ffffff;
             --app-muted: rgba(255, 255, 255, 0.58);
+            --app-cyan: #67e8f9;
+            --app-blue: #3b82f6;
+            --app-rose: #fb7185;
         }
 
         html[data-ui-theme="black_white"] {
@@ -622,8 +638,16 @@
             --dash-muted: #525252;
             --dash-border: #d4d4d4;
             --dash-accent: #111111;
+            --app-bg: #ffffff;
+            --app-panel: #ffffff;
+            --app-panel-strong: #f8fafc;
+            --app-border: #d4d4d4;
+            --app-border-soft: #e5e5e5;
             --app-text: #050505;
             --app-muted: #525252;
+            --app-cyan: #111111;
+            --app-blue: #000000;
+            --app-rose: #000000;
         }
 
         html[data-ui-theme="custom"] {
@@ -634,8 +658,16 @@
             --dash-text: #ffffff;
             --dash-muted: rgba(255, 255, 255, 0.62);
             --dash-border: color-mix(in srgb, var(--dash-accent) 32%, rgba(255, 255, 255, 0.1));
+            --app-bg: color-mix(in srgb, var(--dash-accent) 8%, #030303);
+            --app-panel: rgba(8, 13, 20, 0.88);
+            --app-panel-strong: rgba(9, 15, 26, 0.96);
+            --app-border: color-mix(in srgb, var(--dash-accent) 32%, rgba(255, 255, 255, 0.1));
+            --app-border-soft: color-mix(in srgb, var(--dash-accent) 20%, rgba(255, 255, 255, 0.06));
             --app-text: #ffffff;
             --app-muted: rgba(255, 255, 255, 0.62);
+            --app-cyan: var(--dash-accent);
+            --app-blue: #3b82f6;
+            --app-rose: #fb7185;
         }
 
         html[data-ui-theme] body {
@@ -707,21 +739,55 @@
             color: var(--dash-text) !important;
         }
 
+        html:has(.role-shell),
+        html:has(.role-shell) body {
+            overflow: hidden !important;
+        }
+
         .role-shell {
             display: grid;
             grid-template-columns: 264px minmax(0, 1fr);
             gap: 1.5rem;
             align-items: start;
+            height: calc(100vh - 75px);
+            overflow: hidden;
+            padding-top: 10px;
         }
 
         .role-content {
             min-width: 0;
+            height: 100%;
+            overflow-y: auto;
+            padding-right: 15px;
+            padding-bottom: 4rem;
+        }
+
+        .role-content::-webkit-scrollbar { width: 6px; }
+        .role-content::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .role-content::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        .table-responsive::-webkit-scrollbar {
+            height: 6px;
+            width: 6px;
+        }
+        .table-responsive::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .table-responsive::-webkit-scrollbar-thumb {
+            background: rgba(148, 163, 184, 0.3);
+            border-radius: 4px;
+        }
+        .table-responsive::-webkit-scrollbar-thumb:hover {
+            background: rgba(148, 163, 184, 0.6);
+        }
+        .table-responsive > .table {
+            margin-bottom: 1.25rem !important;
         }
 
         .role-sidebar {
-            position: sticky;
-            top: 96px;
-            min-height: calc(100vh - 128px);
+            position: relative;
+            height: 100%;
+            overflow-y: auto;
             display: flex;
             flex-direction: column;
             gap: 1rem;
@@ -730,6 +796,26 @@
             border-radius: 8px;
             background: var(--dash-sidebar, #101820);
             box-shadow: 0 18px 42px rgba(0, 0, 0, 0.22);
+            --sidebar-scroll-thumb: rgba(255, 255, 255, 0.15);
+            --sidebar-scroll-thumb-hover: rgba(255, 255, 255, 0.25);
+        }
+
+        .role-sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .role-sidebar::-webkit-scrollbar-track {
+            background: transparent;
+            border-radius: 10px;
+        }
+
+        .role-sidebar::-webkit-scrollbar-thumb {
+            background: var(--sidebar-scroll-thumb);
+            border-radius: 10px;
+        }
+
+        .role-sidebar::-webkit-scrollbar-thumb:hover {
+            background: var(--sidebar-scroll-thumb-hover);
         }
 
         .role-sidebar-brand,
@@ -1146,13 +1232,20 @@
         }
 
         @media (max-width: 991.98px) {
-            .role-shell {
+            html:has(.role-shell),
+        html:has(.role-shell) body {
+            overflow: hidden !important;
+        }
+
+        .role-shell {
                 grid-template-columns: 1fr;
             }
 
             .role-sidebar {
                 position: static;
                 min-height: auto;
+                height: auto;
+                overflow-y: visible;
             }
 
             .role-sidebar-nav,
@@ -1193,6 +1286,109 @@
             .theme-options {
                 grid-template-columns: 1fr;
             }
+        }
+
+        /* Premium Toast Container */
+        .app-toast-container {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 1090;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-width: 380px;
+            width: 100%;
+            pointer-events: none;
+        }
+
+        /* Glassmorphism Premium Toast */
+        .app-toast {
+            pointer-events: auto;
+            background: rgba(10, 18, 30, 0.85);
+            backdrop-filter: blur(14px) saturate(140%);
+            border: 1px solid rgba(103, 232, 249, 0.22);
+            border-radius: 12px;
+            padding: 16px 20px;
+            color: #ffffff;
+            box-shadow: 0 20px 48px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            opacity: 0;
+            transform: translateY(-20px) scale(0.95);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .app-toast.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .app-toast-icon {
+            font-size: 1.25rem;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .app-toast-success .app-toast-icon { color: #34d399; }
+        .app-toast-danger .app-toast-icon { color: #f87171; }
+        .app-toast-warning .app-toast-icon { color: #fbbf24; }
+        .app-toast-info .app-toast-icon { color: #60a5fa; }
+
+        .app-toast-content {
+            flex-grow: 1;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            font-weight: 500;
+        }
+
+        .app-toast-close {
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.45);
+            cursor: pointer;
+            font-size: 0.85rem;
+            padding: 2px;
+            line-height: 1;
+            transition: color 0.2s;
+        }
+
+        .app-toast-close:hover {
+            color: #ffffff;
+        }
+
+        html[data-ui-theme="white"] .app-toast {
+            background: rgba(255, 255, 255, 0.92);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            color: #0f172a;
+            box-shadow: 0 20px 48px rgba(15, 23, 42, 0.08);
+        }
+        html[data-ui-theme="white"] .app-toast-close {
+            color: rgba(0, 0, 0, 0.45);
+        }
+
+        /* Theme compatibility styles for Bootstrap modals */
+        .modal-content {
+            background: var(--dash-panel-strong, #ffffff) !important;
+            color: var(--dash-text, #1f2937) !important;
+            border: 1px solid var(--dash-border, #e5e7eb) !important;
+        }
+        .modal-header {
+            border-bottom: 1px solid var(--dash-border, #e5e7eb) !important;
+            background: transparent !important;
+        }
+        .modal-footer {
+            border-top: 1px solid var(--dash-border, #e5e7eb) !important;
+            background: transparent !important;
+        }
+        html[data-ui-theme="dark"] .modal-content .btn-close,
+        html[data-ui-theme="custom"] .modal-content .btn-close {
+            filter: invert(1) grayscale(1) brightness(2) !important;
+        }
+        html[data-ui-theme="dark"] .modal-content .text-muted,
+        html[data-ui-theme="custom"] .modal-content .text-muted {
+            color: rgba(255, 255, 255, 0.5) !important;
         }
     </style>
 
@@ -1247,7 +1443,6 @@
                             <li class="nav-item"><a class="nav-link ui-action" href="{% url 'admin_dashboard' %}#admin-profile">Profile Settings</a></li>
                         {% elif user.is_hospital %}
                             <li class="nav-item"><a class="nav-link ui-action" href="{% url 'hospital_dashboard' %}#hosp-donors-mgmt">Management</a></li>
-                            <li class="nav-item"><a class="nav-link ui-action" href="{% url 'register_organ' %}">Register Organ</a></li>
                         {% elif user.is_donor %}
                             <li class="nav-item"><a class="nav-link ui-action" href="{% url 'donor_dashboard' %}#donor-donate">Donate Organ</a></li>
                             <li class="nav-item"><a class="nav-link ui-action" href="{% url 'donor_dashboard' %}#donor-status">My Status</a></li>
@@ -1274,7 +1469,7 @@
     </nav>
 
     <!-- Messages / Alerts -->
-    <main class="container py-4">
+    <main class="{% block container_class %}container py-4{% endblock %}">
         {% if request.resolver_match.url_name != 'home' %}
             <div class="page-back-row">
                 <button type="button" class="page-back-button ui-action" data-back-fallback="{% if user.is_authenticated and user.is_superuser %}{% url 'admin_dashboard' %}{% elif user.is_authenticated and user.is_hospital %}{% url 'hospital_dashboard' %}{% elif user.is_authenticated and user.is_donor %}{% url 'donor_dashboard' %}{% else %}{% url 'home' %}{% endif %}">
@@ -1312,6 +1507,338 @@
     <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
 
     <script>
+        // Premium Toast Notification Helper
+        function showToast(message, type = 'success') {
+            let container = document.querySelector('.app-toast-container');
+            if (!container) {
+                container = document.createElement('div');
+                container.className = 'app-toast-container';
+                document.body.appendChild(container);
+            }
+            
+            const toast = document.createElement('div');
+            toast.className = `app-toast app-toast-${type}`;
+            
+            let iconClass = 'fa-circle-check';
+            if (type === 'danger' || type === 'error') {
+                iconClass = 'fa-circle-xmark';
+                toast.className = `app-toast app-toast-danger`;
+            } else if (type === 'warning') {
+                iconClass = 'fa-triangle-exclamation';
+            } else if (type === 'info') {
+                iconClass = 'fa-circle-info';
+            }
+            
+            toast.innerHTML = `
+                <span class="app-toast-icon fa-solid ${iconClass}"></span>
+                <div class="app-toast-content">${message}</div>
+                <button class="app-toast-close"><span class="fa-solid fa-xmark"></span></button>
+            `;
+            
+            container.appendChild(toast);
+            
+            requestAnimationFrame(() => {
+                toast.classList.add('show');
+            });
+            
+            const closeToast = () => {
+                toast.classList.remove('show');
+                toast.addEventListener('transitionend', () => {
+                    toast.remove();
+                });
+            };
+            
+            toast.querySelector('.app-toast-close').addEventListener('click', closeToast);
+            setTimeout(closeToast, 4500);
+        }
+
+        // Get CSRF Token from cookie
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // Button Loading State Helper
+        function setButtonLoading(button, isLoading) {
+            if (isLoading) {
+                button.disabled = true;
+                button.dataset.originalHtml = button.innerHTML;
+                button.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Processing...`;
+            } else {
+                button.disabled = false;
+                if (button.dataset.originalHtml) {
+                    button.innerHTML = button.dataset.originalHtml;
+                }
+            }
+        }
+
+        // Clear Form Errors
+        function clearFormErrors(form) {
+            form.querySelectorAll('.invalid-feedback').forEach(el => el.remove());
+            form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+            form.querySelectorAll('.alert-danger').forEach(el => el.remove());
+        }
+
+        // Display Form Validation Errors
+        function displayFormErrors(form, errors) {
+            clearFormErrors(form);
+            let hasFieldErrors = false;
+            for (const fieldName in errors) {
+                const fieldErrors = errors[fieldName];
+                const input = form.querySelector(`[name="${fieldName}"]`);
+                if (input) {
+                    hasFieldErrors = true;
+                    input.classList.add('is-invalid');
+                    const feedback = document.createElement('div');
+                    feedback.className = 'invalid-feedback';
+                    const messagesText = Array.isArray(fieldErrors) 
+                        ? fieldErrors.map(e => typeof e === 'object' ? e.message : e).join(', ')
+                        : fieldErrors;
+                    feedback.innerText = messagesText;
+                    
+                    if (input.parentElement.classList.contains('input-group')) {
+                        input.parentElement.after(feedback);
+                    } else {
+                        input.after(feedback);
+                    }
+                }
+            }
+            if (!hasFieldErrors) {
+                const alertEl = document.createElement('div');
+                alertEl.className = 'alert alert-danger mt-3';
+                alertEl.innerText = 'Please correct the errors in the form.';
+                form.prepend(alertEl);
+            }
+        }
+
+        // Partial Page Container Update
+        async function updatePartialContainers(url, selectors) {
+            try {
+                const response = await fetch(url, {
+                    headers: { 'x-requested-with': 'XMLHttpRequest' }
+                });
+                if (!response.ok) throw new Error('Network response was not ok');
+                const htmlText = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(htmlText, 'text/html');
+                
+                selectors.forEach(selector => {
+                    const oldEl = document.querySelector(selector);
+                    const newEl = doc.querySelector(selector);
+                    if (oldEl && newEl) {
+                        const scrollTop = oldEl.scrollTop;
+                        const scrollLeft = oldEl.scrollLeft;
+                        oldEl.innerHTML = newEl.innerHTML;
+                        oldEl.scrollTop = scrollTop;
+                        oldEl.scrollLeft = scrollLeft;
+                    }
+                });
+                
+                if (window.anime) {
+                    anime({
+                        targets: selectors.map(s => s + " .page-card, " + s + " .stat-card, " + s + " tr").join(','),
+                        opacity: [0, 1],
+                        translateY: [10, 0],
+                        delay: anime.stagger(40),
+                        duration: 450,
+                        easing: "easeOutQuad"
+                    });
+                }
+                
+                document.dispatchEvent(new CustomEvent('partial-content-loaded', { detail: { selectors, doc } }));
+            } catch (error) {
+                console.error('Error updating partial content:', error);
+                showToast('Failed to update dashboard content dynamically.', 'danger');
+            }
+        }
+
+        // Global AJAX Form Submission Helper
+        async function submitAjaxForm(form, options = {}) {
+            const submitBtn = form.querySelector('[type="submit"]');
+            if (submitBtn) setButtonLoading(submitBtn, true);
+            clearFormErrors(form);
+
+            const url = form.action || window.location.href;
+            const method = form.getAttribute('method') || 'POST';
+            const formData = new FormData(form);
+
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'x-requested-with': 'XMLHttpRequest',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error('Server responded with an error status.');
+                }
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Show standard messages
+                    if (data.messages && data.messages.length > 0) {
+                        data.messages.forEach(msg => {
+                            showToast(msg.message, msg.tags);
+                        });
+                    } else if (data.message) {
+                        showToast(data.message, 'success');
+                    } else if (options.successMessage) {
+                        showToast(options.successMessage, 'success');
+                    }
+
+                    // Perform redirect if required
+                    if (data.redirect_url) {
+                        setTimeout(() => {
+                            const oldPath = window.location.pathname;
+                            window.location.href = data.redirect_url;
+                            try {
+                                const urlObj = new URL(data.redirect_url, window.location.origin);
+                                if (urlObj.pathname === oldPath) {
+                                    window.location.reload();
+                                }
+                            } catch (e) {
+                                // fallback reload if URL constructor fails
+                                window.location.reload();
+                            }
+                        }, 800);
+                        return;
+                    }
+
+                    // Reset form unless configured not to
+                    if (!options.preventReset) {
+                        form.reset();
+                    }
+
+                    // Trigger partial updates
+                    if (options.partialSelectors && options.partialSelectors.length > 0) {
+                        const reloadUrl = options.reloadUrl || window.location.href;
+                        await updatePartialContainers(reloadUrl, options.partialSelectors);
+                    }
+
+                    if (options.onSuccess) {
+                        options.onSuccess(data);
+                    }
+                } else {
+                    if (data.errors) {
+                        displayFormErrors(form, data.errors);
+                        showToast('Please correct the highlighted form errors.', 'warning');
+                    } else if (data.messages && data.messages.length > 0) {
+                        data.messages.forEach(msg => {
+                            showToast(msg.message, msg.tags || 'danger');
+                        });
+                    } else {
+                        showToast('An error occurred. Please try again.', 'danger');
+                    }
+
+                    if (options.onError) {
+                        options.onError(data);
+                    }
+                }
+            } catch (error) {
+                console.error('AJAX form submission error:', error);
+                showToast('A network error occurred. Please try again.', 'danger');
+                if (options.onError) {
+                    options.onError(error);
+                }
+            } finally {
+                if (submitBtn) setButtonLoading(submitBtn, false);
+            }
+        }
+
+        // Global AJAX action helper (for links / simple POST requests)
+        async function submitAjaxAction(url, bodyData = {}, options = {}) {
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'x-requested-with': 'XMLHttpRequest',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: new URLSearchParams(bodyData)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Action failed.');
+                }
+
+                const data = await response.json();
+
+                if (data.success) {
+                    if (data.messages && data.messages.length > 0) {
+                        data.messages.forEach(msg => {
+                            showToast(msg.message, msg.tags);
+                        });
+                    } else if (options.successMessage) {
+                        showToast(options.successMessage, 'success');
+                    }
+
+                    if (data.redirect_url) {
+                        setTimeout(() => {
+                            window.location.href = data.redirect_url;
+                        }, 800);
+                        return;
+                    }
+
+                    if (options.partialSelectors && options.partialSelectors.length > 0) {
+                        const reloadUrl = options.reloadUrl || window.location.href;
+                        await updatePartialContainers(reloadUrl, options.partialSelectors);
+                    }
+
+                    if (options.onSuccess) {
+                        options.onSuccess(data);
+                    }
+                } else {
+                    if (data.messages && data.messages.length > 0) {
+                        data.messages.forEach(msg => {
+                            showToast(msg.message, msg.tags || 'danger');
+                        });
+                    } else {
+                        showToast('Action failed. Please try again.', 'danger');
+                    }
+
+                    if (options.onError) {
+                        options.onError(data);
+                    }
+                }
+            } catch (error) {
+                console.error('AJAX action error:', error);
+                showToast('A network error occurred. Please try again.', 'danger');
+                if (options.onError) {
+                    options.onError(error);
+                }
+            }
+        }
+
+        // Global error listener to display JS errors as toast notifications
+        window.addEventListener('error', function (e) {
+            console.error('Captured global error:', e.error);
+            const msg = e.message || 'Unknown JS Error';
+            const file = e.filename ? e.filename.split('/').pop() : 'inline';
+            const line = e.lineno || '?';
+            showToast(`JS Error: ${msg} (${file}:${line})`, 'danger');
+        });
+
+        window.addEventListener('unhandledrejection', function (e) {
+            console.error('Captured unhandled promise rejection:', e.reason);
+            const msg = e.reason && e.reason.message ? e.reason.message : String(e.reason);
+            showToast(`Promise Error: ${msg}`, 'danger');
+        });
+
         document.addEventListener("DOMContentLoaded", function () {
             anime({
                 targets: ".page-card, .stat-card, .page-alert, .auth-shell, .hero-content, .module-panel, .img-card, .admin-shell, .role-shell, .admin-hero, .category-card, .section-title, .hospital-hero, .portal-shell",
@@ -1333,11 +1860,72 @@
                 });
             });
 
-            document.querySelectorAll('input[name="custom_theme_color"]').forEach(input => {
-                input.addEventListener('change', function() {
-                    this.form.submit();
-                });
-            });
+            // Bind theme forms globally
+            const bindThemePanelListeners = () => {
+                const themeForm = document.querySelector('.theme-panel');
+                if (themeForm) {
+                    themeForm.addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        const activeBtn = document.activeElement;
+                        const formData = new FormData(themeForm);
+                        if (activeBtn && activeBtn.name === 'theme') {
+                            formData.set('theme', activeBtn.value);
+                        }
+                        
+                        fetch(themeForm.getAttribute('action') || window.location.href, {
+                            method: 'POST',
+                            headers: {
+                                'x-requested-with': 'XMLHttpRequest',
+                                'X-CSRFToken': getCookie('csrftoken')
+                            },
+                            body: formData
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                showToast('Theme updated successfully.', 'success');
+                                fetch(window.location.href, {
+                                    headers: { 'x-requested-with': 'XMLHttpRequest' }
+                                })
+                                .then(res => res.text())
+                                .then(htmlText => {
+                                    const parser = new DOMParser();
+                                    const doc = parser.parseFromString(htmlText, 'text/html');
+                                    const newTheme = doc.documentElement.getAttribute('data-ui-theme');
+                                    document.documentElement.setAttribute('data-ui-theme', newTheme);
+                                    
+                                    const newAccent = doc.documentElement.style.getPropertyValue('--dash-accent');
+                                    if (newAccent) {
+                                        document.documentElement.style.setProperty('--dash-accent', newAccent);
+                                    } else {
+                                        document.documentElement.style.removeProperty('--dash-accent');
+                                    }
+                                    
+                                    const oldChoices = document.querySelector('.theme-panel');
+                                    const newChoices = doc.querySelector('.theme-panel');
+                                    if (oldChoices && newChoices) {
+                                        oldChoices.innerHTML = newChoices.innerHTML;
+                                        // Rebind since innerHTML destroyed the element structure
+                                        bindThemePanelListeners();
+                                    }
+                                });
+                            }
+                        });
+                    });
+
+                    themeForm.querySelectorAll('input[name="custom_theme_color"]').forEach(input => {
+                        input.addEventListener('change', function() {
+                            if (typeof themeForm.requestSubmit === 'function') {
+                                themeForm.requestSubmit();
+                            } else {
+                                themeForm.dispatchEvent(new Event('submit', { cancelable: true }));
+                            }
+                        });
+                    });
+                }
+            };
+            bindThemePanelListeners();
+            document.addEventListener('partial-content-loaded', bindThemePanelListeners);
 
             document.querySelectorAll(".page-back-button").forEach(function (button) {
                 button.addEventListener("click", function () {
