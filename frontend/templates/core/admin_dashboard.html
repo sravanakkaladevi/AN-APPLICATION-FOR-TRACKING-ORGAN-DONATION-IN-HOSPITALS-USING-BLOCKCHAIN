@@ -616,9 +616,7 @@
     transition: all 0.2s ease;
   }
 
-  .table tbody tr:hover {
-    background-color: #f8fafc;
-  }
+
 
   .form-control,
   .form-select {
@@ -3286,12 +3284,7 @@
                       >
                     </td>
                     <td>
-                      <small
-                        >{% if tx.donor and tx.donor.user %}{{
-                        tx.donor.user.get_full_name|default:tx.donor.user.username
-                        }}{% elif tx.recipient %}{{ tx.recipient.full_name }}{%
-                        else %}—{% endif %}</small
-                      >
+                      <small>{% if tx.donor and tx.donor.user %}{{ tx.donor.user.get_full_name|default:tx.donor.user.username }}{% elif tx.recipient %}{{ tx.recipient.full_name }}{% else %}-{% endif %}</small>
                     </td>
                     <td>
                       <small class="text-muted"

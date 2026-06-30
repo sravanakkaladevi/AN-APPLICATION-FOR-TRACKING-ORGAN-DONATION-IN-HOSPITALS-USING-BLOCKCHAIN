@@ -490,7 +490,7 @@ body.home-page .app-navbar .navbar-toggler {
 .hp-stats-header { margin-bottom: 32px; }
 
 .hp-stats-grid {
-    display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
 }
 .hp-stat-card {
     padding: 20px 14px; border-radius: 10px;
@@ -915,6 +915,25 @@ body.home-page .hp-footer h4 {
         opacity: 0;
         animation: heroFadeIn 1s ease forwards;
     }
+    #hero .hp-hero-grid {
+        grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+        gap: 34px;
+        align-items: center;
+    }
+    #hero .hp-hero-visual {
+        min-height: 480px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+    }
+    #hero .hp-hero-image {
+        width: 125%;
+        max-width: 850px;
+        margin-right: 0;
+        display: block;
+        object-fit: contain;
+    }
     
     @keyframes heroRevealUp {
         0% { opacity: 0; transform: translateY(24px); }
@@ -945,6 +964,22 @@ body.home-page .hp-footer h4 {
         0% { background-position: 0px 0px; }
         100% { background-position: 120px 120px; }
     }
+    @media (max-width: 1024px) {
+        #hero .hp-hero-grid {
+            grid-template-columns: 1fr;
+        }
+        #hero .hp-hero-visual {
+            min-height: 0;
+        }
+        #hero .hp-hero-image {
+            width: min(78vw, 460px);
+        }
+    }
+    @media (max-width: 640px) {
+        #hero .hp-hero-image {
+            width: min(84vw, 380px);
+        }
+    }
 </style>
 <div class="hp-hero-bg-layer {% if user.is_authenticated and user.is_hospital and user.hospitalprofile.background_image %}hospital-home-bg{% endif %}" id="hero-bg" {% if user.is_authenticated and user.is_hospital and user.hospitalprofile.background_image %}style="background-image: url('{{ user.hospitalprofile.background_image.url }}');"{% endif %}></div>
 <div class="hero-particles"></div>
@@ -952,19 +987,22 @@ body.home-page .hp-footer h4 {
 <div class="hp-wrap">
 <div class="hp-hero-grid">
     <div class="hp-hero-text">
-        <h1 style="color: #0f172a !important; font-size: clamp(2.5rem, 5vw, 3.8rem) !important;">
-            <span class="hp-animate-up" style="display:inline-block; animation-delay: 0.1s;">Every Donation</span><br>
-            <span class="hp-animate-up" style="display:inline-block; animation-delay: 0.2s; color: #0d9488;">Saves a Life</span>
+        <div style="display:inline-block; background: #ecfdf5; color: #065f46; padding: 6px 16px; border-radius: 50px; font-weight: 600; font-size: 0.9rem; margin-bottom: 20px;">
+            <i class="fa-solid fa-heart-circle-check" style="color: #059669; margin-right: 6px;"></i> <span class="anime-letters">Donate Organ, Donate Life</span>
+        </div>
+        <h1 style="color: #0f172a !important; font-size: clamp(2.5rem, 5vw, 3.8rem) !important; font-weight: 800; line-height: 1.15; margin-bottom: 20px;">
+            <span class="anime-letters" style="display:inline-block;">Every Donation</span><br>
+            <span class="anime-letters" style="display:inline-block; color: #059669;">Saves a Life</span>
         </h1>
-        <p class="hp-hero-sub hp-animate-up" style="animation-delay: 0.35s; max-width: 450px; font-size: 1.05rem;">
+        <p class="hp-hero-sub hp-animate-up" style="animation-delay: 0.35s; max-width: 450px; font-size: 1.05rem; margin-bottom: 30px;">
             A secure blockchain-powered platform that connects donors, hospitals, and recipients for transparent organ donation and transplantation.
         </p>
         <div class="hp-hero-btns hp-animate-up" style="animation-delay: 0.5s;">
-            <a href="{% url 'register_donor' %}" class="hp-btn" style="background: #0d9488; color: white; padding: 12px 28px; box-shadow: 0 4px 12px rgba(13, 148, 136, 0.3);">
+            <a href="{% url 'register_donor' %}" class="hp-btn" style="background: #059669; color: white; padding: 12px 28px; box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3); border-radius: 8px; font-weight: 600;">
                 <i class="fa-regular fa-heart"></i> Join as a Donor
             </a>
-            <a href="#workflow" class="hp-btn" style="background: white; color: #0f172a; border: 1px solid #e2e8f0; padding: 12px 28px;">
-                <i class="fa-solid fa-play" style="color: #0d9488;"></i> Learn More
+            <a href="#workflow" class="hp-btn" style="background: white; color: #0f172a; border: 1px solid #e2e8f0; padding: 12px 28px; border-radius: 8px; font-weight: 600;">
+                <i class="fa-solid fa-play" style="color: #059669;"></i> Learn More
             </a>
         </div>
         <div class="hp-trust-row hp-animate-up" style="animation-delay: 0.65s; margin-top: 20px;">
@@ -973,61 +1011,49 @@ body.home-page .hp-footer h4 {
             <span class="hp-trust-tag"><i class="fa-solid fa-network-wired" style="color: #0d9488;"></i> Multi-Hospital Network</span>
         </div>
     </div>
-    <div class="hp-hero-visual hp-animate-fade-in" style="animation-delay: 0.4s; display: flex; justify-content: center; align-items: center;">
-        <img src="{% static 'images/hands_holding_heart.png' %}" alt="3D Heart in Hands" style="width: 100%; max-width: 550px; display: block; animation: floatHeroImage 5s ease-in-out infinite;">
+    <div class="hp-hero-visual hp-animate-fade-in" style="animation-delay: 0.4s;">
+        <img src="{% static 'images/hands_holding_heart.png' %}" alt="Organ Donation" class="hp-hero-image" id="hero-image">
     </div>
 </div>
 </div>
 </section>
 
 <!-- ========================================
-     SECTION 2 — PLATFORM OVERVIEW
+     SECTION 2 — PLATFORM FEATURES
      ======================================== -->
-<section class="hp-roles" id="platform">
+<section class="hp-stats" id="statistics">
 <div class="hp-wrap">
-    <div class="hp-roles-header hp-center">
-        <span class="hp-eyebrow"><i class="fa-solid fa-grip"></i> Platform</span>
-        <h2 class="hp-h2">Role-Based Access</h2>
-        <p class="hp-sub">Every participant in the organ donation lifecycle has a dedicated, secure module within the platform.</p>
-    </div>
-    <div class="hp-roles-grid">
-        <div class="hp-role-card donor hp-reveal">
-            <div class="hp-role-icon"><i class="fa-solid fa-hand-holding-heart"></i></div>
-            <h3 class="hp-role-title">Donor</h3>
-            <p class="hp-role-desc">Register donation intent, manage consent records, and track organ pledge status through your dashboard.</p>
-            <a href="{% url 'register_donor' %}" class="hp-role-link">Get started <i class="fa-solid fa-arrow-right"></i></a>
+    <div class="hp-stats-grid">
+        <div class="hp-stat-card hp-reveal">
+            <div class="hp-stat-icon"><i class="fa-solid fa-user-plus"></i></div>
+            <div class="hp-stat-num">Donor Registration</div>
+            <div class="hp-stat-label">Secure &amp; Easy Registration</div>
         </div>
-        <div class="hp-role-card recipient hp-reveal">
-            <div class="hp-role-icon"><i class="fa-solid fa-user-group"></i></div>
-            <h3 class="hp-role-title">Recipient</h3>
-            <p class="hp-role-desc">Submit transplant requirements, view compatibility matches, and monitor organ availability in real time.</p>
-            <a href="{% url 'login' %}" class="hp-role-link">Access portal <i class="fa-solid fa-arrow-right"></i></a>
+        <div class="hp-stat-card hp-reveal">
+            <div class="hp-stat-icon"><i class="fa-solid fa-hospital"></i></div>
+            <div class="hp-stat-num">Hospital Network</div>
+            <div class="hp-stat-label">Verified &amp; Authorized Hospitals</div>
         </div>
-        <div class="hp-role-card hospital hp-reveal">
-            <div class="hp-role-icon"><i class="fa-solid fa-hospital"></i></div>
-            <h3 class="hp-role-title">Hospital</h3>
-            <p class="hp-role-desc">Verify donors, manage organ inventory, coordinate transplants, and record blockchain transactions.</p>
-            <a href="{% url 'register_hospital' %}" class="hp-role-link">Register hospital <i class="fa-solid fa-arrow-right"></i></a>
+        <div class="hp-stat-card hp-reveal">
+            <div class="hp-stat-icon"><i class="fa-solid fa-heart-pulse"></i></div>
+            <div class="hp-stat-num">Organ Tracking</div>
+            <div class="hp-stat-label">Track Every Step</div>
         </div>
-        <div class="hp-role-card admin hp-reveal">
-            <div class="hp-role-icon"><i class="fa-solid fa-user-shield"></i></div>
-            <h3 class="hp-role-title">Administrator</h3>
-            <p class="hp-role-desc">Monitor platform activities, approve hospital registrations, audit blockchain records, and manage users.</p>
-            <a href="{% url 'login' %}" class="hp-role-link">Admin login <i class="fa-solid fa-arrow-right"></i></a>
+        <div class="hp-stat-card hp-reveal">
+            <div class="hp-stat-icon"><i class="fa-solid fa-shield-halved"></i></div>
+            <div class="hp-stat-num">Blockchain Security</div>
+            <div class="hp-stat-label">Immutable &amp; Transparent</div>
         </div>
     </div>
 </div>
 </section>
 
-<!-- ========================================
-     SECTION 3 — SYSTEM WORKFLOW
-     ======================================== -->
 <section class="hp-workflow" id="workflow">
 <div class="hp-wrap">
     <div class="hp-workflow-header hp-center">
         <span class="hp-eyebrow"><i class="fa-solid fa-diagram-project"></i> Workflow</span>
-        <h2 class="hp-h2">System Process Flow</h2>
-        <p class="hp-sub">From donor registration to transplant completion — every step is tracked, verified, and recorded on the blockchain.</p>
+        <h2 class="hp-h2">How It Works</h2>
+        <p class="hp-sub">Simple steps that make a big difference.</p>
     </div>
     <div class="hp-wf-track">
         <div class="hp-wf-step hp-reveal">
@@ -1095,45 +1121,39 @@ body.home-page .hp-footer h4 {
 </section>
 
 <!-- ========================================
-     SECTION 4 — LIVE PLATFORM STATISTICS
+     SECTION 4 — PLATFORM OVERVIEW
      ======================================== -->
-<section class="hp-stats" id="statistics">
+<section class="hp-roles" id="platform">
 <div class="hp-wrap">
-    <div class="hp-stats-header hp-center">
-        <span class="hp-eyebrow"><i class="fa-solid fa-chart-bar"></i> Metrics</span>
-        <h2 class="hp-h2">Platform Statistics</h2>
-        <p class="hp-sub">Real-time operational metrics across the organ donation tracking network.</p>
+    <div class="hp-roles-header hp-center">
+        <span class="hp-eyebrow"><i class="fa-solid fa-grip"></i> Platform</span>
+        <h2 class="hp-h2">Role-Based Access</h2>
+        <p class="hp-sub">Every participant in the organ donation lifecycle has a dedicated, secure module within the platform.</p>
     </div>
-    <div class="hp-stats-grid">
-        <div class="hp-stat-card hp-reveal">
-            <div class="hp-stat-icon"><i class="fa-solid fa-hospital"></i></div>
-            <div class="hp-stat-num" data-count="5">0</div>
-            <div class="hp-stat-label">Partner Hospitals</div>
+    <div class="hp-roles-grid">
+        <div class="hp-role-card donor hp-reveal">
+            <div class="hp-role-icon"><i class="fa-solid fa-hand-holding-heart"></i></div>
+            <h3 class="hp-role-title">Donor</h3>
+            <p class="hp-role-desc">Register donation intent, manage consent records, and track organ pledge status through your dashboard.</p>
+            <a href="{% url 'register_donor' %}" class="hp-role-link">Get started <i class="fa-solid fa-arrow-right"></i></a>
         </div>
-        <div class="hp-stat-card hp-reveal">
-            <div class="hp-stat-icon"><i class="fa-solid fa-hand-holding-heart"></i></div>
-            <div class="hp-stat-num" data-count="10">0</div>
-            <div class="hp-stat-label">Registered Donors</div>
+        <div class="hp-role-card recipient hp-reveal">
+            <div class="hp-role-icon"><i class="fa-solid fa-user-group"></i></div>
+            <h3 class="hp-role-title">Recipient</h3>
+            <p class="hp-role-desc">Submit transplant requirements, view compatibility matches, and monitor organ availability in real time.</p>
+            <a href="{% url 'login' %}" class="hp-role-link">Access portal <i class="fa-solid fa-arrow-right"></i></a>
         </div>
-        <div class="hp-stat-card hp-reveal">
-            <div class="hp-stat-icon"><i class="fa-solid fa-user-group"></i></div>
-            <div class="hp-stat-num" data-count="10">0</div>
-            <div class="hp-stat-label">Recipients</div>
+        <div class="hp-role-card hospital hp-reveal">
+            <div class="hp-role-icon"><i class="fa-solid fa-hospital"></i></div>
+            <h3 class="hp-role-title">Hospital</h3>
+            <p class="hp-role-desc">Verify donors, manage organ inventory, coordinate transplants, and record blockchain transactions.</p>
+            <a href="{% url 'register_hospital' %}" class="hp-role-link">Register hospital <i class="fa-solid fa-arrow-right"></i></a>
         </div>
-        <div class="hp-stat-card hp-reveal">
-            <div class="hp-stat-icon"><i class="fa-solid fa-lungs"></i></div>
-            <div class="hp-stat-num" data-count="8">0</div>
-            <div class="hp-stat-label">Available Organs</div>
-        </div>
-        <div class="hp-stat-card hp-reveal">
-            <div class="hp-stat-icon"><i class="fa-solid fa-heart-circle-check"></i></div>
-            <div class="hp-stat-num" data-count="6">0</div>
-            <div class="hp-stat-label">Successful Matches</div>
-        </div>
-        <div class="hp-stat-card hp-reveal">
-            <div class="hp-stat-icon"><i class="fa-solid fa-cubes"></i></div>
-            <div class="hp-stat-num" data-count="10">0</div>
-            <div class="hp-stat-label">Blockchain Txns</div>
+        <div class="hp-role-card admin hp-reveal">
+            <div class="hp-role-icon"><i class="fa-solid fa-user-shield"></i></div>
+            <h3 class="hp-role-title">Administrator</h3>
+            <p class="hp-role-desc">Monitor platform activities, approve hospital registrations, audit blockchain records, and manage users.</p>
+            <a href="{% url 'login' %}" class="hp-role-link">Admin login <i class="fa-solid fa-arrow-right"></i></a>
         </div>
     </div>
 </div>
@@ -1353,7 +1373,7 @@ body.home-page .hp-footer h4 {
                 <p><i class="fa-solid fa-user"></i> Akkaladevi Sravan Kumar</p>
                 <p><i class="fa-solid fa-graduation-cap"></i> MCA Final Year Project</p>
                 <p><i class="fa-solid fa-university"></i> Dept. of Computer Applications</p>
-                <p><i class="fa-solid fa-envelope"></i> sravankumar@example.com</p>
+                <p><i class="fa-solid fa-envelope"></i> akkaladevisravankumar@gmail.com</p>
             </div>
         </div>
     </div>
@@ -1436,7 +1456,30 @@ body.home-page .hp-footer h4 {
         }, { passive: true });
     }
 
+
+
     window.addEventListener('beforeunload', function() { document.body.classList.remove('home-page'); });
 })();
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    var textWrappers = document.querySelectorAll('.anime-letters');
+    textWrappers.forEach(function(textWrapper) {
+        textWrapper.innerHTML = textWrapper.textContent.replace(/\S/g, "<span class='letter' style='display:inline-block; transform-origin: 50% 100%; opacity: 0;'>$&</span>");
+    });
+
+    anime.timeline({loop: false})
+      .add({
+        targets: '.anime-letters .letter',
+        translateY: [20,0],
+        translateZ: 0,
+        opacity: [0,1],
+        easing: "easeOutExpo",
+        duration: 1200,
+        delay: (el, i) => 30 * i
+      });
+});
 </script>
 {% endblock %}

@@ -76,10 +76,7 @@
             align-items: center;
             gap: 0.8rem;
             letter-spacing: 0.3px;
-            background: linear-gradient(90deg, #67e8f9, #ffffff 45%, #fda4af);
-            background-clip: text;
-            -webkit-background-clip: text;
-            color: transparent !important;
+            color: var(--dash-text, #0f172a) !important;
             font-weight: 850;
             font-size: 1.35rem;
         }
@@ -180,14 +177,14 @@
         }
 
         .app-navbar .nav-link {
-            color: rgba(255, 255, 255, 0.75) !important;
-            font-weight: 500;
+            color: var(--dash-text, #0f172a) !important;
+            font-weight: 600;
             transition: color 0.2s ease;
         }
 
         .app-navbar .nav-link:hover,
         .app-navbar .nav-link:focus {
-            color: #ffffff !important;
+            color: var(--app-cyan, #06b6d4) !important;
         }
 
         .app-navbar .navbar-toggler {
@@ -684,10 +681,10 @@
             border-color: var(--dash-border) !important;
         }
 
-        /* app-navbar is always solid black — never overridden by themes */
+        /* app-navbar adopts the theme's background */
         html[data-ui-theme] .app-navbar {
-            background: #000000 !important;
-            border-bottom: 1px solid rgba(34, 211, 238, 0.22) !important;
+            background: var(--dash-bg) !important;
+            border-bottom: 1px solid var(--dash-border) !important;
         }
 
         html[data-ui-theme] h1,
@@ -722,6 +719,7 @@
             --bs-table-bg: transparent;
             --bs-table-color: var(--dash-text);
             --bs-table-border-color: var(--dash-border);
+            --bs-table-hover-bg: rgba(128, 128, 128, 0.1);
             color: var(--dash-text) !important;
         }
 
@@ -739,32 +737,38 @@
             color: var(--dash-text) !important;
         }
 
-        html:has(.role-shell),
-        html:has(.role-shell) body {
-            overflow: hidden !important;
-        }
+
 
         .role-shell {
             display: grid;
             grid-template-columns: 264px minmax(0, 1fr);
             gap: 1.5rem;
             align-items: start;
-            height: calc(100vh - 75px);
-            overflow: hidden;
             padding-top: 10px;
         }
 
         .role-content {
             min-width: 0;
-            height: 100%;
-            overflow-y: auto;
             padding-right: 15px;
             padding-bottom: 4rem;
         }
 
-        .role-content::-webkit-scrollbar { width: 6px; }
-        .role-content::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        .role-content::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        /* Global Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(148, 163, 184, 0.1);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(148, 163, 184, 0.4);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(148, 163, 184, 0.7);
+        }
 
         .table-responsive::-webkit-scrollbar {
             height: 6px;
@@ -785,8 +789,9 @@
         }
 
         .role-sidebar {
-            position: relative;
-            height: 100%;
+            position: sticky;
+            top: 96px;
+            height: calc(100vh - 128px);
             overflow-y: auto;
             display: flex;
             flex-direction: column;
@@ -1396,7 +1401,7 @@
 </head>
 <body>
     <!-- Navbar -->
-    <nav class="app-navbar navbar navbar-dark navbar-expand-lg sticky-top">
+    <nav class="app-navbar navbar navbar-expand-lg sticky-top">
         <div class="container-fluid px-lg-5">
             <a class="navbar-brand" href="{% url 'home' %}">
                 <span class="project-logo-mark" aria-hidden="true">
