@@ -1,0 +1,106 @@
+# 📂 Project Directory Structure
+
+```text
+organ_donation/
+|-- generate_tree.py
+|-- manage.py
+|-- README.md
+|-- requirements.txt
+|-- start_project.bat
+|-- architecture/
+    |-- architecture.png
+    |-- architecture_graph.md
+    |-- data_flow.png
+    |-- uml_diagram.md
+    |-- uml_diagram.png
+|-- backend/
+    |-- create_super.py
+    |-- db.sqlite3
+    |-- manage.py
+    |-- requirements.txt
+    |-- core/
+        |-- admin.py
+        |-- apps.py
+        |-- forms.py
+        |-- models.py
+        |-- tests.py
+        |-- urls.py
+        |-- views.py
+        |-- __init__.py
+        |-- blockchain/
+            |-- service.py
+            |-- __init__.py
+        |-- management/
+            |-- commands/
+                |-- seed_demo_data.py
+                |-- seed_workflow_demo.py
+    |-- organ_donation_project/
+        |-- asgi.py
+        |-- settings.py
+        |-- urls.py
+        |-- wsgi.py
+        |-- __init__.py
+    |-- scripts/
+        |-- seed_mca_hospitals.py
+|-- blockchain/
+    |-- README_BLOCKCHAIN.md
+    |-- truffle-config.js
+    |-- __init__.py
+    |-- contracts/
+        |-- OrganDonation.sol
+    |-- scripts/
+        |-- compile_contract.py
+        |-- deploy_contract.py
+        |-- example_transaction.py
+    |-- tests/
+        |-- PROJECT_TESTING_REPORT.md
+        |-- TEST_CASES.csv
+        |-- __init__.py
+|-- database/
+    |-- database_records.json
+    |-- organ_donation_db_full.sql
+    |-- README.md
+    |-- schema.sql
+|-- documentation/
+    |-- architecture_graph.html
+    |-- PROJECT_COMPLETION_REPORT.md
+    |-- project_structure.txt
+    |-- SYSTEM_CREDENTIALS.md
+    |-- TEST_CASES.md
+    |-- VIVA_QUESTIONS_AND_ANSWERS.md
+|-- frontend/
+    |-- static/
+        |-- core/
+            |-- images/
+                |-- hospital_blockchain_corridor.png
+                |-- avatars/
+                    |-- avatar_admin.png
+                    |-- avatar_donor.png
+                    |-- avatar_donor_neon.png
+                    |-- avatar_hospital.png
+                    |-- avatar_hospital_neon.png
+                    |-- avatar_system.png
+            |-- js/
+            |-- vendor/
+        |-- images/
+            |-- hands_holding_heart.png
+            |-- hospital_bg.png
+    |-- templates/
+        |-- core/
+            |-- admin_dashboard.html
+            |-- base.html
+            |-- donor_dashboard.html
+            |-- donor_pending.html
+            |-- home.html
+            |-- hospital_dashboard.html
+            |-- login.html
+            |-- register_donor.html
+            |-- register_hospital.html
+|-- scratch/
+|-- scripts/
+    |-- setup_all.py
+    |-- update_donor_dash.py
+    |-- update_hosp_dash.py
+    |-- update_hosp_dash2.py
+    |-- update_nav.py
+```

@@ -151,5 +151,37 @@ This verifies blockchain connection status, smart contract functions, error boun
 
 ---
 
+## 6. Advanced & Scenario-Based Questions
+
+### Q19: What is Gas in Ethereum, and who pays for it in your system?
+**Answer:** In Ethereum, "Gas" is a unit that measures the computational effort required to execute specific operations on the network. Every transaction (like registering an organ) costs gas to prevent infinite loops and spam. 
+In our application, we use Ganache (a local test network), so transactions are executed using test Ether from predefined local accounts. If deployed to a real network, the Hospital invoking the smart contract would need to pay the gas fees using real cryptocurrency (e.g., ETH on Ethereum, or MATIC on Polygon).
+
+### Q20: How did you design the user interface, and why is it important for this project?
+**Answer:** The user interface was built using Bootstrap 5, custom Vanilla CSS, and modern design principles (like Glassmorphism, smooth animations, and responsive native scrolling). 
+In healthcare, user experience is critical because medical professionals and patients need clear, uncluttered information. We implemented distinct dashboards (Admin, Hospital, Donor) with role-specific views so that a hospital administrator can instantly see pending approvals or match organs without being overwhelmed by unrelated data.
+
+### Q21: What happens if two hospitals try to match the same organ at the exact same time?
+**Answer:** This is a classic concurrency problem, which is elegantly solved by the blockchain. The Ethereum Virtual Machine (EVM) executes transactions sequentially. If two hospitals submit a match request simultaneously:
+1. One transaction will be mined into a block slightly before the other.
+2. The smart contract state will change (the organ's status updates from `Available` to `Matched`).
+3. When the second transaction attempts to execute, the contract logic (using `require(organ.status == OrganStatus.Available)`) will fail, and the second transaction will safely revert.
+
+### Q22: Can a hospital delete a registered organ from the blockchain if they made a mistake?
+**Answer:** No. Blockchain is inherently **immutable**, meaning data cannot be erased or altered retroactively. 
+If a mistake is made, the standard procedure is to issue a new corrective transaction (like marking the organ as unavailable or rejected). This ensures that a complete, auditable history of all actions—even mistakes—is preserved forever.
+
+### Q23: Did you use Django Signals or specific ORM features?
+**Answer:** We heavily utilized the Django ORM (Object-Relational Mapping) to interact with SQLite securely without writing raw SQL queries, which protects against SQL Injection attacks. 
+For example, we use `select_related()` and `filter()` queries to efficiently retrieve complex related datasets (like joining a Donor profile with a Death Certificate) before presenting it on the dashboards.
+
+### Q24: What are the future enhancements you would add to this project?
+**Answer:** 
+1. **IPFS Integration:** Storing heavy medical records (like X-Rays or tissue typing reports) on the InterPlanetary File System (IPFS) and only storing the resulting hash on the blockchain.
+2. **AI/Machine Learning:** Integrating a predictive model that suggests the best recipient match based on tissue compatibility, distance, and urgency rather than a manual search.
+3. **Smart Contract Audits:** Adding multi-signature (Multi-Sig) approvals so that both a hospital admin and a government official must sign off on a transplant before the state changes.
+
+---
+
 > [!TIP]
 > **Viva Tip:** Keep your answers concise, highlight "Blockchain Immutability" and "Role-Based Access Control", and refer to the custom Bootstrap 5 dashboards as proof of a ready-to-use healthcare application.

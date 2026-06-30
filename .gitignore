@@ -41,4 +41,4 @@ backend/verify_demo.py
 *.log
 .DS_Store
 Thumbs.db
-graphify-out/
+.agents/graphify-out/

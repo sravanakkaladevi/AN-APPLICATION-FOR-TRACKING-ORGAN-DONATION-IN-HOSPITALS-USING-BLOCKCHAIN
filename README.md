@@ -237,6 +237,14 @@ Simple example:
 
 If CARE Hospital donates a kidney and the admin matches it to a recipient at another hospital, Django updates the normal database record and Web3.py sends a transaction to Ganache. The resulting transaction hash becomes the verification proof for that match.
 
+## AI Agent Context & Documentation
+
+This project contains comprehensive testing records and AI context configurations:
+- `documentation/TEST_CASES.md`: Contains 25 positive test cases covering Unit, Integration, Functional, System, and UAT testing phases.
+- `documentation/architecture_graph.html`: A visual architecture flow generated via Mermaid.js.
+- `.agents/`: Contains custom context files, rules (`AGENTS.md`), and workflows designed to give AI coding assistants (like Google Antigravity or GitHub Copilot) instant contextual awareness of the project architecture and UI constraints.
+- Graphify integration: The workspace uses `graphify` for full semantic codebase mapping. The generated graph output is excluded from git in `.agents/graphify-out/`.
+
 ## Notes for Git
 
 Generated blockchain build files, local credentials, scratch scripts, and test result output should stay out of commits unless they are intentionally needed for a report.

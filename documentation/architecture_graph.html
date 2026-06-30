@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OrganChain Interactive Architecture (Node Network)</title>
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <style>
+        body {
+            background-color: #0f172a; /* Dark slate background */
+            color: #f8fafc;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+        }
+        h1 {
+            margin-top: 20px;
+            font-weight: 300;
+            color: #38bdf8;
+            text-align: center;
+        }
+        p {
+            color: #94a3b8;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        #mynetwork {
+            width: 90vw;
+            height: 80vh;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            background-color: #1e293b;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+    </style>
+</head>
+<body>
+
+    <h1>OrganChain Architecture - Interactive Network</h1>
+    <p>Drag the nodes around to explore the connections!</p>
+
+    <div id="mynetwork"></div>
+
+    <script type="text/javascript">
+        // Create an array with nodes
+        var nodes = new vis.DataSet([
+            // Core Users
+            { id: 1, label: 'Users\n(Admin, Hospital, Donor)', shape: 'circle', color: '#f472b6', font: {color: 'white', size: 14}, size: 40 },
+            
+            // Frontend
+            { id: 2, label: 'Authentication\n& Routing', shape: 'box', color: '#38bdf8', font: {color: 'white'} },
+            { id: 3, label: 'Admin\nDashboard', shape: 'box', color: '#38bdf8', font: {color: 'white'} },
+            { id: 4, label: 'Hospital\nDashboard', shape: 'box', color: '#38bdf8', font: {color: 'white'} },
+            { id: 5, label: 'Donor\nDashboard', shape: 'box', color: '#38bdf8', font: {color: 'white'} },
+            
+            // Backend Central Hub
+            { id: 6, label: 'Django Views\n(Business Logic)', shape: 'ellipse', color: '#10b981', font: {color: 'white', size: 16}, size: 45 },
+            { id: 7, label: 'Django ORM', shape: 'box', color: '#10b981', font: {color: 'white'} },
+            { id: 8, label: 'Web3.py\nMiddleware', shape: 'box', color: '#a78bfa', font: {color: 'white'} },
+            
+            // Storage Nodes
+            { id: 9, label: 'SQLite DB\n(PII & Credentials)', shape: 'database', color: '#fbbf24', font: {color: 'black'} },
+            { id: 10, label: 'Ganache Blockchain\n(Organ Ledger)', shape: 'database', color: '#f59e0b', font: {color: 'black'} }
+        ]);
+
+        // Create an array with edges
+        var edges = new vis.DataSet([
+            // User to Frontend
+            { from: 1, to: 2, label: 'HTTP Requests', arrows: 'to', color: {color: '#94a3b8'}, font: {color: '#94a3b8'} },
+            { from: 2, to: 3, arrows: 'to', color: {color: '#38bdf8'} },
+            { from: 2, to: 4, arrows: 'to', color: {color: '#38bdf8'} },
+            { from: 2, to: 5, arrows: 'to', color: {color: '#38bdf8'} },
+            
+            // Frontend to Backend
+            { from: 3, to: 6, arrows: 'to', color: {color: '#10b981'} },
+            { from: 4, to: 6, arrows: 'to', color: {color: '#10b981'} },
+            { from: 5, to: 6, arrows: 'to', color: {color: '#10b981'} },
+            
+            // Backend Internal
+            { from: 6, to: 7, arrows: 'to', color: {color: '#10b981'} },
+            { from: 6, to: 8, arrows: 'to', color: {color: '#a78bfa'} },
+            
+            // Backend to Storage
+            { from: 7, to: 9, arrows: 'to', color: {color: '#fbbf24'} },
+            { from: 8, to: 10, label: 'Smart Contract Tx', arrows: 'to, from', color: {color: '#f59e0b'}, font: {color: '#f59e0b'} }
+        ]);
+
+        // Create a network
+        var container = document.getElementById('mynetwork');
+        var data = {
+            nodes: nodes,
+            edges: edges
+        };
+        
+        // Configuration for bouncy physics
+        var options = {
+            nodes: {
+                borderWidth: 2,
+                shadow: true
+            },
+            edges: {
+                width: 2,
+                shadow: true,
+                smooth: {
+                    type: 'continuous'
+                }
+            },
+            physics: {
+                barnesHut: {
+                    gravitationalConstant: -2000,
+                    centralGravity: 0.1,
+                    springLength: 150,
+                    springConstant: 0.04,
+                    damping: 0.09
+                },
+                stabilization: {
+                    iterations: 150
+                }
+            }
+        };
+
+        // Initialize network
+        var network = new vis.Network(container, data, options);
+    </script>
+</body>
+</html>
