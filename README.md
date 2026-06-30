@@ -25,7 +25,7 @@ The project architecture spans three distinct layers: blockchain (consensus/ledg
 | Layer / Component | Technology / File Locations | Description |
 | :--- | :--- | :--- |
 | **Backend** | Django, Python | Complete schema (users, profiles, recipients, logs). Built-in Django authentication and customized views. |
-| **Frontend** | HTML, CSS, Bootstrap, JavaScript | Beautiful, customized dark-mode SPAs/dashboards designed specifically for **Admin**, **Hospitals**, and **Donors**. |
+| **Frontend** | HTML, CSS, Bootstrap, JavaScript | Beautiful, customized dark-mode SPAs/dashboards designed specifically for **Admin**, **Hospitals**, and **Donors**. Includes custom hospital-specific landing pages and dynamic mock-data auto-fill. |
 | **Database** | Django ORM / SQLite | Preloaded database entries containing prominent medical centers. |
 | **Blockchain** | Ganache, Solidity, Truffle, Web3.py | Fully implemented Solidity contract tracking registration, matches, transplant status, and events. |
 | **Web3 Core** | `backend/core/blockchain/service.py` | Complete service layer using Web3.py to interact with Ganache JSON-RPC. |
@@ -42,17 +42,20 @@ The project uses a hybrid storage model:
 
 1. Donor registers or pledges an organ.
 2. Hospital reviews donor and organ suitability.
-3. Admin sends approved organ details to blockchain.
-4. Admin clicks **Match Organ** and selects a compatible recipient.
-5. Django calls `match_organ_on_chain()`.
-6. Smart contract executes `matchOrganWithRecipient()`.
-7. Ganache mines a new block.
-8. Database updates the organ status to `Matched`.
-9. Admin or hospital completes the transplant.
-10. Django calls `transplant_organ_on_chain()`.
-11. Smart contract executes `completeTransplantWithRecipient()`.
-12. Ganache mines another block.
-13. Database updates status to `Transplanted`.
+3. Hospital registers Recipients (patients waiting for organs).
+   - Includes details like: Full name, Age, Gender, Blood group, Organ needed, Doctor assigned, Emergency priority, and Medical notes.
+   - Hospitals have **Edit** and **Delete** options for recipients. If a mistake is made, the recipient can be permanently deleted from the database *before* they are sent to the blockchain.
+4. Admin sends approved organ details to blockchain.
+5. Admin clicks **Match Organ** and selects a compatible recipient.
+6. Django calls `match_organ_on_chain()`.
+7. Smart contract executes `matchOrganWithRecipient()`.
+8. Ganache mines a new block.
+9. Database updates the organ status to `Matched`.
+10. Admin or hospital completes the transplant.
+11. Django calls `transplant_organ_on_chain()`.
+12. Smart contract executes `completeTransplantWithRecipient()`.
+13. Ganache mines another block.
+14. Database updates status to `Transplanted`.
 
 ## 📂 Project Structure
 

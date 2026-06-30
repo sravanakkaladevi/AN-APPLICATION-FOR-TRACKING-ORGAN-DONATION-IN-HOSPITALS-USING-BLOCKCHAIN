@@ -1210,6 +1210,41 @@
         document.getElementById('edit_medical_notes').value = medicalNotes;
       });
     }
+
+    // Auto-select doctor based on organ needed
+    const organToDoctorMap = {
+      'Heart': { doctor: 'Dr. Vikram Kumar (Cardiologist)', notes: 'Patient requires urgent heart transplant due to severe coronary artery disease.' },
+      'Kidney': { doctor: 'Dr. Sanjay Reddy (Nephrologist)', notes: 'Patient is suffering from end-stage renal disease (ESRD) and requires a kidney transplant.' },
+      'Liver': { doctor: 'Dr. Priya Sharma (Hepatologist)', notes: 'Patient has advanced liver cirrhosis; urgent liver transplant required.' },
+      'Cornea': { doctor: 'Dr. Anitha Varma (Ophthalmologist)', notes: 'Patient requires corneal transplant to restore vision after severe scarring.' },
+      'Lung': { doctor: 'Dr. Suresh Rao (Pulmonologist)', notes: 'Patient diagnosed with severe chronic obstructive pulmonary disease (COPD).' },
+      'Pancreas': { doctor: 'Dr. Nageswar Reddy (Endocrinologist)', notes: 'Patient has severe Type 1 diabetes with hypoglycemic unawareness; pancreas transplant needed.' },
+      'Intestine': { doctor: 'Dr. Nageswar Reddy (Gastroenterologist)', notes: 'Patient suffering from short bowel syndrome; requires intestinal transplant.' },
+      'Bone Marrow': { doctor: 'Dr. Sameer Khan (Hematologist)', notes: 'Patient diagnosed with acute leukemia; requires immediate bone marrow transplant.' },
+      'Skin Tissue': { doctor: 'Dr. Ramesh Naidu (Dermatologist)', notes: 'Patient suffered severe burns; requires skin tissue grafting.' }
+    };
+
+    function attachAutoDoctor(organFieldId, doctorFieldId, notesFieldId) {
+      const organField = document.getElementById(organFieldId);
+      const doctorField = document.getElementById(doctorFieldId);
+      const notesField = document.getElementById(notesFieldId);
+      if (organField && doctorField && notesField) {
+        organField.addEventListener('change', function() {
+          const selectedOrgan = this.value;
+          if (organToDoctorMap[selectedOrgan]) {
+            doctorField.value = organToDoctorMap[selectedOrgan].doctor;
+            notesField.value = organToDoctorMap[selectedOrgan].notes;
+          } else {
+            doctorField.value = '';
+            notesField.value = '';
+          }
+        });
+      }
+    }
+
+    attachAutoDoctor('id_organ_needed', 'id_doctor_assigned', 'id_medical_notes');
+    attachAutoDoctor('edit_organ_needed', 'edit_doctor_assigned', 'edit_medical_notes');
+
   });
 </script>
 {% endblock %}

@@ -234,37 +234,36 @@ class Command(BaseCommand):
                 is_deceased=d_info["is_deceased"]
             )
             
-            # For Pending Verification donors, automatically create the local OrganRecord
-            if d_info["status"] == "Pending Verification":
-                OrganRecord.objects.create(
-                    donor=d_profile,
-                    organ_type=d_info["organ"],
-                    blood_group=d_info["blood_group"],
-                    status='Pending Verification',
-                    registered_by=target_hosp,
-                    blockchain_id=None,
-                    blockchain_tx_hash=None
-                )
+            # Always create the local OrganRecord for each donor
+            OrganRecord.objects.create(
+                donor=d_profile,
+                organ_type=d_info["organ"],
+                blood_group=d_info["blood_group"],
+                status=d_info["status"],
+                registered_by=target_hosp,
+                blockchain_id=None,
+                blockchain_tx_hash=None
+            )
             
         self.stdout.write(self.style.SUCCESS("6 Donors created successfully!"))
         
         # 4. Create Recipients
         recipients_data = [
-            {"name": "Suresh Raina", "hospital": "Apollo Hospital", "blood": "A+", "organ": "Kidney", "urgency": "High", "age": 45, "gender": "male"},
-            {"name": "Deepa Mehta", "hospital": "Yashoda Hospital", "blood": "B+", "organ": "Liver", "urgency": "Medium", "age": 38, "gender": "female"},
-            {"name": "Vikram Singh", "hospital": "CARE Hospital", "blood": "O+", "organ": "Heart", "urgency": "High", "age": 52, "gender": "male"},
-            {"name": "Meera Bai", "hospital": "KIMS Hospital", "blood": "AB+", "organ": "Lung", "urgency": "Low", "age": 60, "gender": "female"},
-            {"name": "Arjun Reddy", "hospital": "AIG Hospital", "blood": "O-", "organ": "Kidney", "urgency": "Medium", "age": 28, "gender": "male"},
-            {"name": "Kavitha Rao", "hospital": "Apollo Hospital", "blood": "A-", "organ": "Cornea", "urgency": "High", "age": 33, "gender": "female"},
-            {"name": "Ramesh Chand", "hospital": "Yashoda Hospital", "blood": "A+", "organ": "Kidney", "urgency": "Medium", "age": 50, "gender": "male"},
-            {"name": "Shalini Sen", "hospital": "CARE Hospital", "blood": "B+", "organ": "Liver", "urgency": "Low", "age": 41, "gender": "female"},
-            {"name": "Karan Johar", "hospital": "KIMS Hospital", "blood": "O+", "organ": "Heart", "urgency": "Medium", "age": 48, "gender": "male"},
-            {"name": "Neetu Singh", "hospital": "AIG Hospital", "blood": "AB+", "organ": "Lung", "urgency": "High", "age": 55, "gender": "female"},
-            {"name": "Harish Verma", "hospital": "Apollo Hospital", "blood": "O-", "organ": "Kidney", "urgency": "Low", "age": 64, "gender": "male"},
-            {"name": "Divya Pillai", "hospital": "Yashoda Hospital", "blood": "A-", "organ": "Cornea", "urgency": "Medium", "age": 29, "gender": "female"},
-            {"name": "Sanjay Dutt", "hospital": "CARE Hospital", "blood": "A+", "organ": "Kidney", "urgency": "High", "age": 59, "gender": "male"},
-            {"name": "Geeta Phogat", "hospital": "KIMS Hospital", "blood": "B+", "organ": "Liver", "urgency": "High", "age": 31, "gender": "female"},
-            {"name": "Vijay Deverakonda", "hospital": "AIG Hospital", "blood": "O+", "organ": "Heart", "urgency": "Low", "age": 35, "gender": "male"},
+            {"name": "Srinivas Rao", "hospital": "Apollo Hospital", "blood": "O+", "organ": "Kidney", "urgency": "High", "age": 55, "gender": "male"},
+            {"name": "Kavitha Reddy", "hospital": "Yashoda Hospital", "blood": "A+", "organ": "Liver", "urgency": "Medium", "age": 48, "gender": "female"},
+            {"name": "Mahesh Babu", "hospital": "CARE Hospital", "blood": "B+", "organ": "Heart", "urgency": "High", "age": 61, "gender": "male"},
+            {"name": "Harika Varma", "hospital": "KIMS Hospital", "blood": "O+", "organ": "Cornea", "urgency": "Low", "age": 22, "gender": "female"},
+            {"name": "Naveen Kumar", "hospital": "AIG Hospital", "blood": "AB+", "organ": "Kidney", "urgency": "Medium", "age": 39, "gender": "male"},
+            {"name": "Bhavani Devi", "hospital": "Apollo Hospital", "blood": "A-", "organ": "Liver", "urgency": "High", "age": 45, "gender": "female"},
+            {"name": "Rajesh Goud", "hospital": "Yashoda Hospital", "blood": "O-", "organ": "Heart", "urgency": "Critical", "age": 52, "gender": "male"},
+            {"name": "Mounika S", "hospital": "CARE Hospital", "blood": "B+", "organ": "Kidney", "urgency": "High", "age": 33, "gender": "female"},
+            {"name": "Shiva Krishna", "hospital": "KIMS Hospital", "blood": "O+", "organ": "Liver", "urgency": "Medium", "age": 41, "gender": "male"},
+            {"name": "Tejaswini R", "hospital": "AIG Hospital", "blood": "AB-", "organ": "Cornea", "urgency": "Low", "age": 27, "gender": "female"},
+            {"name": "Anil Kumar", "hospital": "Apollo Hospital", "blood": "O+", "organ": "Kidney", "urgency": "High", "age": 58, "gender": "male"},
+            {"name": "Nandini P", "hospital": "Yashoda Hospital", "blood": "B-", "organ": "Liver", "urgency": "Critical", "age": 36, "gender": "female"},
+            {"name": "Suresh Reddy", "hospital": "CARE Hospital", "blood": "A+", "organ": "Heart", "urgency": "Medium", "age": 49, "gender": "male"},
+            {"name": "Akhila K", "hospital": "KIMS Hospital", "blood": "AB+", "organ": "Kidney", "urgency": "High", "age": 19, "gender": "female"},
+            {"name": "Vijay Kumar", "hospital": "AIG Hospital", "blood": "O-", "organ": "Liver", "urgency": "High", "age": 64, "gender": "male"},
         ]
         
         for r_info in recipients_data:

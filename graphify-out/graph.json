@@ -1,0 +1,281 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {},
+  "nodes": [
+    {
+      "label": "README.md",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "readme",
+      "community": 0,
+      "norm_label": "readme.md"
+    },
+    {
+      "label": "\ud83e\udec0 OrganChain \u2014 Tracking Organ Donation in Hospitals using Blockchain",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "readme_organchain_tracking_organ_donation_in_hospitals_using_blockchain",
+      "community": 0,
+      "norm_label": "\ud83e\udec0 organchain \u2014 tracking organ donation in hospitals using blockchain"
+    },
+    {
+      "label": "\ud83d\udcca System Completeness & Viva Readiness",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L9",
+      "_origin": "ast",
+      "id": "readme_system_completeness_viva_readiness",
+      "community": 0,
+      "norm_label": "\ud83d\udcca system completeness & viva readiness"
+    },
+    {
+      "label": "\ud83d\udee0\ufe0f Current Stack & Component Status",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L21",
+      "_origin": "ast",
+      "id": "readme_current_stack_component_status",
+      "community": 0,
+      "norm_label": "\ud83d\udee0\ufe0f current stack & component status"
+    },
+    {
+      "label": "\ud83d\udca1 Important Design Rule",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L34",
+      "_origin": "ast",
+      "id": "readme_important_design_rule",
+      "community": 0,
+      "norm_label": "\ud83d\udca1 important design rule"
+    },
+    {
+      "label": "\ud83d\udd04 Main Workflow",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L41",
+      "_origin": "ast",
+      "id": "readme_main_workflow",
+      "community": 0,
+      "norm_label": "\ud83d\udd04 main workflow"
+    },
+    {
+      "label": "\ud83d\udcc2 Project Structure",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L57",
+      "_origin": "ast",
+      "id": "readme_project_structure",
+      "community": 0,
+      "norm_label": "\ud83d\udcc2 project structure"
+    },
+    {
+      "label": "\ud83d\ude80 Setup & Execution",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L95",
+      "_origin": "ast",
+      "id": "readme_setup_execution",
+      "community": 1,
+      "norm_label": "\ud83d\ude80 setup & execution"
+    },
+    {
+      "label": "1. Create and activate virtual environment",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L97",
+      "_origin": "ast",
+      "id": "readme_1_create_and_activate_virtual_environment",
+      "community": 1,
+      "norm_label": "1. create and activate virtual environment"
+    },
+    {
+      "label": "2. Install dependencies",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L104",
+      "_origin": "ast",
+      "id": "readme_2_install_dependencies",
+      "community": 1,
+      "norm_label": "2. install dependencies"
+    },
+    {
+      "label": "3. Start Ganache",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L110",
+      "_origin": "ast",
+      "id": "readme_3_start_ganache",
+      "community": 1,
+      "norm_label": "3. start ganache"
+    },
+    {
+      "label": "4. Run Automatic Setup (Migrations, Compiling, Deployment)",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L118",
+      "_origin": "ast",
+      "id": "readme_4_run_automatic_setup_migrations_compiling_deployment",
+      "community": 1,
+      "norm_label": "4. run automatic setup (migrations, compiling, deployment)"
+    },
+    {
+      "label": "5. Run server",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L125",
+      "_origin": "ast",
+      "id": "readme_5_run_server",
+      "community": 1,
+      "norm_label": "5. run server"
+    },
+    {
+      "label": "\u2705 Useful Verification Commands",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L133",
+      "_origin": "ast",
+      "id": "readme_useful_verification_commands",
+      "community": 0,
+      "norm_label": "\u2705 useful verification commands"
+    }
+  ],
+  "links": [
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "README.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "readme",
+      "target": "readme_organchain_tracking_organ_donation_in_hospitals_using_blockchain",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "README.md",
+      "source_location": "L21",
+      "weight": 1.0,
+      "source": "readme_organchain_tracking_organ_donation_in_hospitals_using_blockchain",
+      "target": "readme_current_stack_component_status",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "README.md",
+      "source_location": "L34",
+      "weight": 1.0,
+      "source": "readme_organchain_tracking_organ_donation_in_hospitals_using_blockchain",
+      "target": "readme_important_design_rule",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "README.md",
+      "source_location": "L41",
+      "weight": 1.0,
+      "source": "readme_organchain_tracking_organ_donation_in_hospitals_using_blockchain",
+      "target": "readme_main_workflow",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "README.md",
+      "source_location": "L57",
+      "weight": 1.0,
+      "source": "readme_organchain_tracking_organ_donation_in_hospitals_using_blockchain",
+      "target": "readme_project_structure",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "README.md",
+      "source_location": "L95",
+      "weight": 1.0,
+      "source": "readme_organchain_tracking_organ_donation_in_hospitals_using_blockchain",
+      "target": "readme_setup_execution",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "README.md",
+      "source_location": "L9",
+      "weight": 1.0,
+      "source": "readme_organchain_tracking_organ_donation_in_hospitals_using_blockchain",
+      "target": "readme_system_completeness_viva_readiness",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "README.md",
+      "source_location": "L133",
+      "weight": 1.0,
+      "source": "readme_organchain_tracking_organ_donation_in_hospitals_using_blockchain",
+      "target": "readme_useful_verification_commands",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "README.md",
+      "source_location": "L97",
+      "weight": 1.0,
+      "source": "readme_setup_execution",
+      "target": "readme_1_create_and_activate_virtual_environment",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "README.md",
+      "source_location": "L104",
+      "weight": 1.0,
+      "source": "readme_setup_execution",
+      "target": "readme_2_install_dependencies",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "README.md",
+      "source_location": "L110",
+      "weight": 1.0,
+      "source": "readme_setup_execution",
+      "target": "readme_3_start_ganache",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "README.md",
+      "source_location": "L118",
+      "weight": 1.0,
+      "source": "readme_setup_execution",
+      "target": "readme_4_run_automatic_setup_migrations_compiling_deployment",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "README.md",
+      "source_location": "L125",
+      "weight": 1.0,
+      "source": "readme_setup_execution",
+      "target": "readme_5_run_server",
+      "confidence_score": 1.0
+    }
+  ],
+  "hyperedges": [],
+  "built_at_commit": "0ba85218df93ba28258ffdea0accbba0e2059289"
+}

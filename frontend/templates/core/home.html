@@ -987,33 +987,53 @@ body.home-page .hp-footer h4 {
 <div class="hp-wrap">
 <div class="hp-hero-grid">
     <div class="hp-hero-text">
-        <div style="display:inline-block; background: #ecfdf5; color: #065f46; padding: 6px 16px; border-radius: 50px; font-weight: 600; font-size: 0.9rem; margin-bottom: 20px;">
-            <i class="fa-solid fa-heart-circle-check" style="color: #059669; margin-right: 6px;"></i> <span class="anime-letters">Donate Organ, Donate Life</span>
-        </div>
-        <h1 style="color: #0f172a !important; font-size: clamp(2.5rem, 5vw, 3.8rem) !important; font-weight: 800; line-height: 1.15; margin-bottom: 20px;">
-            <span class="anime-letters" style="display:inline-block;">Every Donation</span><br>
-            <span class="anime-letters" style="display:inline-block; color: #059669;">Saves a Life</span>
-        </h1>
-        <p class="hp-hero-sub hp-animate-up" style="animation-delay: 0.35s; max-width: 450px; font-size: 1.05rem; margin-bottom: 30px;">
-            A secure blockchain-powered platform that connects donors, hospitals, and recipients for transparent organ donation and transplantation.
-        </p>
-        <div class="hp-hero-btns hp-animate-up" style="animation-delay: 0.5s;">
-            <a href="{% url 'register_donor' %}" class="hp-btn" style="background: #059669; color: white; padding: 12px 28px; box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3); border-radius: 8px; font-weight: 600;">
-                <i class="fa-regular fa-heart"></i> Join as a Donor
-            </a>
-            <a href="#workflow" class="hp-btn" style="background: white; color: #0f172a; border: 1px solid #e2e8f0; padding: 12px 28px; border-radius: 8px; font-weight: 600;">
-                <i class="fa-solid fa-play" style="color: #059669;"></i> Learn More
-            </a>
-        </div>
-        <div class="hp-trust-row hp-animate-up" style="animation-delay: 0.65s; margin-top: 20px;">
-            <span class="hp-trust-tag"><i class="fa-solid fa-shield-check" style="color: #0d9488;"></i> Blockchain Verified</span>
-            <span class="hp-trust-tag"><i class="fa-solid fa-lock" style="color: #0d9488;"></i> Encrypted Records</span>
-            <span class="hp-trust-tag"><i class="fa-solid fa-network-wired" style="color: #0d9488;"></i> Multi-Hospital Network</span>
-        </div>
+        {% if user.is_authenticated and user.is_hospital %}
+            <div style="display:inline-block; background: #ecfdf5; color: #065f46; padding: 6px 16px; border-radius: 50px; font-weight: 600; font-size: 0.9rem; margin-bottom: 20px;">
+                <i class="fa-solid fa-hospital" style="color: #059669; margin-right: 6px;"></i> <span class="anime-letters">Welcome to {{ user.hospitalprofile.hospital_name }}</span>
+            </div>
+            <h1 style="color: #0f172a !important; font-size: clamp(2.5rem, 5vw, 3.8rem) !important; font-weight: 800; line-height: 1.15; margin-bottom: 20px;">
+                <span class="anime-letters" style="display:inline-block;">Your Trusted</span><br>
+                <span class="anime-letters" style="display:inline-block; color: #059669;">Healthcare Partner</span>
+            </h1>
+            <p class="hp-hero-sub hp-animate-up" style="animation-delay: 0.35s; max-width: 450px; font-size: 1.05rem; margin-bottom: 30px;">
+                Access your hospital management portal to securely manage donors, recipients, and organ inventory on our blockchain network.
+            </p>
+            <div class="hp-hero-btns hp-animate-up" style="animation-delay: 0.5s;">
+                <a href="{% url 'hospital_dashboard' %}" class="hp-btn" style="background: #059669; color: white; padding: 12px 28px; box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3); border-radius: 8px; font-weight: 600;">
+                    <i class="fa-solid fa-gauge-high"></i> Go to Dashboard
+                </a>
+            </div>
+        {% else %}
+            <div style="display:inline-block; background: #ecfdf5; color: #065f46; padding: 6px 16px; border-radius: 50px; font-weight: 600; font-size: 0.9rem; margin-bottom: 20px;">
+                <i class="fa-solid fa-heart-circle-check" style="color: #059669; margin-right: 6px;"></i> <span class="anime-letters">Donate Organ, Donate Life</span>
+            </div>
+            <h1 style="color: #0f172a !important; font-size: clamp(2.5rem, 5vw, 3.8rem) !important; font-weight: 800; line-height: 1.15; margin-bottom: 20px;">
+                <span class="anime-letters" style="display:inline-block;">Every Donation</span><br>
+                <span class="anime-letters" style="display:inline-block; color: #059669;">Saves a Life</span>
+            </h1>
+            <p class="hp-hero-sub hp-animate-up" style="animation-delay: 0.35s; max-width: 450px; font-size: 1.05rem; margin-bottom: 30px;">
+                A secure blockchain-powered platform that connects donors, hospitals, and recipients for transparent organ donation and transplantation.
+            </p>
+            <div class="hp-hero-btns hp-animate-up" style="animation-delay: 0.5s;">
+                <a href="{% url 'register_donor' %}" class="hp-btn" style="background: #059669; color: white; padding: 12px 28px; box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3); border-radius: 8px; font-weight: 600;">
+                    <i class="fa-regular fa-heart"></i> Join as a Donor
+                </a>
+                <a href="#workflow" class="hp-btn" style="background: white; color: #0f172a; border: 1px solid #e2e8f0; padding: 12px 28px; border-radius: 8px; font-weight: 600;">
+                    <i class="fa-solid fa-play" style="color: #059669;"></i> Learn More
+                </a>
+            </div>
+            <div class="hp-trust-row hp-animate-up" style="animation-delay: 0.65s; margin-top: 20px;">
+                <span class="hp-trust-tag"><i class="fa-solid fa-shield-check" style="color: #0d9488;"></i> Blockchain Verified</span>
+                <span class="hp-trust-tag"><i class="fa-solid fa-lock" style="color: #0d9488;"></i> Encrypted Records</span>
+                <span class="hp-trust-tag"><i class="fa-solid fa-network-wired" style="color: #0d9488;"></i> Multi-Hospital Network</span>
+            </div>
+        {% endif %}
     </div>
+    {% if not user.is_authenticated or not user.is_hospital %}
     <div class="hp-hero-visual hp-animate-fade-in" style="animation-delay: 0.4s;">
         <img src="{% static 'images/hands_holding_heart.png' %}" alt="Organ Donation" class="hp-hero-image" id="hero-image">
     </div>
+    {% endif %}
 </div>
 </div>
 </section>
