@@ -2368,38 +2368,6 @@
 
       <div class="admin-nav-group-label">Records & Reports</div>
 
-      <a
-        class="admin-nav-link dropdown-toggle-link"
-        data-bs-toggle="collapse"
-        href="#collapseFeedback"
-        role="button"
-        aria-expanded="false"
-      >
-        <i class="fa-solid fa-comments"></i><span>Feedback & Sentiment</span>
-        <i class="fa-solid fa-chevron-down ms-auto font-size-sm"></i>
-      </a>
-      <div class="collapse" id="collapseFeedback">
-        <div class="admin-nav-sub">
-          <a
-            class="admin-nav-link ui-action"
-            href="#admin-feedback"
-            data-admin-target="feedback"
-          >
-            <span>Feedback List</span>
-            {% if stats.feedbacks %}<span
-              class="admin-nav-badge"
-              style="background: #7c3aed; margin-left: auto"
-              >{{ stats.feedbacks }}</span
-            >{% endif %}
-          </a>
-          <a
-            class="admin-nav-link ui-action"
-            href="#admin-sentiment"
-            data-admin-target="sentiment"
-            ><span>Sentiment Analysis</span></a
-          >
-        </div>
-      </div>
 
       <a
         class="admin-nav-link dropdown-toggle-link"
@@ -2431,12 +2399,7 @@
             data-admin-target="audit-logs"
             ><span>User Audit Trail</span></a
           >
-          <a
-            class="admin-nav-link ui-action"
-            href="#admin-status-history"
-            data-admin-target="status-history"
-            ><span>Status Transition Logs</span></a
-          >
+
           <a
             class="admin-nav-link ui-action"
             href="#admin-death-certs"
@@ -3174,9 +3137,11 @@
                     <td>
                       <div class="small fw-bold text-primary">
                         {% if t.donor and t.donor.user %}{{ t.donor.user.get_full_name|default:t.donor.user.username }}{% else %}Unknown Donor{% endif %}
+                        {% if t.organ.blockchain_id %}<span class="badge bg-secondary ms-1" style="font-size: 0.65rem;">ID: {{ t.organ.blockchain_id }}</span>{% endif %}
                       </div>
-                      <div class="small text-muted">
+                      <div class="small text-muted mt-1">
                         <i class="fa-solid fa-arrow-right mx-1"></i>{{ t.recipient.full_name }}
+                        {% if t.recipient.blockchain_id %}<span class="badge bg-secondary ms-1" style="font-size: 0.65rem;">ID: {{ t.recipient.blockchain_id }}</span>{% endif %}
                       </div>
                     </td>
                     <td>
@@ -3188,9 +3153,12 @@
                       >
                     </td>
                     <td>
-                      <small class="text-muted"
+                      <small class="text-muted fw-bold"
                         >{{ t.hospital.hospital_name }}</small
                       >
+                      {% if t.donor.assigned_hospital and t.donor.assigned_hospital != t.hospital %}
+                        <br><span class="badge text-bg-warning mt-1 text-dark" style="font-size: 0.65rem;" title="Donor is from {{ t.donor.assigned_hospital.hospital_name }}"><i class="fa-solid fa-truck-medical me-1"></i>Inter-Hospital</span>
+                      {% endif %}
                     </td>
                     <td>
                       {% if t.match_status == 'Approved' %}
@@ -3751,13 +3719,26 @@
               <i class="fa-solid fa-user me-1"></i>{{ plain_users|length }}
               users
             </span>
+            <select id="um-hstatus-filter" class="form-select form-select-sm me-2" style="width: auto; border-radius: 20px;" onchange="filterUMCards()">
+              <option value="all">All Verification Statuses</option>
+              <option value="waiting for blockchain approval">Waiting For Blockchain Approval</option>
+              <option value="blockchain verified">Blockchain Verified</option>
+              <option value="eligible">Eligible for Blockchain</option>
+              <option value="organ suitable">Organ Suitable</option>
+              <option value="registered">Registered</option>
+              <option value="under review">Under Review</option>
+              <option value="under testing">Under Testing</option>
+              <option value="available">Available</option>
+              <option value="rejected">Rejected / Organ Rejected</option>
+              <option value="none">No Organ Record</option>
+            </select>
             <input
               type="text"
               id="um-search"
               class="form-control form-control-sm"
               placeholder="🔍 Search users..."
               style="width: 180px; border-radius: 20px"
-              oninput="filterUMCards(this.value)"
+              oninput="filterUMCards()"
             />
           </div>
         </div>
@@ -3779,7 +3760,11 @@
             </thead>
             <tbody>
               {% for account in plain_users %}
-              <tr style="border-bottom: 1px solid var(--dash-border, rgba(255,255,255,0.08));">
+              <tr class="um-row" 
+                  data-username="{{ account.username|lower }}" 
+                  data-email="{{ account.email|lower }}"
+                  data-hstatus="{% if account.is_donor %}{% with organ=account.donorprofile.organrecord_set.first %}{% if organ %}{% if organ.status == 'Organ Rejected' or organ.status == 'Rejected' %}rejected{% else %}{{ organ.status|lower }}{% endif %}{% else %}none{% endif %}{% endwith %}{% else %}none{% endif %}"
+                  style="border-bottom: 1px solid var(--dash-border, rgba(255,255,255,0.08));">
                 <td>
                   <input
                     form="um-form-{{ account.id }}"
@@ -4917,6 +4902,7 @@
                     <th>Username</th>
                     <th>Email</th>
                     <th>Role</th>
+                    <th>Status</th>
                     <th>Joined</th>
                   </tr>
                 </thead>
@@ -4936,6 +4922,15 @@
                       >{% endif %}
                     </td>
                     <td>
+                      {% if pu.is_donor and pu.donorprofile.approval_status == 'Rejected' %}
+                        <span class="badge text-bg-danger">Ineligible</span>
+                      {% elif not pu.is_approved %}
+                        <span class="badge text-bg-warning">Pending</span>
+                      {% else %}
+                        <span class="badge text-bg-success">Approved</span>
+                      {% endif %}
+                    </td>
+                    <td>
                       <small class="text-muted"
                         >{{ pu.date_joined|date:"d M Y" }}</small
                       >
@@ -4943,7 +4938,7 @@
                   </tr>
                   {% empty %}
                   <tr>
-                    <td colspan="4" class="text-center text-muted py-4">
+                    <td colspan="5" class="text-center text-muted py-4">
                       <i class="fa-solid fa-check-circle text-success me-2"></i
                       >No pending users.
                     </td>
@@ -5126,11 +5121,66 @@
       <div class="card-body">
         <div class="d-flex justify-content-between align-items-center mb-3">
           <div class="admin-section-hdr"><i class="fa-solid fa-heart-circle-check text-danger"></i> Donor Management</div>
-          <span class="badge text-bg-primary">{{ donors|length }} donors</span>
+          <div class="d-flex align-items-center gap-3">
+            <select id="donorStatusFilter" class="form-select form-select-sm" style="width: auto;" onchange="filterDonors()">
+              <option value="all">All Statuses</option>
+              <option value="pending">Pending</option>
+              <option value="approved">Approved</option>
+              <option value="accepted">Accepted</option>
+              <option value="eligible">Eligible</option>
+              <option value="under testing">Under Testing</option>
+              <option value="rejected">Rejected</option>
+              <option value="not eligible">Not Eligible</option>
+              <option value="organ failure">Organ Failure</option>
+              <option value="deceased">Deceased</option>
+            </select>
+            <select id="donorHospitalFilter" class="form-select form-select-sm" style="width: auto;" onchange="filterDonors()">
+              <option value="all">All Hospitals</option>
+              {% for h in hospitals %}
+              <option value="{{ h.hospital_name|lower }}">{{ h.hospital_name }}</option>
+              {% endfor %}
+            </select>
+            <span class="badge text-bg-primary">{{ donors|length }} donors</span>
+          </div>
         </div>
         <p class="text-muted small mb-3">All registered donors in the system. Hospitals manage medical status. Admins manage blockchain submission.</p>
+        
+        <script>
+          function filterDonors() {
+            const statusFilterValue = document.getElementById('donorStatusFilter').value.toLowerCase();
+            const hospitalFilterValue = document.getElementById('donorHospitalFilter').value.toLowerCase();
+            const rows = document.querySelectorAll('#donor-management-table tbody tr');
+            
+            rows.forEach(row => {
+              if (row.querySelector('td[colspan="9"]')) return; // empty row fallback
+
+              // Approval status is in the 7th column (index 6)
+              const statusCell = row.cells[6];
+              // Assigned Hospital is in the 6th column (index 5)
+              const hospitalCell = row.cells[5];
+
+              let showStatus = true;
+              if (statusFilterValue !== 'all' && statusCell) {
+                const statusText = statusCell.textContent.toLowerCase().trim();
+                showStatus = statusText.includes(statusFilterValue);
+              }
+
+              let showHospital = true;
+              if (hospitalFilterValue !== 'all' && hospitalCell) {
+                const hospitalText = hospitalCell.textContent.toLowerCase().trim();
+                showHospital = hospitalText.includes(hospitalFilterValue);
+              }
+
+              if (showStatus && showHospital) {
+                row.style.display = '';
+              } else {
+                row.style.display = 'none';
+              }
+            });
+          }
+        </script>
         <div class="table-responsive">
-          <table class="table table-hover align-middle">
+          <table id="donor-management-table" class="table table-hover align-middle">
             <thead class="table-light">
               <tr>
                 <th>Donor</th>
@@ -5149,22 +5199,41 @@
               <tr>
                 <td>
                   <div class="d-flex align-items-center gap-2">
-                    <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold" style="width:34px;height:34px;min-width:34px;background:linear-gradient(135deg,#7c3aed,#2563eb);font-size:.85rem;">{{ dp.user.username|first|upper }}</div>
+                    {% if dp.user.profile_picture %}
+                      <img src="{{ dp.user.profile_picture.url }}" alt="{{ dp.user.username }}" class="rounded-circle" style="width:34px;height:34px;min-width:34px;object-fit:cover;">
+                    {% else %}
+                      <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold" style="width:34px;height:34px;min-width:34px;background:linear-gradient(135deg,#7c3aed,#2563eb);font-size:.85rem;">{{ dp.user.username|first|upper }}</div>
+                    {% endif %}
                     <div>
                       <strong>{{ dp.user.get_full_name|default:dp.user.username }}</strong><br>
                       <small class="text-muted">@{{ dp.user.username }}</small>
+                      {% with organ=dp.organrecord_set.first %}
+                        {% if organ and organ.blockchain_id %}
+                          <br><span class="badge bg-secondary mt-1" style="font-size: 0.65rem;">ID: {{ organ.blockchain_id }}</span>
+                        {% endif %}
+                      {% endwith %}
                     </div>
                   </div>
                 </td>
                 <td><span class="badge text-bg-danger">{{ dp.blood_group }}</span></td>
                 <td class="fw-semibold">{{ dp.pledged_organ|default:"—" }}</td>
                 <td>{{ dp.contact_number|default:"—" }}</td>
-                <td>{{ dp.city|default:"—" }}{% if dp.state %}, {{ dp.state }}{% endif %}</td>
+                <td>
+                  {% if dp.city or dp.state %}
+                    {{ dp.city|default:"" }}{% if dp.city and dp.state %}, {% endif %}{{ dp.state|default:"" }}
+                  {% elif dp.address %}
+                    {{ dp.address|truncatechars:30 }}
+                  {% else %}
+                    —
+                  {% endif %}
+                </td>
                 <td>{{ dp.assigned_hospital.hospital_name|default:"<span class='text-muted small'>Not Assigned</span>" }}</td>
                 <td>
-                  {% if dp.approval_status == 'Approved' %}<span class="badge text-bg-success">Approved</span>
+                  {% if dp.approval_status in 'Approved,Accepted,Eligible' %}<span class="badge text-bg-success">{{ dp.approval_status }}</span>
                   {% elif dp.approval_status == 'Pending' %}<span class="badge text-bg-warning text-dark">Pending</span>
-                  {% elif dp.approval_status == 'Rejected' %}<span class="badge text-bg-danger">Rejected</span>
+                  {% elif dp.approval_status == 'Under Testing' %}<span class="badge text-bg-info">Under Testing</span>
+                  {% elif dp.approval_status in 'Rejected,Not Eligible,Organ Failure' %}<span class="badge text-bg-danger">{{ dp.approval_status }}</span>
+                  {% elif dp.approval_status in 'Deceased,Death but Eligible Transplant,Death but Ineligible Transplant' %}<span class="badge text-bg-dark">{{ dp.approval_status }}</span>
                   {% else %}<span class="badge text-bg-secondary">{{ dp.approval_status }}</span>{% endif %}
                 </td>
                 <td>
@@ -5231,11 +5300,46 @@
       <div class="card-body">
         <div class="d-flex justify-content-between align-items-center mb-3">
           <div class="admin-section-hdr"><i class="fa-solid fa-bed-pulse text-primary"></i> Recipient &amp; Patient Monitor</div>
-          <span class="badge text-bg-primary">{{ all_recipients|length }} patients</span>
+          <div class="d-flex align-items-center gap-3">
+            <select id="recipientHospitalFilter" class="form-select form-select-sm" style="width: auto;" onchange="filterRecipientsByHospital()">
+              <option value="all">All Hospitals</option>
+              {% for h in hospitals %}
+                <option value="{{ h.hospital_name|lower }}">{{ h.hospital_name }}</option>
+              {% endfor %}
+            </select>
+            <span class="badge text-bg-primary">{{ all_recipients|length }} patients</span>
+          </div>
         </div>
         <p class="text-muted small mb-3">All recipients and patients awaiting organ transplants across all hospitals.</p>
+        
+        <script>
+          function filterRecipientsByHospital() {
+            const filterValue = document.getElementById('recipientHospitalFilter').value.toLowerCase();
+            const rows = document.querySelectorAll('#recipient-monitor-table tbody tr');
+            
+            rows.forEach(row => {
+              if (filterValue === 'all') {
+                row.style.display = '';
+                return;
+              }
+              
+              // Hospital is in the 7th column (index 6)
+              const hospitalCell = row.cells[6];
+              if (hospitalCell) {
+                const hospitalText = hospitalCell.textContent.toLowerCase().trim();
+                // Check if the hospitalText contains the filterValue
+                if (hospitalText.includes(filterValue)) {
+                  row.style.display = '';
+                } else {
+                  row.style.display = 'none';
+                }
+              }
+            });
+          }
+        </script>
+        
         <div class="table-responsive">
-          <table class="table table-hover align-middle">
+          <table id="recipient-monitor-table" class="table table-hover align-middle">
             <thead class="table-light">
               <tr>
                 <th>Patient</th>
@@ -5252,7 +5356,10 @@
             <tbody>
               {% for r in all_recipients %}
               <tr>
-                <td><strong>{{ r.full_name }}</strong></td>
+                <td>
+                  <strong>{{ r.full_name }}</strong>
+                  {% if r.blockchain_id %}<br><span class="badge bg-secondary mt-1" style="font-size: 0.65rem;">ID: {{ r.blockchain_id }}</span>{% endif %}
+                </td>
                 <td>{{ r.age }}</td>
                 <td><span class="badge text-bg-danger">{{ r.blood_group }}</span></td>
                 <td class="fw-semibold">{{ r.organ_needed }}</td>
@@ -5606,8 +5713,8 @@
     const sectionLinks = document.querySelectorAll("[data-admin-target]");
     const sectionKeys = new Set([
       "overview", "wallet", "analytics", "users", "pending", "hospitals",
-      "donors", "recipients", "ledger", "feedback", "sentiment", "profile",
-      "transplants", "blockchain-logs", "audit-logs", "status-history", "death-certs",
+      "donors", "recipients", "ledger", "profile",
+      "transplants", "blockchain-logs", "audit-logs", "death-certs",
     ]);
 
     if (adminContent && sectionLinks.length) {
@@ -5742,13 +5849,21 @@
   });
 
   // ── User Management live search ──
-  function filterUMCards(query) {
-    const q = query.toLowerCase().trim();
+  function filterUMCards() {
+    const searchInput = document.getElementById('um-search');
+    const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+    const hstatusInput = document.getElementById('um-hstatus-filter');
+    const hstatus = hstatusInput ? hstatusInput.value.toLowerCase() : 'all';
+    
     document.querySelectorAll(".um-row").forEach((row) => {
       const u = row.dataset.username || "";
       const e = row.dataset.email || "";
-      const match = !q || u.includes(q) || e.includes(q);
-      row.style.display = match ? "" : "none";
+      const rowStatus = row.dataset.hstatus || "none";
+      
+      const matchSearch = !query || u.includes(query) || e.includes(query);
+      const matchStatus = hstatus === 'all' || rowStatus === hstatus;
+      
+      row.style.display = (matchSearch && matchStatus) ? "" : "none";
     });
   }
 

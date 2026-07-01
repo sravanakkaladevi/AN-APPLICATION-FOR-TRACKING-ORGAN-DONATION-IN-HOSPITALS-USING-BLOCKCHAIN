@@ -52,6 +52,7 @@ The project uses a hybrid storage model:
 8. Ganache mines a new block.
 9. Database updates the organ status to `Matched`.
 10. Admin or hospital completes the transplant.
+    - **Note:** The system seamlessly supports **Inter-Hospital Transfers**. An organ from a donor at one hospital (e.g. CARE) can be matched with a high-priority recipient at a completely different hospital (e.g. Apollo). The system securely routes the organ logic and highlights the transfer on the Transplant Tracking dashboard.
 11. Django calls `transplant_organ_on_chain()`.
 12. Smart contract executes `completeTransplantWithRecipient()`.
 13. Ganache mines another block.

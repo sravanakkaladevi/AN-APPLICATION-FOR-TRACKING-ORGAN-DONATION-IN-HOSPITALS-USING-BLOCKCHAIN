@@ -457,14 +457,26 @@
               <tr>
                 <td>
                   <div class="d-flex align-items-center gap-2">
-                    <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold" style="width:34px;height:34px;min-width:34px;background:linear-gradient(135deg,#f59e0b,#ef4444);font-size:.85rem;">{{ dp.user.username|first|upper }}</div>
+                    {% if dp.user.profile_picture %}
+                      <img src="{{ dp.user.profile_picture.url }}" alt="{{ dp.user.username }}" class="rounded-circle" style="width:34px;height:34px;min-width:34px;object-fit:cover;">
+                    {% else %}
+                      <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold" style="width:34px;height:34px;min-width:34px;background:linear-gradient(135deg,#f59e0b,#ef4444);font-size:.85rem;">{{ dp.user.username|first|upper }}</div>
+                    {% endif %}
                     <div><strong>{{ dp.user.get_full_name|default:dp.user.username }}</strong><br><small class="text-muted">@{{ dp.user.username }}</small></div>
                   </div>
                 </td>
                 <td><span class="badge text-bg-danger">{{ dp.blood_group }}</span></td>
                 <td class="fw-semibold">{{ dp.pledged_organ|default:"—" }}</td>
                 <td>{{ dp.contact_number|default:"—" }}</td>
-                <td>{{ dp.city|default:"—" }}{% if dp.state %}, {{ dp.state }}{% endif %}</td>
+                <td>
+                  {% if dp.city or dp.state %}
+                    {{ dp.city|default:"" }}{% if dp.city and dp.state %}, {% endif %}{{ dp.state|default:"" }}
+                  {% elif dp.address %}
+                    {{ dp.address|truncatechars:30 }}
+                  {% else %}
+                    —
+                  {% endif %}
+                </td>
                 <td><small class="text-muted">{{ dp.user.date_joined|date:"d M Y" }}</small></td>
                 <td>
                   <div class="d-flex gap-2">
@@ -510,12 +522,24 @@
               {% for dp in all_donors %}
               <tr>
                 <td><div class="d-flex align-items-center gap-2">
-                  <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold" style="width:34px;height:34px;background:linear-gradient(135deg,#7c3aed,#2563eb);font-size:.9rem;">{{ dp.user.username|first|upper }}</div>
+                  {% if dp.user.profile_picture %}
+                    <img src="{{ dp.user.profile_picture.url }}" alt="{{ dp.user.username }}" class="rounded-circle" style="width:34px;height:34px;min-width:34px;object-fit:cover;">
+                  {% else %}
+                    <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold" style="width:34px;height:34px;background:linear-gradient(135deg,#7c3aed,#2563eb);font-size:.9rem;">{{ dp.user.username|first|upper }}</div>
+                  {% endif %}
                   <div><strong>{{ dp.user.get_full_name|default:dp.user.username }}</strong><br><small class="text-muted">@{{ dp.user.username }}</small></div>
                 </div></td>
                 <td><span class="badge text-bg-danger">{{ dp.blood_group }}</span></td>
                 <td>{{ dp.contact_number }}</td>
-                <td>{{ dp.city|default:"—" }}{% if dp.state %}, {{ dp.state }}{% endif %}</td>
+                <td>
+                  {% if dp.city or dp.state %}
+                    {{ dp.city|default:"" }}{% if dp.city and dp.state %}, {% endif %}{{ dp.state|default:"" }}
+                  {% elif dp.address %}
+                    {{ dp.address|truncatechars:30 }}
+                  {% else %}
+                    —
+                  {% endif %}
+                </td>
                 <td>{{ dp.organrecord_set.count }}</td>
                 <td>{% if dp.is_deceased %}<span class="badge text-bg-secondary">Deceased</span>{% else %}<span class="badge text-bg-success">Active</span>{% endif %}</td>
               </tr>
@@ -532,7 +556,7 @@
     <!-- ── Registered Donors (In Hospital) ── -->
     <section id="hosp-registered-donors" data-hosp-section="hosp-registered-donors" class="card page-card mb-4">
       <div class="card-body">
-        <div class="section-hdr"><i class="fa-solid fa-user-check text-success"></i>Registered Donors <span class="badge text-bg-success ms-2">{{ registered_organs|length }}</span></div>
+        <div class="section-hdr"><i class="fa-solid fa-user-check text-success"></i>Registered Donors <span class="badge text-bg-success ms-2">{{ assigned_donors|length }}</span></div>
         <p class="text-muted">Donors whose organs have been registered by your hospital.</p>
         <div class="table-responsive">
           <table class="table align-middle">
@@ -540,18 +564,32 @@
               <tr><th>Donor</th><th>Blood Group</th><th>Organ</th><th>Blockchain ID</th><th>Status</th><th>Date</th></tr>
             </thead>
             <tbody>
-              {% for organ in registered_organs %}
+              {% for donor in assigned_donors %}
               <tr>
-                <td><strong>{{ organ.donor.user.get_full_name|default:organ.donor.user.username }}</strong></td>
-                <td><span class="badge text-bg-light border">{{ organ.blood_group }}</span></td>
-                <td class="fw-semibold">{{ organ.organ_type }}</td>
-                <td><span class="ledger-id">#{{ organ.blockchain_id }}</span></td>
+                <td><strong>{{ donor.user.get_full_name|default:donor.user.username }}</strong></td>
+                <td><span class="badge text-bg-light border">{{ donor.blood_group }}</span></td>
+                <td class="fw-semibold">{{ donor.pledged_organ }}</td>
+                <td><span class="ledger-id">#{{ donor.organrecord_set.first.blockchain_id|default:"Pending" }}</span></td>
                 <td>
-                  {% if organ.status == 'Available' or organ.status == 'Blockchain Verified' %}<span class="badge text-bg-success">{{ organ.status }}</span>
-                  {% elif organ.status == 'Matched' %}<span class="badge text-bg-warning">{{ organ.status }}</span>
-                  {% else %}<span class="badge text-bg-info">{{ organ.status }}</span>{% endif %}
+                  <form id="donor-edit-{{ donor.pk }}" method="post" action="{% url 'hospital_update_donor_status' donor.pk %}" class="d-flex gap-2">
+                    {% csrf_token %}
+                    <select name="status" class="form-select form-select-sm" required>
+                      <option value="Pending" {% if donor.approval_status == 'Pending' %}selected{% endif %}>Pending</option>
+                      <option value="Under Testing" {% if donor.approval_status == 'Under Testing' %}selected{% endif %}>Under Testing</option>
+                      <option value="Accepted" {% if donor.approval_status == 'Accepted' %}selected{% endif %}>Accepted</option>
+                      <option value="Approved" {% if donor.approval_status == 'Approved' %}selected{% endif %}>Approved</option>
+                      <option value="Eligible" {% if donor.approval_status == 'Eligible' %}selected{% endif %}>Eligible</option>
+                      <option value="Not Eligible" {% if donor.approval_status == 'Not Eligible' %}selected{% endif %}>Not Eligible</option>
+                      <option value="Organ Failure" {% if donor.approval_status == 'Organ Failure' %}selected{% endif %}>Organ Failure</option>
+                      <option value="Deceased" {% if donor.approval_status == 'Deceased' %}selected{% endif %}>Deceased</option>
+                      <option value="Death but Eligible Transplant" {% if donor.approval_status == 'Death but Eligible Transplant' %}selected{% endif %}>Death but Eligible Transplant</option>
+                      <option value="Death but Ineligible Transplant" {% if donor.approval_status == 'Death but Ineligible Transplant' %}selected{% endif %}>Death but Ineligible Transplant</option>
+                      <option value="Rejected" {% if donor.approval_status == 'Rejected' %}selected{% endif %}>Rejected</option>
+                    </select>
+                    <button type="submit" class="btn btn-sm btn-primary ui-action">Save</button>
+                  </form>
                 </td>
-                <td><small class="text-muted">{{ organ.created_at|date:"d M Y" }}</small></td>
+                <td><small class="text-muted">{{ donor.user.date_joined|date:"d M Y" }}</small></td>
               </tr>
               {% empty %}
               <tr><td colspan="6" class="text-center text-muted py-4">No donors registered by your hospital yet.</td></tr>
@@ -657,11 +695,15 @@
         <div class="table-responsive">
           <table class="table align-middle">
             <thead class="table-light">
-              <tr><th>Organ</th><th>Blood Group</th><th>Status</th><th>Blockchain ID</th><th>Tx Hash</th><th>Edit</th></tr>
+              <tr><th>Donor</th><th>Organ</th><th>Blood Group</th><th>Status</th><th>Blockchain ID</th><th>Tx Hash</th><th>Edit</th></tr>
             </thead>
             <tbody>
               {% for organ in registered_organs %}
               <tr>
+                <td>
+                  <div class="fw-bold">{{ organ.donor.user.first_name }} {{ organ.donor.user.last_name }}</div>
+                  <div class="small text-muted">@{{ organ.donor.user.username }}</div>
+                </td>
                 <td class="fw-semibold">
                   <select form="organ-edit-{{ organ.id }}" name="organ_type" class="form-select form-select-sm" required>
                     <option value="Kidney" {% if organ.organ_type == 'Kidney' %}selected{% endif %}>Kidney</option>
@@ -687,6 +729,7 @@
                     <option value="AB-" {% if organ.blood_group == 'AB-' %}selected{% endif %}>AB-</option>
                   </select>
                 </td>
+                <td>
                   {% if organ.status == 'Available' or organ.status == 'Blockchain Verified' %}<span class="badge text-bg-success">{{ organ.status }}</span>
                   {% elif organ.status == 'Matched' %}<span class="badge text-bg-warning">{{ organ.status }}</span>
                   {% else %}<span class="badge text-bg-info">{{ organ.status }}</span>{% endif %}
@@ -728,7 +771,7 @@
                 </td>
               </tr>
               {% empty %}
-              <tr><td colspan="5" class="text-center text-muted py-4">No organs registered yet.</td></tr>
+              <tr><td colspan="7" class="text-center text-muted py-4">No organs registered yet.</td></tr>
               {% endfor %}
             </tbody>
           </table>
@@ -747,14 +790,27 @@
         <div class="table-responsive">
           <table class="table align-middle">
             <thead class="table-light">
-              <tr><th>Organ</th><th>Blood Group</th><th>Source Hospital</th><th>Status</th><th>Blockchain ID</th><th>Blockchain Verification</th><th>Edit Status</th></tr>
+              <tr><th>Organ</th><th>Blood Group</th><th>Donor</th><th>Recipient</th><th>Status</th><th>Blockchain ID</th><th>Blockchain Verification</th><th>Edit Status</th></tr>
             </thead>
             <tbody>
               {% for organ in received_organs %}
               <tr>
                 <td class="fw-semibold">{{ organ.organ_type }}</td>
                 <td><span class="badge text-bg-light border">{{ organ.blood_group }}</span></td>
-                <td>{{ organ.registered_by.hospital_name }}</td>
+                <td>
+                  <strong>{{ organ.donor.user.get_full_name|default:organ.donor.user.username }}</strong><br>
+                  <small class="text-muted">{{ organ.registered_by.hospital_name }}</small>
+                </td>
+                <td>
+                  {% with t=organ.transplant.first %}
+                    {% if t and t.recipient %}
+                      <strong>{{ t.recipient.full_name }}</strong><br>
+                      <small class="text-muted">{{ t.recipient.hospital.hospital_name }}</small>
+                    {% else %}
+                      <span class="text-muted small">Not matched yet</span>
+                    {% endif %}
+                  {% endwith %}
+                </td>
                 <td><span class="badge text-bg-warning">{{ organ.status }}</span></td>
                 <td><span class="ledger-id">#{{ organ.blockchain_id }}</span></td>
                 <td>
@@ -1211,18 +1267,56 @@
       });
     }
 
-    // Auto-select doctor based on organ needed
-    const organToDoctorMap = {
-      'Heart': { doctor: 'Dr. Vikram Kumar (Cardiologist)', notes: 'Patient requires urgent heart transplant due to severe coronary artery disease.' },
-      'Kidney': { doctor: 'Dr. Sanjay Reddy (Nephrologist)', notes: 'Patient is suffering from end-stage renal disease (ESRD) and requires a kidney transplant.' },
-      'Liver': { doctor: 'Dr. Priya Sharma (Hepatologist)', notes: 'Patient has advanced liver cirrhosis; urgent liver transplant required.' },
-      'Cornea': { doctor: 'Dr. Anitha Varma (Ophthalmologist)', notes: 'Patient requires corneal transplant to restore vision after severe scarring.' },
-      'Lung': { doctor: 'Dr. Suresh Rao (Pulmonologist)', notes: 'Patient diagnosed with severe chronic obstructive pulmonary disease (COPD).' },
-      'Pancreas': { doctor: 'Dr. Nageswar Reddy (Endocrinologist)', notes: 'Patient has severe Type 1 diabetes with hypoglycemic unawareness; pancreas transplant needed.' },
-      'Intestine': { doctor: 'Dr. Nageswar Reddy (Gastroenterologist)', notes: 'Patient suffering from short bowel syndrome; requires intestinal transplant.' },
-      'Bone Marrow': { doctor: 'Dr. Sameer Khan (Hematologist)', notes: 'Patient diagnosed with acute leukemia; requires immediate bone marrow transplant.' },
-      'Skin Tissue': { doctor: 'Dr. Ramesh Naidu (Dermatologist)', notes: 'Patient suffered severe burns; requires skin tissue grafting.' }
-    };
+    // Auto-select doctor based on organ needed and hospital
+    const currentHospitalName = "{{ request.user.hospitalprofile.hospital_name|default:'' }}".toLowerCase();
+    
+    function getDoctorForOrgan(organ) {
+      if (currentHospitalName.includes("apollo")) {
+        if (organ === "Kidney") return "Dr. Sanjay Reddy (Nephrologist / Kidney Specialist)";
+        if (organ === "Liver") return "Dr. Priya Sharma (Hepatologist / Liver Specialist)";
+      } else if (currentHospitalName.includes("yashoda")) {
+        if (organ === "Heart") return "Dr. Vikram Kumar (Cardiologist / Heart Specialist)";
+        if (organ === "Kidney") return "Dr. Rakesh Goud (Nephrologist / Kidney Specialist)";
+      } else if (currentHospitalName.includes("care")) {
+        if (organ === "Cornea") return "Dr. Anitha Varma (Ophthalmologist / Corneas)";
+        if (organ === "Liver") return "Dr. Sameer Khan (Hepatologist / Liver Specialist)";
+      } else if (currentHospitalName.includes("kims")) {
+        if (organ === "Heart") return "Dr. Ramesh Naidu (Cardiologist / Heart Specialist)";
+        if (organ === "Kidney") return "Dr. Sunitha Rao (Nephrologist / Kidney Specialist)";
+      } else if (currentHospitalName.includes("aig")) {
+        if (organ === "Liver") return "Dr. Nageswar Reddy (Gastroenterologist & Hepatologist / Liver)";
+        if (organ === "Heart") return "Dr. Prathap C (Cardiologist / Heart Specialist)";
+      }
+      
+      // Fallbacks if hospital not recognized or organ not in specific mapping
+      const fallbacks = {
+        'Heart': 'Dr. Vikram Kumar (Cardiologist)',
+        'Kidney': 'Dr. Sanjay Reddy (Nephrologist)',
+        'Liver': 'Dr. Priya Sharma (Hepatologist)',
+        'Cornea': 'Dr. Anitha Varma (Ophthalmologist)',
+        'Lung': 'Dr. Suresh Rao (Pulmonologist)',
+        'Pancreas': 'Dr. Nageswar Reddy (Endocrinologist)',
+        'Intestine': 'Dr. Nageswar Reddy (Gastroenterologist)',
+        'Bone Marrow': 'Dr. Sameer Khan (Hematologist)',
+        'Skin Tissue': 'Dr. Ramesh Naidu (Dermatologist)'
+      };
+      return fallbacks[organ] || '';
+    }
+
+    function getNotesForOrgan(organ) {
+      const notes = {
+        'Heart': 'Patient requires urgent heart transplant due to severe coronary artery disease.',
+        'Kidney': 'Patient is suffering from end-stage renal disease (ESRD) and requires a kidney transplant.',
+        'Liver': 'Patient has advanced liver cirrhosis; urgent liver transplant required.',
+        'Cornea': 'Patient requires corneal transplant to restore vision after severe scarring.',
+        'Lung': 'Patient diagnosed with severe chronic obstructive pulmonary disease (COPD).',
+        'Pancreas': 'Patient has severe Type 1 diabetes with hypoglycemic unawareness; pancreas transplant needed.',
+        'Intestine': 'Patient suffering from short bowel syndrome; requires intestinal transplant.',
+        'Bone Marrow': 'Patient diagnosed with acute leukemia; requires immediate bone marrow transplant.',
+        'Skin Tissue': 'Patient suffered severe burns; requires skin tissue grafting.'
+      };
+      return notes[organ] || '';
+    }
 
     function attachAutoDoctor(organFieldId, doctorFieldId, notesFieldId) {
       const organField = document.getElementById(organFieldId);
@@ -1231,13 +1325,8 @@
       if (organField && doctorField && notesField) {
         organField.addEventListener('change', function() {
           const selectedOrgan = this.value;
-          if (organToDoctorMap[selectedOrgan]) {
-            doctorField.value = organToDoctorMap[selectedOrgan].doctor;
-            notesField.value = organToDoctorMap[selectedOrgan].notes;
-          } else {
-            doctorField.value = '';
-            notesField.value = '';
-          }
+          doctorField.value = getDoctorForOrgan(selectedOrgan);
+          notesField.value = getNotesForOrgan(selectedOrgan);
         });
       }
     }

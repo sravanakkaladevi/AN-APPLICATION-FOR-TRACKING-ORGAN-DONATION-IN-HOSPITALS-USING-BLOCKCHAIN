@@ -181,6 +181,19 @@ For example, we use `select_related()` and `filter()` queries to efficiently ret
 2. **AI/Machine Learning:** Integrating a predictive model that suggests the best recipient match based on tissue compatibility, distance, and urgency rather than a manual search.
 3. **Smart Contract Audits:** Adding multi-signature (Multi-Sig) approvals so that both a hospital admin and a government official must sign off on a transplant before the state changes.
 
+### Q25: How many blockchain transactions occur during a complete organ match lifecycle?
+**Answer:** There are exactly **4** distinct blockchain transactions that happen during a full lifecycle:
+1. **Donor Organ Registration:** Writing the donor's organ details to the blockchain (creating the Organ ID).
+2. **Recipient Registration:** Writing the recipient's medical needs and details to the blockchain (creating the Recipient ID).
+3. **Organ Matching:** When the admin approves the match, a smart contract function (`matchOrgan`) is called to formally link the Organ ID and Recipient ID together on-chain.
+4. **Transplant Completion:** After surgery, a final smart contract function (`completeTransplantWithRecipient`) is called to permanently lock the organ state as "Transplanted" so it can never be used again.
+
+### Q26: Can an organ from Hospital A (e.g. CARE) be given to a high-priority patient at Hospital B (e.g. Apollo)? Does the system support inter-hospital transfers?
+**Answer:** **Yes, absolutely.** This is one of the strongest use cases of our blockchain system!
+- **How it works:** The matching logic strictly checks for medical compatibility (Organ Type and Blood Group). It intentionally *does not* restrict the match to the same hospital.
+- **The Benefit:** Because all hospitals are connected to the same decentralized ledger (Ganache), the Central Admin has a global view of all available organs and all waiting patients. The admin can instantly match Hospital A's organ to Hospital B's high-priority recipient.
+- **UI Tracking:** The Transplant Tracking dashboard visually highlights these cross-hospital transfers with an "Inter-Hospital" badge, demonstrating how the system breaks down data silos between hospitals to save high-priority patients.
+
 ---
 
 > [!TIP]

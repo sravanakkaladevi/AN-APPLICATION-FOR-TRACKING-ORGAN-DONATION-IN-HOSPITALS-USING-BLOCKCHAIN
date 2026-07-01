@@ -262,9 +262,7 @@
       </div>
       
       <div class="role-nav-group-label" style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--dash-muted, #64748b); margin: 1.25rem 0 0.5rem 0.5rem; letter-spacing: 0.5px;">Settings</div>
-      <a class="role-nav-link ui-action" href="#donor-feedback" data-donor-target="donor-feedback">
-        <i class="fa-solid fa-comments"></i><span>Feedback</span>
-      </a>
+
       <a class="role-nav-link ui-action" href="#donor-profile" data-donor-target="donor-profile">
         <i class="fa-solid fa-user-gear"></i><span>Profile Settings</span>
       </a>
@@ -768,7 +766,7 @@
     const donorContent = document.getElementById("donor-content");
     const sectionLinks = document.querySelectorAll("[data-donor-target]");
     const sectionKeys = new Set([
-      "donor-overview", "donor-donate", "donor-status", "donor-profile", "donor-feedback", "donor-blockchain"
+      "donor-overview", "donor-donate", "donor-status", "donor-profile", "donor-blockchain"
     ]);
 
     function showDonorSection(target) {

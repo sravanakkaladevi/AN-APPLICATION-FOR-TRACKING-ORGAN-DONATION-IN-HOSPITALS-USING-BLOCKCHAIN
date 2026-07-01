@@ -491,6 +491,7 @@
                         {% if form.age.errors %}
                             <div class="field-error" style="color: #e11d48; font-size: 0.8rem; margin-top: 0.25rem;">{{ form.age.errors|striptags }}</div>
                         {% endif %}
+                        <div id="age-validation-error" class="field-error" style="color: #e11d48; font-size: 0.8rem; margin-top: 0.25rem; display: none;">You are not eligible. You must be at least 18 years old to register.</div>
                     </div>
                     <div class="portal-field">
                         <label for="donor-gender">Gender</label>
@@ -560,6 +561,20 @@
                             <div class="field-error" style="color: #e11d48; font-size: 0.8rem; margin-top: 0.25rem;">{{ form.address.errors|striptags }}</div>
                         {% endif %}
                     </div>
+                    <div class="portal-field">
+                        <label for="donor-city">City</label>
+                        <input id="donor-city" type="text" name="city" value="{{ form.city.value|default:'' }}">
+                        {% if form.city.errors %}
+                            <div class="field-error" style="color: #e11d48; font-size: 0.8rem; margin-top: 0.25rem;">{{ form.city.errors|striptags }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="portal-field">
+                        <label for="donor-state">State</label>
+                        <input id="donor-state" type="text" name="state" value="{{ form.state.value|default:'' }}">
+                        {% if form.state.errors %}
+                            <div class="field-error" style="color: #e11d48; font-size: 0.8rem; margin-top: 0.25rem;">{{ form.state.errors|striptags }}</div>
+                        {% endif %}
+                    </div>
                 </div>
 
                 <label class="gl-checkbox">
@@ -600,6 +615,50 @@
                     preventReset: true
                 });
             });
+        }
+
+        const firstNameInput = document.getElementById('donor-first-name');
+        const contactInput = document.getElementById('donor-contact');
+        const usernameInput = document.getElementById('donor-username');
+
+        function generateUsername() {
+            if (firstNameInput && contactInput && usernameInput) {
+                const firstName = firstNameInput.value.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+                const contactStr = contactInput.value.trim().replace(/[^0-9]/g, '');
+                
+                if (firstName && contactStr.length >= 4) {
+                    const lastFour = contactStr.slice(-4);
+                    // Only update if the user hasn't heavily modified it or if we are actively typing
+                    // (To avoid replacing a custom username entirely, though simple overwrite is what they asked for)
+                    usernameInput.value = `${firstName}_${lastFour}`;
+                } else if (firstName) {
+                    usernameInput.value = firstName;
+                }
+            }
+        }
+
+        if (firstNameInput) firstNameInput.addEventListener('input', generateUsername);
+        if (contactInput) contactInput.addEventListener('input', generateUsername);
+        const ageInput = document.getElementById('donor-age');
+        const ageError = document.getElementById('age-validation-error');
+        const submitButton = form ? form.querySelector('button[type="submit"]') : null;
+
+        function validateAge() {
+            if (ageInput && ageError && submitButton) {
+                const age = parseInt(ageInput.value, 10);
+                if (!isNaN(age) && age < 18) {
+                    ageError.style.display = 'block';
+                    submitButton.disabled = true;
+                } else {
+                    ageError.style.display = 'none';
+                    submitButton.disabled = false;
+                }
+            }
+        }
+
+        if (ageInput) {
+            ageInput.addEventListener('input', validateAge);
+            validateAge(); // Initial check
         }
     });
 </script>

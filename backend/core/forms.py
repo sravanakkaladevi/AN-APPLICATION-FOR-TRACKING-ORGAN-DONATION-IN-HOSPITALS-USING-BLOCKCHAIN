@@ -61,6 +61,12 @@ class DonorRegistrationForm(UserCreationForm):
             raise forms.ValidationError("This email address is already in use.")
         return email
 
+    def clean_age(self):
+        age = self.cleaned_data.get('age')
+        if age is not None and age < 18:
+            raise forms.ValidationError("You must be at least 18 years old to register as a donor.")
+        return age
+
     def save(self, commit=True):
         user = super().save(commit=False)
         user.is_donor = True

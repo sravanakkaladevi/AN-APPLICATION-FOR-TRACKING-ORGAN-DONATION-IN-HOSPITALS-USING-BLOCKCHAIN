@@ -3,9 +3,12 @@ from django.contrib.auth import login, update_session_auth_hash
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
+from django.core.cache import cache
+from django.utils.dateformat import DateFormat
+from django.db import transaction
+from django.views.decorators.http import require_POST
 from django.db.models import Count, Avg, Q
 from django.urls import reverse_lazy
-from django.db import transaction
 import json
 import logging
 logger = logging.getLogger(__name__)
@@ -273,8 +276,9 @@ def hospital_dashboard(request):
     recipients = Recipient.objects.filter(hospital=hospital).order_by('-created_at')
 
     registered_organs = OrganRecord.objects.select_related('donor__user', 'registered_by').filter(
-        Q(registered_by=hospital) | Q(donor__assigned_hospital=hospital)
-    ).distinct().order_by('-created_at')
+        Q(registered_by=hospital) | Q(donor__assigned_hospital=hospital),
+        donor__approval_status__in=['Approved', 'Accepted', 'Eligible', 'Deceased', 'Death but Eligible Transplant']
+    ).exclude(status='Transplanted').distinct().order_by('-created_at')
     received_organs = OrganRecord.objects.select_related('registered_by', 'donor__user').filter(
         recipient_hospital=hospital, status__in=['Matched', 'Transplanted']
     ).order_by('-created_at')
@@ -294,7 +298,7 @@ def hospital_dashboard(request):
     rejected_donors = all_donors.filter(approval_status='Rejected')
 
     # Assigned donors for this hospital
-    assigned_donors = all_donors
+    assigned_donors = all_donors.exclude(approval_status='Rejected')
     
     # Search functionality
     search_organ = request.GET.get('search_organ', '').strip()
@@ -513,13 +517,21 @@ def admin_dashboard(request):
                 return ajax_response(request, success=True)
             return redirect('admin_dashboard')
 
-    organs = OrganRecord.objects.all().order_by('-created_at')
+    from django.db.models import Q
+    organs = OrganRecord.objects.filter(
+        Q(blockchain_id__isnull=False) | Q(blockchain_tx_hash__isnull=False) | Q(status='Blockchain Verified')
+    ).distinct().order_by('-created_at')
     hospitals = HospitalProfile.objects.all()
     donors = DonorProfile.objects.select_related('user').all().order_by('user__username')
     users = User.objects.all().order_by('username')
     # User Management section: only show regular users (not hospital, not donor, not admin)
-    plain_users = User.objects.filter(is_superuser=False, is_hospital=False).order_by('username')
-    pending_users = User.objects.filter(is_approved=False).exclude(donorprofile__approval_status='Rejected').order_by('date_joined')
+    plain_users = User.objects.filter(is_superuser=False, is_hospital=False).exclude(
+        donorprofile__organrecord__status__in=['Transplanted', 'Transplant Completed']
+    ).order_by('username')
+    from django.db.models import Q
+    pending_users = User.objects.filter(
+        Q(is_approved=False) | Q(donorprofile__approval_status__in=['Pending', 'Rejected'])
+    ).distinct().order_by('date_joined')
     all_recipients = Recipient.objects.select_related('hospital').all().order_by('-created_at')
     all_death_certs = DeathCertificate.objects.select_related('donor__user', 'issued_by').all().order_by('-issued_at')
     feedbacks = Feedback.objects.select_related('user').all().order_by('-submitted_at')
@@ -1030,6 +1042,19 @@ def admin_approve_organ(request, organ_id):
                     ip_address=request.META.get('REMOTE_ADDR')
                 )
                 
+                # Auto-generate Death Certificate if not already present
+                import uuid
+                from datetime import date
+                if not DeathCertificate.objects.filter(donor=donor).exists() and hospital:
+                    DeathCertificate.objects.create(
+                        donor=donor,
+                        issued_by=hospital,
+                        certificate_number=f"DC-AUTO-{uuid.uuid4().hex[:8].upper()}",
+                        date_of_death=date.today(),
+                        cause_of_death=f"Auto-generated after blockchain verification for {organ.organ_type}.",
+                        notes="Automatically issued post-blockchain registration."
+                    )
+                
                 # Create BlockchainTransaction record
                 if organ.blockchain_tx_hash:
                     BlockchainTransaction.objects.create(
@@ -1422,6 +1447,45 @@ def admin_complete_transplant(request, organ_id):
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         return ajax_response(request, success=success)
     return redirect('admin_dashboard')
+
+@login_required
+@require_POST
+def hospital_update_donor_status(request, donor_id):
+    if not hasattr(request.user, 'hospitalprofile'):
+        messages.error(request, "Unauthorized access.")
+        return redirect('home')
+
+    donor = get_object_or_404(DonorProfile, pk=donor_id)
+    if donor.assigned_hospital != request.user.hospitalprofile:
+        messages.error(request, "Unauthorized to edit this donor.")
+        return redirect('/dashboard/hospital/#hosp-registered-donors')
+
+    new_status = request.POST.get('status')
+    valid_statuses = dict(DonorProfile.APPROVAL_CHOICES).keys()
+    
+    if new_status in valid_statuses:
+        with transaction.atomic():
+            donor.approval_status = new_status
+            donor.save()
+            
+            # If the hospital rejected the donor, also update the organ status
+            if new_status == 'Rejected':
+                organ = donor.organrecord_set.first()
+                if organ and organ.status != 'Rejected':
+                    organ.status = 'Rejected'
+                    organ.save()
+                    OrganStatusHistory.objects.create(
+                        organ_record=organ,
+                        previous_status=None,
+                        new_status='Rejected',
+                        updated_by=request.user
+                    )
+            
+            messages.success(request, f"Status for {donor.user.get_full_name() or donor.user.username} updated to {new_status}.")
+    else:
+        messages.error(request, "Invalid status selected.")
+
+    return redirect('/dashboard/hospital/#hosp-registered-donors')
 
 @login_required
 def hospital_transition_organ(request, organ_id):

@@ -17,6 +17,7 @@ urlpatterns = [
     path('dashboard/admin/user/<int:user_id>/update/', views.admin_update_user, name='admin_update_user'),
     path('dashboard/admin/organ/<int:organ_id>/status/', views.admin_update_organ_status, name='admin_update_organ_status'),
     path('dashboard/hospital/organ/<int:organ_id>/status/', views.hospital_update_organ_status, name='hospital_update_organ_status'),
+    path('dashboard/hospital/donor/<int:donor_id>/status/', views.hospital_update_donor_status, name='hospital_update_donor_status'),
     path('dashboard/hospital/organ/<int:organ_id>/transition/', views.hospital_transition_organ, name='hospital_transition_organ'),
     path('dashboard/organ/<int:organ_id>/delete/', views.delete_organ, name='delete_organ'),
     path('dashboard/admin/organ/<int:organ_id>/approve/', views.admin_approve_organ, name='admin_approve_organ'),

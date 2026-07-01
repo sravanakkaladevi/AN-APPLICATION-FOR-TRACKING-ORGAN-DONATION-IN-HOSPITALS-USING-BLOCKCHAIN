@@ -1669,6 +1669,9 @@
 
         // Global AJAX Form Submission Helper
         async function submitAjaxForm(form, options = {}) {
+            if (form.dataset.isSubmitting === 'true') return;
+            form.dataset.isSubmitting = 'true';
+
             const submitBtn = form.querySelector('[type="submit"]');
             if (submitBtn) setButtonLoading(submitBtn, true);
             clearFormErrors(form);
@@ -1676,6 +1679,7 @@
             const url = form.action || window.location.href;
             const method = form.getAttribute('method') || 'POST';
             const formData = new FormData(form);
+            let isRedirecting = false;
 
             try {
                 const response = await fetch(url, {
@@ -1707,6 +1711,7 @@
 
                     // Perform redirect if required
                     if (data.redirect_url) {
+                        isRedirecting = true;
                         setTimeout(() => {
                             const oldPath = window.location.pathname;
                             window.location.href = data.redirect_url;
@@ -1760,7 +1765,8 @@
                     options.onError(error);
                 }
             } finally {
-                if (submitBtn) setButtonLoading(submitBtn, false);
+                form.dataset.isSubmitting = 'false';
+                if (submitBtn && !isRedirecting) setButtonLoading(submitBtn, false);
             }
         }
 
