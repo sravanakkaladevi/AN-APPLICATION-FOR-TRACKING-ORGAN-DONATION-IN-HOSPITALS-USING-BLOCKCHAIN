@@ -89,14 +89,7 @@ In our application, Django uses Web3.py in the service layer (`service.py`):
 2. Once the blockchain transaction succeeds and returns a `transactionHash` and block number, Django saves the record to the SQLite database, including the transaction hash.
 3. This creates a link: the SQLite record contains the `blockchain_tx_hash` which can be verified at any time by querying the Ethereum node.
 
-### Q11: Explain the Feedback & Sentiment Analysis feature.
-**Answer:** To show advanced backend capabilities, the application analyzes user feedback text. 
-We implemented a rule-based Natural Language Processing (NLP) sentiment scoring engine in the Django views:
-- It processes the message text and ratings.
-- It scans the text for positive keywords (e.g., "great", "excellent", "love") and negative keywords (e.g., "poor", "terrible", "issue").
-- It classifies feedback into **Positive**, **Neutral**, or **Negative** based on keyword density and numerical ratings. The results are plotted on the Admin Dashboard using a pie chart.
-
-### Q12: How are Django forms and authentication structured in the project?
+### Q11: How are Django forms and authentication structured in the project?
 **Answer:**
 - **Authentication:** Django's built-in authentication system is extended using a custom `User` model that tracks roles (is_superuser, is_hospital, is_donor).
 - **Role-Based Routing:** Upon login, a custom redirection view (`CustomLoginView`) inspects the user profile type and sends Admins to `admin_dashboard`, Hospitals to `hospital_dashboard`, and Donors to `donor_dashboard`.
@@ -106,20 +99,20 @@ We implemented a rule-based Natural Language Processing (NLP) sentiment scoring 
 
 ## 4. Security & Workflows Questions
 
-### Q13: How is access security enforced in your views?
+### Q12: How is access security enforced in your views?
 **Answer:** 
 - **View-Level Protection:** Django decorators `@login_required` prevent unauthenticated access to dashboards.
 - **Role Validation:** We check role flags (e.g., `hasattr(request.user, 'hospitalprofile')`) at the beginning of views. If a donor tries to access a hospital URL or a hospital tries to access an admin dashboard, they are redirected immediately with an error message.
 - **Data Validation:** Form submissions validate inputs (e.g., ensuring a hospital can only match available organs, and cannot match an organ registered by itself).
 
-### Q14: How does the organ donation matching workflow work?
+### Q13: How does the organ donation matching workflow work?
 **Answer:**
 1. **Pledging (Donor):** A registered donor logs into the Donor Portal and submits a pledge for specific organs.
 2. **Registration (Hospital):** When the donor arrives at a hospital or is certified deceased, the hospital registers the organ in the Hospital Portal, sending the registration transaction to the blockchain.
 3. **Matching:** The matching hospital searches the location/organ catalog. They identify an available organ and click **Match**. Django executes the `matchOrgan` blockchain transaction, locking the organ to that recipient hospital.
 4. **Transplantation:** Once the transplant surgery completes, the receiving hospital marks it as **Transplanted**, updating the status on the blockchain ledger permanently.
 
-### Q15: What is the Death Certificate module, and what is its role?
+### Q14: What is the Death Certificate module, and what is its role?
 **Answer:** In real-world organ donation, an organ can only be harvested from a deceased donor after medical verification. 
 In our application:
 - An Admin issues a digital **Death Certificate** containing a certificate number and cause of death, linked to a specific donor profile.
@@ -129,20 +122,20 @@ In our application:
 
 ## 5. Troubleshooting & Demo Questions
 
-### Q16: What happens if Ganache is offline when a user tries to register an organ?
+### Q15: What happens if Ganache is offline when a user tries to register an organ?
 **Answer:** If the Ganache blockchain server is offline, the Web3 provider raises a `ConnectionError` or `HTTPConnectionPool` exception. 
 Our view handles this exception in `_format_blockchain_error(e)`:
 - It intercepts the connection error.
 - It prevents the record from being saved to SQLite (avoiding database-blockchain inconsistency).
 - It displays a user-friendly error message on the frontend: *"Blockchain service is not running. Start Ganache at http://127.0.0.1:7545, then try again."*
 
-### Q17: Why are there two service files in your codebase (`backend/blockchain_service.py` and `backend/core/blockchain/service.py`)?
+### Q16: Why are there two service files in your codebase (`backend/blockchain_service.py` and `backend/core/blockchain/service.py`)?
 **Answer:** 
 - `backend/blockchain_service.py` is the **direct API service** that connects to `blockchain/compiled/` ABI and is mapped to REST endpoints under `/api/blockchain/...` (useful for external clients, integration testing, and mobile app APIs). It interacts with the contract using `registerDonor` and `getDonor`.
 - `backend/core/blockchain/service.py` is the **core Django web service** that integrates with the main Django templates. It uses Truffle-style JSON artifacts (`backend/build/contracts/OrganDonation.json`) to invoke actions like `registerDonation`, `matchOrgan`, and `completeTransplant`.
 - *This dual structure shows the ability to support both standard Django templated pages and separate JSON-RPC REST API integrations.*
 
-### Q18: What commands did you write to test your system?
+### Q17: What commands did you write to test your system?
 **Answer:** We wrote a comprehensive Python unit test suite at `blockchain/tests/test_blockchain.py` verifying 50 test cases. It can be run using:
 ```bash
 python blockchain/tests/test_blockchain.py
@@ -153,42 +146,42 @@ This verifies blockchain connection status, smart contract functions, error boun
 
 ## 6. Advanced & Scenario-Based Questions
 
-### Q19: What is Gas in Ethereum, and who pays for it in your system?
+### Q18: What is Gas in Ethereum, and who pays for it in your system?
 **Answer:** In Ethereum, "Gas" is a unit that measures the computational effort required to execute specific operations on the network. Every transaction (like registering an organ) costs gas to prevent infinite loops and spam. 
 In our application, we use Ganache (a local test network), so transactions are executed using test Ether from predefined local accounts. If deployed to a real network, the Hospital invoking the smart contract would need to pay the gas fees using real cryptocurrency (e.g., ETH on Ethereum, or MATIC on Polygon).
 
-### Q20: How did you design the user interface, and why is it important for this project?
+### Q19: How did you design the user interface, and why is it important for this project?
 **Answer:** The user interface was built using Bootstrap 5, custom Vanilla CSS, and modern design principles (like Glassmorphism, smooth animations, and responsive native scrolling). 
 In healthcare, user experience is critical because medical professionals and patients need clear, uncluttered information. We implemented distinct dashboards (Admin, Hospital, Donor) with role-specific views so that a hospital administrator can instantly see pending approvals or match organs without being overwhelmed by unrelated data.
 
-### Q21: What happens if two hospitals try to match the same organ at the exact same time?
+### Q20: What happens if two hospitals try to match the same organ at the exact same time?
 **Answer:** This is a classic concurrency problem, which is elegantly solved by the blockchain. The Ethereum Virtual Machine (EVM) executes transactions sequentially. If two hospitals submit a match request simultaneously:
 1. One transaction will be mined into a block slightly before the other.
 2. The smart contract state will change (the organ's status updates from `Available` to `Matched`).
 3. When the second transaction attempts to execute, the contract logic (using `require(organ.status == OrganStatus.Available)`) will fail, and the second transaction will safely revert.
 
-### Q22: Can a hospital delete a registered organ from the blockchain if they made a mistake?
+### Q21: Can a hospital delete a registered organ from the blockchain if they made a mistake?
 **Answer:** No. Blockchain is inherently **immutable**, meaning data cannot be erased or altered retroactively. 
 If a mistake is made, the standard procedure is to issue a new corrective transaction (like marking the organ as unavailable or rejected). This ensures that a complete, auditable history of all actions—even mistakes—is preserved forever.
 
-### Q23: Did you use Django Signals or specific ORM features?
+### Q22: Did you use Django Signals or specific ORM features?
 **Answer:** We heavily utilized the Django ORM (Object-Relational Mapping) to interact with SQLite securely without writing raw SQL queries, which protects against SQL Injection attacks. 
 For example, we use `select_related()` and `filter()` queries to efficiently retrieve complex related datasets (like joining a Donor profile with a Death Certificate) before presenting it on the dashboards.
 
-### Q24: What are the future enhancements you would add to this project?
+### Q23: What are the future enhancements you would add to this project?
 **Answer:** 
 1. **IPFS Integration:** Storing heavy medical records (like X-Rays or tissue typing reports) on the InterPlanetary File System (IPFS) and only storing the resulting hash on the blockchain.
 2. **AI/Machine Learning:** Integrating a predictive model that suggests the best recipient match based on tissue compatibility, distance, and urgency rather than a manual search.
 3. **Smart Contract Audits:** Adding multi-signature (Multi-Sig) approvals so that both a hospital admin and a government official must sign off on a transplant before the state changes.
 
-### Q25: How many blockchain transactions occur during a complete organ match lifecycle?
+### Q24: How many blockchain transactions occur during a complete organ match lifecycle?
 **Answer:** There are exactly **4** distinct blockchain transactions that happen during a full lifecycle:
 1. **Donor Organ Registration:** Writing the donor's organ details to the blockchain (creating the Organ ID).
 2. **Recipient Registration:** Writing the recipient's medical needs and details to the blockchain (creating the Recipient ID).
 3. **Organ Matching:** When the admin approves the match, a smart contract function (`matchOrgan`) is called to formally link the Organ ID and Recipient ID together on-chain.
 4. **Transplant Completion:** After surgery, a final smart contract function (`completeTransplantWithRecipient`) is called to permanently lock the organ state as "Transplanted" so it can never be used again.
 
-### Q26: Can an organ from Hospital A (e.g. CARE) be given to a high-priority patient at Hospital B (e.g. Apollo)? Does the system support inter-hospital transfers?
+### Q25: Can an organ from Hospital A (e.g. CARE) be given to a high-priority patient at Hospital B (e.g. Apollo)? Does the system support inter-hospital transfers?
 **Answer:** **Yes, absolutely.** This is one of the strongest use cases of our blockchain system!
 - **How it works:** The matching logic strictly checks for medical compatibility (Organ Type and Blood Group). It intentionally *does not* restrict the match to the same hospital.
 - **The Benefit:** Because all hospitals are connected to the same decentralized ledger (Ganache), the Central Admin has a global view of all available organs and all waiting patients. The admin can instantly match Hospital A's organ to Hospital B's high-priority recipient.

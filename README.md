@@ -28,8 +28,7 @@ The project architecture spans three distinct layers: blockchain (consensus/ledg
 | **Frontend** | HTML, CSS, Bootstrap, JavaScript | Beautiful, customized dark-mode SPAs/dashboards designed specifically for **Admin**, **Hospitals**, and **Donors**. Includes custom hospital-specific landing pages and dynamic mock-data auto-fill. |
 | **Database** | Django ORM / SQLite | Preloaded database entries containing prominent medical centers. |
 | **Blockchain** | Ganache, Solidity, Truffle, Web3.py | Fully implemented Solidity contract tracking registration, matches, transplant status, and events. |
-| **Web3 Core** | `backend/core/blockchain/service.py` | Complete service layer using Web3.py to interact with Ganache JSON-RPC. |
-| **Sentiment Analysis** | `backend/core/views.py` | Built-in text analyzer categorizing hospital/donor feedback into Positive, Neutral, or Negative classes. |
+| **Web3 Core**          | `backend/core/blockchain/service.py` | Complete service layer using Web3.py to interact with Ganache JSON-RPC.                                                                                                                                               |
 
 ## 💡 Important Design Rule
 
